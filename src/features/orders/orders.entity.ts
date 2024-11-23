@@ -15,6 +15,8 @@ import { Staffs } from '../staffs/staffs.entity';
 import { Customers } from '../customers/customers.entity';
 import { Coupons } from '../coupons/coupons.entity';
 import { Book } from '../book/book.entity';
+import { PaymentMethod, PaymentStatus } from 'src/common/constants';
+import { Users } from '../users/users.entity';
 
 @Table
 export class Orders extends Model<Orders> {
@@ -55,4 +57,21 @@ export class Orders extends Model<Orders> {
 
   @HasMany(() => Book)
   books: Book[];
+
+  @ForeignKey(() => Users)
+  @Column(DataType.UUID)
+  userId: string;
+
+  @AllowNull(false)
+  @Default(PaymentMethod.ONLINE)
+  @Column(DataType.ENUM(...Object.values(PaymentMethod)))
+  paymentMethod: PaymentMethod;
+
+  @Column(DataType.DATE)
+  timePayment: Date;
+
+  @AllowNull(false)
+  @Default(PaymentStatus.IN_PROGRESS)
+  @Column(DataType.ENUM(...Object.values(PaymentStatus)))
+  paymentStatus: PaymentStatus;
 }

@@ -31,3 +31,14 @@ export enum SizeFastfood {
   MEDIUM = 'Medium',
   BIG = 'Big',
 }
+
+export enum PaymentMethod {
+  ONLINE = 'Online',
+  OFFLINE = 'Offline',
+}
+
+export enum PaymentStatus {
+  CANCELLED = 'Đã hủy',
+  IN_PROGRESS = 'Đang chờ thanh toán',
+  OK = 'Thành công',
+}
