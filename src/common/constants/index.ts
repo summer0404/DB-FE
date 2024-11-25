@@ -42,3 +42,7 @@ export enum PaymentStatus {
   IN_PROGRESS = 'Đang chờ thanh toán',
   OK = 'Thành công',
 }
+
+
+export const ACTORS_REPOSITORY = "ACTORS_REPOSITORY"
+export const MOVIES_REPOSITORY = "MOVIES_REPOSITORY"
