@@ -3,13 +3,17 @@ import { Type } from "class-transformer";
 import { IsNotEmpty, IsString, IsNumber, IsArray, IsDate } from "class-validator";
 import { Files } from "src/features/files/files.entity";
 
-export class CreateMovies {
+export class UpdateMovies {
+    @IsNotEmpty()
+    @IsString()
+    id: string
+
     @ApiProperty({ description: "Publish date of the movie", type: Date })
     @IsNotEmpty()
     @IsDate()
     @Type(() => Date)
     publishDay: Date;
-    
+
     @ApiProperty({ description: "Length of the movie in minutes" })
     @IsNotEmpty()
     @IsNumber()
