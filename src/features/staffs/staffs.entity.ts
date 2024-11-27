@@ -23,7 +23,7 @@ export class Staffs extends Model<Staffs> {
   @BelongsTo(() => Users, { onDelete: 'CASCADE' })
   user: Users;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.INTEGER)
   salary: number;
 

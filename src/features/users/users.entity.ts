@@ -45,6 +45,7 @@ export class Users extends Model<Users> {
   phoneNumber: string;
 
   @AllowNull(false)
+  @Default(UserType.CUSTOMER)
   @Column(DataType.ENUM(UserType.CUSTOMER, UserType.STAFF))
   userType: UserType;
 
@@ -62,11 +63,4 @@ export class Users extends Model<Users> {
 
   @HasMany(() => Comments, { onDelete: 'CASCADE' })
   comments: Comments[];
-
-  @BeforeValidate
-  static async validateUserType(instance: Users) {
-    if (!instance.staff && !instance.customer) {
-      throw new Error('User must be either a staff or a customer.');
-    }
-  }
 }

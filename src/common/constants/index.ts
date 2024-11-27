@@ -3,6 +3,9 @@ export const DEVELOPMENT = 'development' as const;
 export const TEST = 'test' as const;
 export const PRODUCTION = 'production' as const;
 
+export const USER_REPOSITORY = 'USER_REPOSITORY';
+export const CUSTOMER_REPOSITORY = 'CUSTOMER_REPOSITORY';
+
 export enum UserType {
   CUSTOMER = 'Customer',
   STAFF = 'Staff',

@@ -40,6 +40,9 @@ export class Customers extends Model<Customers> {
   })
   referrer: Customers;
 
+  @BelongsTo(() => Users, { onDelete: 'CASCADE' })
+  user: Users;
+
   @HasMany(() => Customers, {
     foreignKey: 'referrerId',
     onDelete: 'SET NULL',
