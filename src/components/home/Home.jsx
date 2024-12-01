@@ -5,7 +5,7 @@ import PopularMovies from './PopularMovies';
 export default function HomePage() {
     return (
         <div style={{ padding: '20px', backgroundColor: 'black' }}>
-            <NavBar />
+
             <LandingPage />
             <div style={{ marginTop: '20px' }}>
                 <PopularMovies title="Popular Movies" movies={movieData} />

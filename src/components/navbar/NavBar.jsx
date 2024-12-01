@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -15,6 +15,10 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import ButtonBase from "@mui/material/ButtonBase";
+import SideBar from "./SideBar";
+import { useNavigate } from 'react-router-dom';
+
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -46,7 +50,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
@@ -59,9 +62,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function NavBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const navigate = useNavigate();
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -169,6 +179,7 @@ export default function NavBar() {
             edge="start"
             color="inherit"
             aria-label="open drawer"
+            onClick={toggleSidebar}
             sx={{
               mr: 2,
               color: "#66FCF1",
@@ -179,14 +190,16 @@ export default function NavBar() {
           >
             <MenuIcon />
           </IconButton>
+          <ButtonBase onClick={() => navigate('/')} sx={{ color: '#66FCF1' }}>
           <Typography
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: "none", sm: "block" }, color: '#66FCF1' }}
+            sx={{ display: { xs: "none", sm: "block" }, color: "#66FCF1" }}
           >
             CINEMA AWESOME
           </Typography>
+          </ButtonBase>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -201,10 +214,12 @@ export default function NavBar() {
             <IconButton
               size="large"
               aria-label="show 4 new mails"
-              sx={{ color: "#66FCF1", 
-              "&:hover": {
-                color: alpha("#66FCF1", 0.8),}
-               }}
+              sx={{
+                color: "#66FCF1",
+                "&:hover": {
+                  color: alpha("#66FCF1", 0.8),
+                },
+              }}
             >
               <Badge badgeContent={4} color="error">
                 <MailIcon />
@@ -213,11 +228,11 @@ export default function NavBar() {
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
-              sx={{ 
-                color: '#66FCF1',
-                '&:hover': {
-                  color: alpha('#66FCF1', 0.8)
-                }
+              sx={{
+                color: "#66FCF1",
+                "&:hover": {
+                  color: alpha("#66FCF1", 0.8),
+                },
               }}
             >
               <Badge badgeContent={17} color="error">
@@ -231,9 +246,11 @@ export default function NavBar() {
               aria-controls={menuId}
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
-              sx={{ color: "#66FCF1",
-              "&:hover": {
-                color: alpha("#66FCF1", 0.8),}
+              sx={{
+                color: "#66FCF1",
+                "&:hover": {
+                  color: alpha("#66FCF1", 0.8),
+                },
               }}
             >
               <AccountCircle />
@@ -246,11 +263,11 @@ export default function NavBar() {
               aria-controls={mobileMenuId}
               aria-haspopup="true"
               onClick={handleMobileMenuOpen}
-              sx={{ 
-                color: '#66FCF1',
-                '&:hover': {
-                  color: alpha('#66FCF1', 0.8)
-                }
+              sx={{
+                color: "#66FCF1",
+                "&:hover": {
+                  color: alpha("#66FCF1", 0.8),
+                },
               }}
             >
               <MoreIcon />
@@ -258,6 +275,7 @@ export default function NavBar() {
           </Box>
         </Toolbar>
       </AppBar>
+      <SideBar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {renderMobileMenu}
       {renderMenu}
     </Box>

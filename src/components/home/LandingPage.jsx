@@ -4,6 +4,8 @@ import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import TheatersOutlinedIcon from '@mui/icons-material/TheatersOutlined';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useNavigate } from 'react-router-dom';
+
 
 // Import images
 import SpiderMoviePoster from "../../assets/Spider_moviePoster.jpg";
@@ -41,6 +43,9 @@ const LandingPage = () => {
     alert(`Playing: ${title}`);
   };
 
+  const navigate = useNavigate();
+
+
   return (
     <div className="h-screen bg-gradient-to-r from-[#0B0C10] to-[#1F2833] text-white flex items-center justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-screen-xl px-6">
@@ -54,7 +59,7 @@ const LandingPage = () => {
             Khám phá thế giới phim đặc sắc trong hệ thống phòng chiếu công nghệ cao<br/> Đặt vé
             ngay hôm nay để tận hưởng trải nghiệm rạp chiếu đỉnh cao!
           </p>
-          <button className="flex items-center gap-2 px-6 py-3 text-lg font-semibold border border-cyan-blue rounded-md hover:bg-white hover:text-black transition">
+          <button className="flex items-center gap-2 px-6 py-3 text-lg font-semibold border border-cyan-blue rounded-md hover:bg-white hover:text-black transition" onClick={() => navigate('/cart')}>
             <TheatersOutlinedIcon />
             Đặt vé ngay
           </button>
