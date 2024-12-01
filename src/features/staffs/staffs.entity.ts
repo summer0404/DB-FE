@@ -1,4 +1,3 @@
-import { UUID } from 'sequelize';
 import {
   AllowNull,
   Column,
@@ -24,9 +23,10 @@ export class Staffs extends Model<Staffs> {
   user: Users;
 
   @AllowNull(true)
-  @Column(DataType.INTEGER)
+  @Column(DataType.FLOAT)
   salary: number;
 
+  @AllowNull(true)
   @Column(DataType.STRING)
   position: string;
 

@@ -12,7 +12,6 @@ import {
 } from 'sequelize-typescript';
 import { Users } from '../users/users.entity';
 import { UUID } from 'sequelize';
-import { Orders } from '../orders/orders.entity';
 
 @Table
 export class Customers extends Model<Customers> {
@@ -49,7 +48,4 @@ export class Customers extends Model<Customers> {
     as: 'referrals',
   })
   referrals: Customers[];
-
-  @HasMany(() => Orders, { onDelete: 'SET NULL' })
-  orders: Orders[];
 }

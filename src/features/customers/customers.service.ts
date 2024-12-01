@@ -3,6 +3,7 @@ import { UpdateCustomerDto } from './dto/updateCustomer.dto';
 import { CUSTOMER_REPOSITORY } from 'src/common/constants';
 import { Customers } from './customers.entity';
 import { CreateCustomerDto } from './dto/createCustomer.dto';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class CustomersService {
@@ -11,15 +12,8 @@ export class CustomersService {
     private readonly customerRepository: typeof Customers,
   ) {}
 
-  async create(createCustomerDto: CreateCustomerDto): Promise<Customers> {
-    const customer = await this.findOne(createCustomerDto.id);
-
-    if (customer)
-      throw new BadRequestException(
-        `Khách hàng với id ${createCustomerDto.id} đã tồn tại`,
-      );
-
-    return await this.customerRepository.create(createCustomerDto);
+  async create(id: string, transaction: Transaction): Promise<Customers> {
+    return await this.customerRepository.create({ id }, { transaction });
   }
 
   async findAll(): Promise<Customers[]> {
@@ -30,11 +24,17 @@ export class CustomersService {
     return await this.customerRepository.findOne({ where: { id } });
   }
 
-  async update(id: string, updateCustomerDto: UpdateCustomerDto) {
-    const customer = await this.findOne(id);
+  async update(
+    id: string,
+    updateCustomerDto: UpdateCustomerDto,
+    transaction: Transaction,
+  ) {
+    const existingcustomer = await this.customerRepository.findOne({
+      where: { id },
+    });
 
-    if (!customer)
-      throw new BadRequestException('Không tồn tại khách hàng tương ứng');
+    if (!existingcustomer)
+      throw new BadRequestException('Không tồn tại khách hàng');
 
     const [numRecordUpdates, [updateRecordData]] =
       await this.customerRepository.update(updateCustomerDto, {
@@ -42,16 +42,26 @@ export class CustomersService {
           id: id,
         },
         returning: true,
+        transaction,
       });
     return numRecordUpdates > 0 ? updateRecordData : null;
   }
 
   async remove(id: string) {
-    const customer = await this.findOne(id);
+    const customer = await this.customerRepository.findOne({ where: { id } });
 
     if (!customer)
       throw new BadRequestException('Không tồn tại khách hàng tương ứng');
 
     await this.customerRepository.destroy({ where: { id } });
+  }
+
+  async removeTransaction(id: string, transaction: Transaction) {
+    const customer = await this.customerRepository.findOne({ where: { id } });
+
+    if (!customer)
+      throw new BadRequestException('Không tồn tại khách hàng tương ứng');
+
+    await this.customerRepository.destroy({ where: { id }, transaction });
   }
 }

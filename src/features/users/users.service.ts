@@ -1,8 +1,11 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/creatUser.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { USER_REPOSITORY } from 'src/common/constants';
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { USER_REPOSITORY, UserType } from 'src/common/constants';
 import { Users } from './users.entity';
+import { Transaction } from 'sequelize';
+import { Customers } from '../customers/customers.entity';
+import { Staffs } from '../staffs/staffs.entity';
 
 @Injectable()
 export class UsersService {
@@ -11,20 +14,36 @@ export class UsersService {
     private readonly userRepository: typeof Users,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<Users> {
-    const existingUser = await this.findByEmail(createUserDto.email);
+  async create(
+    createUserDto: CreateUserDto,
+    transaction: Transaction,
+  ): Promise<Users> {
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        email: createUserDto.email,
+      },
+      transaction,
+    });
 
     if (existingUser)
       throw new BadRequestException('Email người dùng đã tồn tại');
 
-    const user = await this.userRepository.create(createUserDto);
-
-    return user;
+    return await this.userRepository.create(createUserDto);
   }
 
   async findAll(): Promise<Users[]> {
-    const users = await this.userRepository.findAll();
-    return users;
+    return await this.userRepository.findAll({
+      include: [
+        {
+          model: Customers,
+          as: 'customer',
+        },
+        {
+          model: Staffs,
+          as: 'staff',
+        },
+      ],
+    });
   }
 
   async findByEmail(email: string): Promise<Users> {
@@ -33,15 +52,51 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<Users> {
-    const user = await this.userRepository.findByPk(id);
+    const user = await this.userRepository.findByPk(id, {
+      include: [
+        {
+          model: Customers,
+          as: 'customer',
+        },
+        {
+          model: Staffs,
+          as: 'staff',
+        },
+      ],
+    });
+    if (!user) throw new BadRequestException('Không tồn tại người dùng');
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    transaction: Transaction,
+  ): Promise<Users> {
+    const existingUser = await this.userRepository.findByPk(id);
+
+    if (!existingUser)
+      throw new BadRequestException('Không tồn tại người dùng');
+
+    const [affectedRow, [updatedUser]] = await this.userRepository.update(
+      updateUserDto,
+      {
+        where: { id },
+        returning: true,
+        transaction,
+      },
+    );
+    return affectedRow > 0 ? updatedUser : null;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const existingUser = await this.userRepository.findByPk(id);
+
+    if (!existingUser)
+      throw new BadRequestException('Không tồn tại người dùng');
+
+    await this.userRepository.destroy({
+      where: { id },
+    });
   }
 }

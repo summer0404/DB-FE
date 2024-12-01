@@ -1,4 +1,4 @@
-import { UUIDV4 } from 'sequelize';
+import { STRING, UUIDV4 } from 'sequelize';
 import {
   AllowNull,
   Column,
@@ -18,9 +18,13 @@ export class Coupons extends Model<Coupons> {
   @Column(DataType.UUID)
   id: string;
 
-  @Default(false)
-  @Column(DataType.BOOLEAN)
-  isUsed: boolean;
+  @AllowNull(true)
+  @Column(DataType.ARRAY(DataType.STRING))
+  isUsed: string[];
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  name: string;
 
   @AllowNull(false)
   @Column(DataType.DATE)

@@ -53,4 +53,14 @@ export class CreateUserDto {
   @IsOptional()
   @IsString({ message: 'Số điện thoại phải có dạng chuỗi' })
   phoneNumber: string;
+
+  @ApiProperty({
+    description: 'Loại người dùng',
+    example: UserType.CUSTOMER,
+  })
+  @IsOptional()
+  @IsEnum(UserType, {
+    message: `Loại người dùng phải là ${UserType.CUSTOMER} hoặc ${UserType.STAFF}`,
+  })
+  userType: UserType;
 }

@@ -16,7 +16,7 @@ export class Book extends Model<Book> {
   @PrimaryKey
   @ForeignKey(() => Orders)
   @Column(DataType.UUID)
-  oderId: string;
+  orderId: string;
 
   @PrimaryKey
   @ForeignKey(() => Fastfoods)

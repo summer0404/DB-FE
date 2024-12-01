@@ -8,7 +8,6 @@ import {
   PrimaryKey,
   Table,
   Model,
-  BeforeValidate,
   HasMany,
 } from 'sequelize-typescript';
 import { UserType } from 'src/common/constants';

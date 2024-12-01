@@ -4,8 +4,10 @@ import { UsersController } from './users.controller';
 import { Users } from './users.entity';
 import { USER_REPOSITORY } from 'src/common/constants';
 import { LoggerModule } from '../logger/logger.module';
-import { LoggerService } from '../logger/logger.service';
 import { ResponseModule } from '../response/response.module';
+import { CustomersModule } from '../customers/customers.module';
+import { StaffsModule } from '../staffs/staffs.module';
+import { DatabaseModule } from 'src/config/database/database.module';
 
 @Module({
   controllers: [UsersController],
@@ -17,6 +19,12 @@ import { ResponseModule } from '../response/response.module';
     },
   ],
   exports: [UsersService],
-  imports: [LoggerModule, ResponseModule],
+  imports: [
+    LoggerModule,
+    ResponseModule,
+    CustomersModule,
+    StaffsModule,
+    DatabaseModule,
+  ],
 })
 export class UsersModule {}
