@@ -1,41 +1,63 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsNotEmpty, IsString, IsNumber, IsArray, IsDate } from "class-validator";
-import { Files } from "src/features/files/files.entity";
 
 export class UpdateMovies {
+    @ApiProperty({
+        description: "Id của hành phim",
+        example: "2024-11-29",
+    })
     @IsNotEmpty()
     @IsString()
     id: string
 
-    @ApiProperty({ description: "Publish date of the movie", type: Date })
+    @ApiProperty({
+        description: "Ngày phát hành phim",
+        example: "2024-11-29",
+    })
     @IsNotEmpty()
     @IsDate()
     @Type(() => Date)
     publishDay: Date;
 
-    @ApiProperty({ description: "Length of the movie in minutes" })
+    @ApiProperty({
+        description: "Thời lượng phim (tính bằng phút)",
+        example: 120,
+    })
     @IsNotEmpty()
     @IsNumber()
     length: number;
 
-    @ApiProperty({ description: "Age limitation for the movie" })
+    @ApiProperty({
+        description: "Giới hạn độ tuổi (số nguyên)",
+        example: 13,
+    })
     @IsNotEmpty()
     @IsNumber()
     ageLimitation: number;
 
-    @ApiProperty({ description: "Name of the movie" })
+    @ApiProperty({
+        description: "Tên phim",
+        example: "Tên phim mẫu",
+    })
     @IsNotEmpty()
     @IsString()
     name: string;
 
-    @ApiProperty({ description: "Country where the movie was produced" })
+    @ApiProperty({
+        description: "Quốc gia sản xuất phim",
+        example: "Việt Nam",
+    })
     @IsNotEmpty()
     @IsString()
     country: string;
 
-    @ApiProperty({ description: "Description of the movie" })
+    @ApiProperty({
+        description: "Mô tả chi tiết về phim",
+        example: "Mô tả chi tiết nội dung phim.",
+    })
     @IsNotEmpty()
     @IsString()
     description: string;
+
 }

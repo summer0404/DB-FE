@@ -22,8 +22,13 @@ export class DirectorsService {
         const updateData = await isDirector.update(updateDirectorDto)
         return updateData
     }
-    async removeDirector(id: string) {
-        const isDirector = await this.directorsRepository.findByPk(id)
+    async removeDirector(movieId:string, id: string) {
+        const isDirector = await this.directorsRepository.findOne({
+            where: {
+                id: id,
+                movieId:movieId
+            }
+        })
         if (!isDirector) {
             throw new NotFoundException("Không tìm thấy đạo diễn phù hợp")
         }
@@ -35,8 +40,13 @@ export class DirectorsService {
         if (allDirectors.length == 0) return []
         return allDirectors
     }
-    async getById(id: string) {
-        const isDirector = await this.directorsRepository.findByPk(id)
+    async getByIds(movieId:string,id: string) {
+        const isDirector = await this.directorsRepository.findOne({
+            where:{
+                id: id,
+                movieId:movieId
+            }
+        })
         if (!isDirector) {
             throw new NotFoundException("Không tìm thấy đạo diễn phù hợp")
         }

@@ -4,6 +4,7 @@ import { LoggerService } from '../logger/logger.service';
 import { Response } from '../response/response.entity';
 import { CreateRoomDto } from './dtos/create.dto';
 import { UpdateRoomDto } from './dtos/update.dto';
+import { ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @Controller('rooms')
 export class RoomsController {
@@ -13,7 +14,34 @@ export class RoomsController {
         private readonly response: Response
     ) { }
     @Post("/create")
-    async getHello(@Res() res, @Body() createDto: CreateRoomDto) {
+    @ApiResponse({
+        status: 200,
+        description: 'Tạo phòng chiếu phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Tạo phòng chiếu phim thành công',
+                data: {
+                    id: "room123",
+                    name: "Phòng chiếu VIP",
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Lỗi trong quá trình.',
+        schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
+    async create(@Res() res, @Body() createDto: CreateRoomDto) {
         try {
             const temp = await this.roomService.create(createDto)
             this.logger.debug('Tạo phòng chiếu phim thành công');
@@ -31,6 +59,33 @@ export class RoomsController {
         }
     }
     @Put("/Update")
+    @ApiResponse({
+        status: 200,
+        description: 'Cập nhật thông tin phòng chiếu phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Cập nhật thông tin phòng chiếu phim thành công',
+                data: {
+                    id: "room123",
+                    name: "Phòng chiếu VIP cập nhật",
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Lỗi trong quá trình.',
+        schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async update(@Res() res, @Body() updateDto: UpdateRoomDto) {
         try {
             const temp = await this.roomService.updateRoom(updateDto)
@@ -49,6 +104,29 @@ export class RoomsController {
         }
     }
     @Delete("/Delete/:id")
+    @ApiParam({ name: 'id', description: 'ID của phòng chiếu cần xóa' })
+    @ApiResponse({
+        status: 200,
+        description: 'Xóa phòng chiếu phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Xóa phòng chiếu phim thành công',
+                data: []
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Lỗi trong quá trình.',
+        schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async delete(@Res() res, @Param("id") id: string) {
         try {
             const temp = await this.roomService.removeRoom(id)
@@ -67,6 +145,41 @@ export class RoomsController {
         }
     }
     @Get("/all")
+    @ApiResponse({
+        status: 200,
+        description: 'Lấy toàn bộ thông tin phòng chiếu phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Lấy toàn bộ thông tin phòng chiếu phim thành công',
+                data: [
+                    {
+                        id: "room123",
+                        name: "Phòng chiếu VIP",
+                        updatedAt: "2024-11-28T14:04:31.171Z",
+                        createdAt: "2024-11-28T14:04:31.171Z"
+                    },
+                    {
+                        id: "room456",
+                        name: "Phòng chiếu tiêu chuẩn",
+                        updatedAt: "2024-11-28T14:04:31.171Z",
+                        createdAt: "2024-11-28T14:04:31.171Z"
+                    }
+                ]
+            }
+        }
+    })
+    @ApiResponse({
+        status: 204,
+        description: 'Không có dữ liệu.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Không có dữ liệu',
+                data: []
+            }
+        }
+    })
     async getAll(@Res() res) {
         try {
             const temp = await this.roomService.getAll()
@@ -88,6 +201,34 @@ export class RoomsController {
         }
     }
     @Get("/:id")
+    @ApiParam({ name: 'id', description: 'ID của phòng chiếu phim' })
+    @ApiResponse({
+        status: 200,
+        description: 'Lấy thông tin phòng chiếu phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Lấy thông tin phòng chiếu phim thành công',
+                data: {
+                    id: "room123",
+                    name: "Phòng chiếu VIP",
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Lỗi trong quá trình.',
+        schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async getById(@Res() res, @Param("id") id: string) {
         try {
             const temp = await this.roomService.getById(id)

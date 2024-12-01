@@ -5,6 +5,7 @@ import { Response } from '../response/response.entity';
 import { CreateMovies } from './dtos/create.dtos';
 import { UpdateMovies } from './dtos/update.dtos';
 import { cpuUsage } from 'process';
+import { ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @Controller('movies')
 export class MoviesController {
@@ -14,6 +15,38 @@ export class MoviesController {
         private readonly response: Response
     ) { }
     @Post("/create")
+    @ApiResponse({
+        status: 200,
+        description: 'Tạo phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Tạo phim thành công',
+                data: {
+                    id: "abc123",
+                    name: "Tên phim mẫu",
+                    publishDay: "2024-11-29",
+                    length: 120,
+                    ageLimitation: 13,
+                    country: "Việt Nam",
+                    description: "Mô tả chi tiết nội dung phim.",
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Lỗi trong quá trình.',
+        schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async create(@Res() res, @Body() createDto: CreateMovies) {
         try {
             const temp = await this.movieService.createMovie(createDto)
@@ -32,6 +65,38 @@ export class MoviesController {
         }
     }
     @Put("/Update")
+    @ApiResponse({
+        status: 200,
+        description: 'Cập nhật thông tin bộ phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Cập nhật thông tin bộ phim thành công',
+                data: {
+                    id: "abc123",
+                    name: "Tên phim mới",
+                    publishDay: "2024-11-30",
+                    length: 130,
+                    ageLimitation: 16,
+                    country: "Hoa Kỳ",
+                    description: "Mô tả mới chi tiết nội dung phim.",
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Lỗi trong quá trình.',
+        schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async update(@Res() res, @Body() updateDto: UpdateMovies) {
         try {
             const temp = await this.movieService.updateMovie(updateDto)
@@ -50,6 +115,29 @@ export class MoviesController {
         }
     }
     @Delete("/Delete/:id")
+    @ApiParam({ name: 'id', description: 'ID của bộ phim cần xóa' })
+    @ApiResponse({
+        status: 200,
+        description: 'Xóa bỏ thông tin bộ phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Xóa bỏ thông tin bộ phim thành công',
+                data: []
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Lỗi trong quá trình.',
+        schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async delete (@Res() res, @Param("id") id:string){
         try {
             const temp = await this.movieService.removeMovie(id)
@@ -67,6 +155,51 @@ export class MoviesController {
             }
         }
     }
+    @ApiResponse({
+        status: 200,
+        description: 'Lấy toàn bộ thông tin bộ phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Lấy toàn bộ thông tin bộ phim thành công',
+                data: [
+                    {
+                        id: "abc123",
+                        name: "Tên phim 1",
+                        publishDay: "2024-11-29",
+                        length: 120,
+                        ageLimitation: 13,
+                        country: "Việt Nam",
+                        description: "Mô tả chi tiết nội dung phim 1.",
+                        updatedAt: "2024-11-28T14:04:31.171Z",
+                        createdAt: "2024-11-28T14:04:31.171Z"
+                    },
+                    {
+                        id: "def456",
+                        name: "Tên phim 2",
+                        publishDay: "2024-12-01",
+                        length: 90,
+                        ageLimitation: 18,
+                        country: "Nhật Bản",
+                        description: "Mô tả chi tiết nội dung phim 2.",
+                        updatedAt: "2024-11-28T14:04:31.171Z",
+                        createdAt: "2024-11-28T14:04:31.171Z"
+                    }
+                ]
+            }
+        }
+    })
+    @ApiResponse({
+        status: 204,
+        description: 'Không có dữ liệu.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Không có dữ liệu',
+                data: []
+            }
+        }
+    })
     @Get("/all")
     async getAll(@Res() res) {
         try {
@@ -89,6 +222,39 @@ export class MoviesController {
         }
     }
     @Get("/:id")
+    @ApiParam({ name: 'id', description: 'ID của bộ phim' })
+    @ApiResponse({
+        status: 200,
+        description: 'Lấy thông tin bộ phim thành công.',
+        schema: {
+            example: {
+                success: true,
+                message: 'Lấy thông tin bộ phim thành công',
+                data: {
+                    id: "abc123",
+                    name: "Tên phim mẫu",
+                    publishDay: "2024-11-29",
+                    length: 120,
+                    ageLimitation: 13,
+                    country: "Việt Nam",
+                    description: "Mô tả chi tiết nội dung phim.",
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Lỗi trong quá trình.',
+        schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async getById(@Res() res, @Param("id") id: string) {
         try {
             const temp = await this.movieService.getById(id)

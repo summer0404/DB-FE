@@ -4,7 +4,9 @@ import { LoggerService } from '../logger/logger.service';
 import { Response } from '../response/response.entity';
 import { createActors } from './dtos/create.dto';
 import { updateActors } from './dtos/update.dto';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Actors')
 @Controller('actors')
 export class ActorsController {
     constructor(
@@ -12,8 +14,35 @@ export class ActorsController {
         private readonly logger: LoggerService,
         private readonly response: Response
     ) { }
+    
     @Post("/create")
-    async getHello(@Res() res, @Body() createDto:createActors) {
+    @ApiResponse({
+        status: 200, description: 'Tạo diễn viên thành công.', schema: {
+            example: {
+                success: true,
+                message: 'Tạo diễn viên thành công',
+                data: {
+                    id: 'actorId123',
+                    movieId: 'movieId456',
+                    age: 30,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500, description: 'Lỗi trong quá trình xử lý.', schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
+    async create(@Res() res, @Body() createDto:createActors) {
         try {
             const temp = await this.actorService.create(createDto)
             this.logger.debug('Tạo diễn viên thành công');
@@ -30,7 +59,34 @@ export class ActorsController {
             }
         }
     }
+
     @Put("/Update")
+    @ApiResponse({
+        status: 200, description: 'Cập nhật thông tin diễn viên thành công.', schema: {
+            example: {
+                success: true,
+                message: 'Cập nhật thông tin diễn viên thành công',
+                data: {
+                    id: 'actorId123',
+                    movieId: 'movieId456',
+                    age: 30,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500, description: 'Lỗi trong quá trình xử lý.', schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async update(@Res() res, @Body() updateDto: updateActors) {
         try {
             const temp = await this.actorService.updateActor(updateDto)
@@ -48,7 +104,28 @@ export class ActorsController {
             }
         }
     }
+
     @Delete("/Delete/:movieId/:id")
+    @ApiParam({ name: 'movieId', description: 'ID của bộ phim', example: 'movieId456' })
+    @ApiParam({ name: 'id', description: 'ID của diễn viên', example: 'actorId123' })
+    @ApiResponse({
+        status: 200, description: 'Xóa bỏ thông tin diễn viên thành công.', schema: {
+            example: {
+                success: true,
+                message: 'Xóa bỏ thông tin diễn viên thành công',
+                data: []
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500, description: 'Lỗi trong quá trình xử lý.', schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async delete(@Res() res, @Param("id") id: string, @Param("movieId") movieId:string) {
         try {
             const temp = await this.actorService.removeActor(movieId,id)
@@ -66,7 +143,54 @@ export class ActorsController {
             }
         }
     }
+
     @Get("/all")
+    @ApiResponse({
+        status: 200, description: 'Lấy toàn bộ thông tin diễn viên thành công.', schema: {
+            example: {
+                success: true,
+                message: 'Lấy toàn bộ thông tin diễn viên thành công',
+                data: [
+                    {
+                        id: 'actorId123456',
+                        movieId: 'movieId456789',
+                        age: 39,
+                        firstName: 'WALKER',
+                        lastName: 'ALAN',
+                        updatedAt: "2024-11-28T14:04:31.171Z",
+                        createdAt: "2024-11-28T14:04:31.171Z"
+                    },
+                    {
+                        id: 'actorId123',
+                        movieId: 'movieId456',
+                        age: 30,
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        updatedAt: "2024-11-28T14:04:31.171Z",
+                        createdAt: "2024-11-28T14:04:31.171Z"
+                    }
+                ]
+            }
+        }
+    })
+    @ApiResponse({
+        status: 204, description: 'Không có thông tin diễn viên.', schema: {
+            example: {
+                success: true,
+                message: 'Không có dữ liệu',
+                data: []
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500, description: 'Lỗi trong quá trình xử lý.', schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async getAll(@Res() res) {
         try {
             const temp = await this.actorService.getAll()
@@ -88,6 +212,34 @@ export class ActorsController {
         }
     }
     @Get("/:movieId/:id")
+    @ApiParam({ name: 'movieId', description: 'ID của bộ phim', example: 'movieId456' })
+    @ApiParam({ name: 'id', description: 'ID của diễn viên', example: 'actorId123' })
+    @ApiResponse({
+        status: 200, description: 'Lấy thông tin diễn viên thành công.', schema: {
+            example: {
+                success: true,
+                message: 'Lấy thông tin diễn viên thành công',
+                data: {
+                    id: 'actorId123',
+                    movieId: 'movieId456',
+                    age: 30,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    updatedAt: "2024-11-28T14:04:31.171Z",
+                    createdAt: "2024-11-28T14:04:31.171Z"
+                }
+            }
+        }
+    })
+    @ApiResponse({
+        status: 500, description: 'Lỗi trong quá trình xử lý.', schema: {
+            example: {
+                success: false,
+                message: 'Lỗi trong quá trình..',
+                data: null
+            }
+        }
+    })
     async getById(@Res() res, @Param("id") id: string, @Param("movieId") movieId: string) {
         try {
             const temp = await this.actorService.getById(movieId,id)

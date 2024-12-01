@@ -1,15 +1,33 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
-import { UUID } from "crypto";
-import { NotNull } from "sequelize-typescript";
+import { IsNotEmpty, IsString, IsInt } from "class-validator";
 
 export class createActors {
+    @ApiProperty({
+        description: "ID của bộ phim",
+        example: "abcd1234",
+    })
     @IsNotEmpty()
-    movieId: string
+    movieId: string;
+
+    @ApiProperty({
+        description: "Tuổi của diễn viên",
+        example: 30,
+    })
     @IsNotEmpty()
-    age: number
+    @IsInt()
+    age: number;
+
+    @ApiProperty({
+        description: "Tên đầu của diễn viên",
+        example: "John",
+    })
     @IsNotEmpty()
-    firstName: string
+    firstName: string;
+
+    @ApiProperty({
+        description: "Họ của diễn viên",
+        example: "Doe",
+    })
     @IsNotEmpty()
-    lastName: string
+    lastName: string;
 }
