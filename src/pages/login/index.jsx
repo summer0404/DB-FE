@@ -1,5 +1,10 @@
+import LoginComponent from "../../component/login";
+
+
 export default function Login() {
     return (
-        <h1>Đăng nhập + đăng ký</h1>
+        <div className="h-screen flex items-center justify-center bg-cover bg-center relative">
+            <LoginComponent></LoginComponent>
+        </div>
     )
 }

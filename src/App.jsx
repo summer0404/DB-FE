@@ -7,6 +7,8 @@ import Login from "./pages/login";
 import MovieDetails from "./pages/movie_details";
 import TicketBooking from "./pages/ticket_booking";
 import NavBar from "./components/navbar/NavBar";
+import Register from './pages/register';
+import ManageMovies from './pages/manage_movies';
 
 function App() {
   return (
@@ -15,13 +17,15 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+        <Route path="/home" element={<Home />} />
           <Route path="/add_food" element={<AddFood />} />
           <Route path="/add_movies" element={<AddMovies />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/movie_details" element={<MovieDetails />} />
           <Route path="ticket_booking" element={<TicketBooking />} />
-        </Routes>
+          <Route path="/manage_movies" element={<ManageMovies />} />
+      </Routes>
     </div>
   );
 }
