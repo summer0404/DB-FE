@@ -1,4 +1,4 @@
-import { UUIDV4 } from 'sequelize';
+import { UUIDV4 } from "sequelize";
 import {
   AllowNull,
   BeforeValidate,
@@ -10,9 +10,9 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Users } from '../users/users.entity';
-import { Movies } from '../movies/movies.entity';
+} from "sequelize-typescript";
+import { Users } from "../users/users.entity";
+import { Movies } from "../movies/movies.entity";
 
 @Table
 export class Files extends Model<Files> {
@@ -21,19 +21,32 @@ export class Files extends Model<Files> {
   @Column(DataType.UUID)
   id: string;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.STRING)
   path: string;
 
+  @AllowNull(true)
   @Column(DataType.STRING)
   name: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  key: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  size: string;
+
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  pages: number;
 
   @ForeignKey(() => Users)
   @AllowNull(true)
   @Column(DataType.UUID)
   userId: string;
 
-  @BelongsTo(() => Users, { onDelete: 'CASCADE' })
+  @BelongsTo(() => Users, { onDelete: "CASCADE" })
   user: Users;
 
   @ForeignKey(() => Movies)
@@ -41,14 +54,14 @@ export class Files extends Model<Files> {
   @Column(DataType.UUID)
   movieId: string;
 
-  @BelongsTo(() => Movies, { onDelete: 'CASCADE' })
+  @BelongsTo(() => Movies, { onDelete: "CASCADE" })
   movie: Movies;
 
   @BeforeValidate
   static async validateFileOwnership(instance: Files) {
     if (instance.userId != null && instance.movieId != null) {
       throw new Error(
-        'A file can only belong to either a user or a movie, not both.',
+        "A file can only belong to either a user or a movie, not both.",
       );
     }
   }

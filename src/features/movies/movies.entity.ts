@@ -1,21 +1,20 @@
-import { UUIDV4 } from 'sequelize';
+import { UUIDV4 } from "sequelize";
 import {
   AllowNull,
   Column,
   DataType,
   Default,
   HasMany,
-  HasOne,
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Files } from '../files/files.entity';
-import { Genre } from '../genre/genre.entity';
-import { Directors } from '../directors/directors.entity';
-import { Actors } from '../actors/actors.entity';
-import { Comments } from '../comments/comments.entity';
-import { Rates } from '../rates/rates.entity';
+} from "sequelize-typescript";
+import { Files } from "../files/files.entity";
+import { Genre } from "../genre/genre.entity";
+import { Directors } from "../directors/directors.entity";
+import { Actors } from "../actors/actors.entity";
+import { Comments } from "../comments/comments.entity";
+import { Rates } from "../rates/rates.entity";
 
 @Table
 export class Movies extends Model<Movies> {
@@ -44,21 +43,21 @@ export class Movies extends Model<Movies> {
   @Column(DataType.TEXT)
   description: string;
 
-  @HasMany(() => Files, { onDelete: 'CASCADE' })
+  @HasMany(() => Files, { onDelete: "CASCADE" })
   files: Files[];
 
-  @HasMany(() => Genre, { onDelete: 'CASCADE' })
+  @HasMany(() => Genre, { onDelete: "CASCADE" })
   genres: Genre[];
 
-  @HasMany(() => Comments, { onDelete: 'CASCADE' })
+  @HasMany(() => Comments, { onDelete: "CASCADE" })
   comments: Comments[];
 
-  @HasMany(() => Rates, { onDelete: 'CASCADE' })
+  @HasMany(() => Rates, { onDelete: "CASCADE" })
   rate: Rates[];
 
-  @HasMany(() => Actors, { onDelete: 'CASCADE' })
+  @HasMany(() => Actors, { onDelete: "CASCADE" })
   actors: Actors[];
 
-  @HasMany(() => Directors, { onDelete: 'CASCADE' })
+  @HasMany(() => Directors, { onDelete: "CASCADE" })
   directors: Directors[];
 }

@@ -17,6 +17,7 @@ import { Coupons } from '../coupons/coupons.entity';
 import { Book } from '../book/book.entity';
 import { PaymentMethod, PaymentStatus } from 'src/common/constants';
 import { Users } from '../users/users.entity';
+import { Tickets } from '../tickets/tickets.entity';
 
 @Table
 export class Orders extends Model<Orders> {
@@ -35,20 +36,15 @@ export class Orders extends Model<Orders> {
   totalPrice: number;
 
   @ForeignKey(() => Staffs)
+  @AllowNull(true)
   @Column(DataType.UUID)
   staffId: string;
 
   @BelongsTo(() => Staffs, { onDelete: 'SET NULL' })
   staff: Staffs;
 
-  @ForeignKey(() => Customers)
-  @Column(DataType.UUID)
-  customerId: string;
-
-  @BelongsTo(() => Customers, { onDelete: 'SET NULL' })
-  customer: Customers;
-
   @ForeignKey(() => Coupons)
+  @AllowNull(true)
   @Column(DataType.UUID)
   couponId: string;
 
@@ -59,14 +55,16 @@ export class Orders extends Model<Orders> {
   books: Book[];
 
   @ForeignKey(() => Users)
+  @AllowNull(false)
   @Column(DataType.UUID)
   userId: string;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Default(PaymentMethod.ONLINE)
   @Column(DataType.ENUM(...Object.values(PaymentMethod)))
   paymentMethod: PaymentMethod;
 
+  @AllowNull(true)
   @Column(DataType.DATE)
   timePayment: Date;
 
@@ -74,4 +72,7 @@ export class Orders extends Model<Orders> {
   @Default(PaymentStatus.IN_PROGRESS)
   @Column(DataType.ENUM(...Object.values(PaymentStatus)))
   paymentStatus: PaymentStatus;
+
+  @HasMany(() => Tickets, { onDelete: 'SET NULL' })
+  tickets: Tickets[];
 }

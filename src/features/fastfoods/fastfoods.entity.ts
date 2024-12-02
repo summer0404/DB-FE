@@ -4,10 +4,12 @@ import {
   Column,
   DataType,
   Default,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
+import { Book } from '../book/book.entity';
 
 @Table
 export class Fastfoods extends Model<Fastfoods> {
@@ -23,4 +25,7 @@ export class Fastfoods extends Model<Fastfoods> {
   @AllowNull(false)
   @Column(DataType.FLOAT)
   price: number;
+
+  @HasMany(() => Book, { onDelete: 'CASCADE' })
+  books: Book[];
 }
