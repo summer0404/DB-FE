@@ -68,7 +68,9 @@ export default function MovieDetailComponent() {
   return (
     <Box
       className="flex flex-col justify-center p-[6px] w-[95%] md:w-7/12 items-center"
-      sx={{ padding: "0px 8px" }}
+      sx={{ padding: "0px 8px",
+        marginBottom: '100px' // Added margin at the bottom
+       }}
     >
       {/* Thông tin phim  */}
       <Box className="w-full">
@@ -321,7 +323,7 @@ export default function MovieDetailComponent() {
           width: { xs: "100%", md: "60%" },
         }}
       >
-        <ShowSchedule></ShowSchedule>
+        {/* <ShowSchedule></ShowSchedule> */}
       </Box>
 
       <Box
@@ -335,7 +337,7 @@ export default function MovieDetailComponent() {
       </Box>
 
       <Box sx={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        <ButtonOrder></ButtonOrder>
+        {/* <ButtonOrder></ButtonOrder> */}
       </Box>
     </Box>
   );

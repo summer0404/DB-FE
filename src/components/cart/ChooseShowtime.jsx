@@ -32,7 +32,7 @@ const ChooseShowtime = ({ onShowtimeSelect }) => {
         borderRadius: "8px",
         border: '2px solid #66FCF1',
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
-        color: "#fff",
+        color: "#66FCF1",
         textAlign: "center",
       }}
     >
@@ -53,10 +53,10 @@ const ChooseShowtime = ({ onShowtimeSelect }) => {
                 <Button
                   onClick={() => handleDateSelection(formattedDate)}
                   sx={{
-                    backgroundColor: formattedDate === selectedDate ? "#6C63FF" : "#fff",
-                    color: formattedDate === selectedDate ? "#fff" : "#000",
+                    backgroundColor: formattedDate === selectedDate ? "#66FCF1" : "#fff",
+                    color: "#000",
                     "&:hover": {
-                      backgroundColor: formattedDate === selectedDate ? "#5A54D4" : "#f0f0f0",
+                      backgroundColor: formattedDate === selectedDate ? "#66FCF1" : "#f0f0f0",
                     },
                     padding: "10px 20px",
                     borderRadius: "4px",
@@ -81,10 +81,10 @@ const ChooseShowtime = ({ onShowtimeSelect }) => {
               <Button
                 onClick={() => handleTimeSelection(time)}
                 sx={{
-                  backgroundColor: time === selectedTime ? "#6C63FF" : "#fff",
-                  color: time === selectedTime ? "#fff" : "#000",
+                  backgroundColor: time === selectedTime ? "#66FCF1" : "#fff",
+                  color:  "#000",
                   "&:hover": {
-                    backgroundColor: time === selectedTime ? "#5A54D4" : "#f0f0f0",
+                    backgroundColor: time === selectedTime ? "#66FCF1" : "#f0f0f0",
                   },
                   padding: "10px 20px",
                   borderRadius: "4px",

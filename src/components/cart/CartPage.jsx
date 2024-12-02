@@ -3,6 +3,7 @@ import SeatingMap from "./SeatingMap";
 import FoodBuy from "./FoodBuy";
 import ChooseShowtime from "./ChooseShowtime";
 import QuickBooking from "./QuickBooking";
+import MovieDetailComponent from "../movie_details";
 import { Box } from "@mui/material";
 
 export default function CartPage() {
@@ -10,7 +11,6 @@ export default function CartPage() {
 
   const handleShowtimeSelect = (selectedShowtime) => {
     setShowtime(selectedShowtime);
-    console.log("Selected Showtime:", selectedShowtime);
   };
   return (
     <>
@@ -24,7 +24,8 @@ export default function CartPage() {
           alignItems: "center",
         }}
       >
-        <QuickBooking />
+        
+        <MovieDetailComponent />
         <ChooseShowtime onShowtimeSelect={handleShowtimeSelect} />
         <SeatingMap />
         <FoodBuy />

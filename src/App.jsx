@@ -9,6 +9,7 @@ import TicketBooking from "./pages/ticket_booking";
 import NavBar from "./components/navbar/NavBar";
 import Register from './pages/register';
 import ManageMovies from './pages/manage_movies';
+import QuickBooking from "./components/cart/QuickBooking";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/movie_details" element={<MovieDetails />} />
           <Route path="ticket_booking" element={<TicketBooking />} />
           <Route path="/manage_movies" element={<ManageMovies />} />
+          <Route path="/quick_booking" element={<QuickBooking />} />
       </Routes>
     </div>
   );

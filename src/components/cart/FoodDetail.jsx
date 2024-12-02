@@ -8,6 +8,10 @@ const FoodDetail = ({ image, title, description, price }) => {
         backgroundColor: "#1C2336",
         color: "#fff",
         borderRadius: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        height: '100%',
       }}
     >
       <CardMedia component="img" height="140" image={image} alt={title} />
@@ -18,7 +22,7 @@ const FoodDetail = ({ image, title, description, price }) => {
         <Typography variant="body2" color="gray" gutterBottom>
           {description}
         </Typography>
-        <Typography variant="h6" color="#FFD700">
+        <Typography variant="h6" color="#66FCF1">
           {price}
         </Typography>
         <Box
@@ -31,14 +35,14 @@ const FoodDetail = ({ image, title, description, price }) => {
         >
           <Button
             variant="outlined"
-            sx={{ color: "#fff", borderColor: "#FFD700" }}
+            sx={{ color: "#fff", borderColor: "#66FCF1" }}
           >
             -
           </Button>
           <Typography variant="body1">0</Typography>
           <Button
             variant="outlined"
-            sx={{ color: "#fff", borderColor: "#FFD700" }}
+            sx={{ color: "#fff", borderColor: "#66FCF1" }}
           >
             +
           </Button>

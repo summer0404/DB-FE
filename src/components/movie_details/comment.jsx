@@ -107,17 +107,21 @@ export default function Comment() {
           fontFamily: "'Anton', sans-serif",
           fontSize: { xs: "16px", md: "24px" }, // Thay đổi kích thước dựa trên màn hình
           fontWeight: 400, // Định dạng lại thành số (fontWeight không dùng px)
+          color: "#ffffff",
         }}
       >
         BÌNH LUẬN
       </Typography>
-      <List
+            <List
         sx={{
           width: "100%",
           maxWidth: 500,
-          // borderRadius: "5px",
-          // boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
-          // backgroundColor: "#f9f9f9",
+          height: 300, // Set a fixed height
+          overflowY: "auto", // Enable vertical scrolling
+          backgroundColor: "#1F2833", // Optional: Set background color to match theme
+          borderRadius: "5px",
+          boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
+          padding: 5 // Add padding to all sides
         }}
       >
         {comments.map((comment) => (
@@ -137,8 +141,19 @@ export default function Comment() {
                 defaultValue={comment.rating}
                 precision={0.5}
                 readOnly
+                sx={{
+                  '& .MuiRating-iconFilled': {
+                    color: 'yellow', // Filled star color
+                  },
+                  '& .MuiRating-iconEmpty': {
+                    color: 'white', // Empty star color
+                  },
+                  '& .MuiRating-iconHover': {
+                    color: '#ffffff', // Hover color for stars
+                  },
+                }}
               />
-              <ListItemText>{comment.content}</ListItemText>
+              <ListItemText sx={{ color: '#ffffff' }}>{comment.content}</ListItemText>
             </Box>
           </ListItem>
         ))}

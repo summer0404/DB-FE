@@ -76,20 +76,20 @@ const SeatingMap = () => {
                     height: { xs: 30, sm: 40, md: 50 },
                     margin: "0 4px",
                     backgroundColor:
+                    status === "occupied"
+                      ? "#555" // Occupied seats remain gray
+                      : status === "selected"
+                      ? "#66FCF1" // Selected seats use the new theme color
+                      : "#3B4A54", // Available seats use a lighter background color
+                  color: status === "available" ? "#66FCF1" : "#000", // Available seats have the theme color text
+                  "&:hover": {
+                    backgroundColor:
                       status === "occupied"
-                        ? "#555"
+                        ? "#555" // Occupied seats remain gray on hover
                         : status === "selected"
-                        ? "#6C63FF"
-                        : "#fff",
-                    color: status === "available" ? "#000" : "#fff",
-                    "&:hover": {
-                      backgroundColor:
-                        status === "occupied"
-                          ? "#555"
-                          : status === "selected"
-                          ? "#5A54D4"
-                          : "#f0f0f0",
-                    },
+                        ? "#66FCF1" // Selected seats remain the same on hover
+                        : "#45A29E", // Available seats change to a lighter theme color on hover
+                  },
                     borderRadius: "4px",
                     minWidth: "unset",
                     padding: 0,

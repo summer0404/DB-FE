@@ -37,7 +37,7 @@ export default function PopularMovies({ title, movies }) {
       <Typography
         variant="h4"
         sx={{
-          color: "white",
+          color: "#66FCF1",
           fontWeight: "bold",
           textAlign: "left",
           marginBottom: "20px",
@@ -70,7 +70,7 @@ export default function PopularMovies({ title, movies }) {
               alt={item.title}
               style={{
                 width: "100%",
-                height: "400px",
+                height: "500px",
                 objectFit: "cover",
                 borderRadius: "10px",
               }}

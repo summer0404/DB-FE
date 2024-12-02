@@ -12,7 +12,11 @@ import {
   Button,
   TextField,
   Grid,
+  IconButton,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 
 const FoodTable = ({ initialData }) => {
   const [foodData, setFoodData] = useState(initialData);
@@ -127,7 +131,7 @@ const FoodTable = ({ initialData }) => {
             textAlign: "center",
           }}
         >
-          Food Menu
+          Danh sách thức ăn
         </Typography>
 
         {/* Add New Food Form */}
@@ -190,28 +194,27 @@ const FoodTable = ({ initialData }) => {
                 variant="contained"
                 component="label"
                 sx={{
-                    height: "100%",
-                    backgroundColor: "#1F2833",
-                    color: "#66FCF1",
-                    borderColor: "#66FCF1",
-                    transition: 'all 0.3s ease',
-                    border: '1px solid #45A29E',
-                    '&:hover': { 
-                      backgroundColor: "#66FCF1",
-                      color: "#1F2833",
-                      
-                    },
-                    '&:active': {
-                      backgroundColor: "#0B0C10",
-                      borderColor: "#45A29E"
-                    },
-                    '&:disabled': {
-                      backgroundColor: "#C5C6C7",
-                      color: "#1F2833"
-                    }
-                  }}
+                  height: "100%",
+                  backgroundColor: "#1F2833",
+                  color: "#66FCF1",
+                  borderColor: "#66FCF1",
+                  transition: "all 0.3s ease",
+                  border: "1px solid #45A29E",
+                  "&:hover": {
+                    backgroundColor: "#66FCF1",
+                    color: "#1F2833",
+                  },
+                  "&:active": {
+                    backgroundColor: "#0B0C10",
+                    borderColor: "#45A29E",
+                  },
+                  "&:disabled": {
+                    backgroundColor: "#C5C6C7",
+                    color: "#1F2833",
+                  },
+                }}
               >
-                Upload Image
+                <FileUploadOutlinedIcon />
                 <input
                   type="file"
                   accept="image/*"
@@ -228,7 +231,7 @@ const FoodTable = ({ initialData }) => {
                   height: "100%",
                   backgroundColor: "#66FCF1",
                   color: "#1F2833", // Dark text for contrast
-                fontWeight: "bold",
+                  fontWeight: "bold",
                   transition: "all 0.3s ease",
                   border: "1px solid #45A29E",
                   "&:hover": {
@@ -246,7 +249,7 @@ const FoodTable = ({ initialData }) => {
                   },
                 }}
               >
-                Add Food
+                Thêm mới
               </Button>
             </Grid>
           </Grid>
@@ -331,31 +334,26 @@ const FoodTable = ({ initialData }) => {
                       </TableCell>
                       <TableCell>
                         <Button
-                          variant="contained"
                           component="label"
                           sx={{
                             height: "100%",
                             backgroundColor: "#1F2833",
                             color: "#66FCF1",
-                            borderColor: "#66FCF1",
-                            transition: 'all 0.3s ease',
-                            border: '1px solid #45A29E',
-                            '&:hover': { 
+                            transition: "all 0.3s ease",
+                            "&:hover": {
                               backgroundColor: "#66FCF1",
                               color: "#1F2833",
-                              
                             },
-                            '&:active': {
+                            "&:active": {
                               backgroundColor: "#0B0C10",
-                              borderColor: "#45A29E"
                             },
-                            '&:disabled': {
+                            "&:disabled": {
                               backgroundColor: "#C5C6C7",
-                              color: "#1F2833"
-                            }
+                              color: "#1F2833",
+                            },
                           }}
                         >
-                          Edit Image
+                          <FileUploadOutlinedIcon />
                           <input
                             type="file"
                             accept="image/*"
@@ -385,93 +383,31 @@ const FoodTable = ({ initialData }) => {
                       }}
                     >
                       {editIndex === index ? (
-                        <Button
-                          variant="contained"
-                          color="success"
+                        <IconButton
                           onClick={handleSaveEdit}
                           sx={{
                             marginRight: 1,
-                            backgroundColor: "#00FF7F",
-                            color: "#000000", // Dark text for better contrast with light green
-                            transition: 'all 0.3s ease',
-                            border: '1px solid #00FF7F',
-                            '&:hover': {
-                              backgroundColor: "#00CC66", // Darker shade
-                              color: "#000000",
-                              borderColor: "#00FF7F",
-                              transform: 'scale(0.98)'
-                            },
-                            '&:active': {
-                              backgroundColor: "#009949", // Even darker shade
-                              borderColor: "#00FF7F"
-                            },
-                            '&:disabled': {
-                              backgroundColor: "#90EEB1", // Lighter shade
-                              color: "#666666",
-                              border: 'none'
-                            }
+                            color: "#00FF7F",
                           }}
                         >
-                          Save
-                        </Button>
+                          <CheckOutlinedIcon />
+                        </IconButton>
                       ) : (
-                        <Button
-                          variant="contained"
+                        <IconButton
                           onClick={() => handleEditFood(index)}
-                          sx={{
-                            marginRight: 1,
-                            backgroundColor: "#00ccff",
-                            color: "#ffffff",
-                            transition: 'all 0.3s ease',
-                            border: '1px solid #00ccff',
-                            '&:hover': {
-                              backgroundColor: "#00a3cc", // Darker shade
-                              color: "#ffffff",
-                              borderColor: "#00ccff",
-                              transform: 'scale(0.98)'
-                            },
-                            '&:active': {
-                              backgroundColor: "#007a99", // Even darker shade
-                              borderColor: "#00ccff"
-                            },
-                            '&:disabled': {
-                              backgroundColor: "#b3ecff", // Lighter shade
-                              color: "#666666",
-                              border: 'none'
-                            }
-                          }}
+                          sx={{ marginRight: 1, color: "#66FCF1" }}
                         >
-                          Edit
-                        </Button>
+                          <EditIcon />
+                        </IconButton>
                       )}
-                      <Button
-                        variant="contained"
+                      <IconButton
                         onClick={() => handleDeleteFood(index)}
                         sx={{
-                          height: "100%",
-                          backgroundColor: "#ff153f",
-                          color: "#ffffff", // Fixed missing # in color
-                          transition: 'all 0.3s ease',
-                          border: '1px solid #ff153f',
-                          '&:hover': { 
-                            backgroundColor: "#cc1132", // Darker shade of the red
-                            color: "#ffffff",
-                            borderColor: "#ff153f",
-                            transform: 'scale(0.98)'
-                          },
-                          '&:active': {
-                            backgroundColor: "#990d26", // Even darker shade for active
-                            borderColor: "#ff153f"
-                          },
-                          '&:disabled': {
-                            backgroundColor: "#ffccd5", // Light pink for disabled
-                            color: "#666666",
-                            border: 'none'
-                          }
+                          color: "#FF0000",
                         }}
                       >
-                        Delete
-                      </Button>
+                        <DeleteIcon />
+                      </IconButton>
                     </Box>
                   </TableCell>
                 </TableRow>

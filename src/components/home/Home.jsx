@@ -8,7 +8,7 @@ export default function HomePage() {
 
             <LandingPage />
             <div style={{ marginTop: '20px' }}>
-                <PopularMovies title="Popular Movies" movies={movieData} />
+                <PopularMovies title="Phim nổi bật" movies={movieData} />
             </div>
             <div style={{ marginTop: '20px' }}>
                 <PopularMovies title="Kinh dị" movies={movieData} />
