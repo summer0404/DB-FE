@@ -6,6 +6,7 @@ import Cart from './pages/cart';
 import Login from './pages/login';
 import MovieDetails from './pages/movie_details';
 import Register from './pages/register';
+import ManageMovies from './pages/manage_movies';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/add_movies" element={<AddMovies />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/movie_details" element={<MovieDetails />} />
+        <Route path="/manage_movies" element={<ManageMovies />} />
       </Routes>
     </Router>
   );
