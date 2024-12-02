@@ -145,7 +145,7 @@ export default function MovieDetailComponent() {
               <nav aria-label="main mailbox folders">
                 <List sx={{ padding: "0px", marginTop: "10px" }}>
                   <ListItem disablePadding sx={{ marginTop: "10px" }}>
-                    <StyleIcon sx={{ color: "yellow" }}></StyleIcon>
+                    <StyleIcon sx={{ color: "#66FCF1" }}></StyleIcon>
                     <ListItemText
                       sx={{
                         marginTop: "10px",
@@ -158,7 +158,7 @@ export default function MovieDetailComponent() {
                   </ListItem>
                   <ListItem disablePadding sx={{ marginTop: "10px" }}>
                     <AccessTimeRoundedIcon
-                      sx={{ color: "yellow" }}
+                      sx={{ color: "#66FCF1" }}
                     ></AccessTimeRoundedIcon>
                     <ListItemText
                       sx={{ marginLeft: "8px" }}
@@ -169,14 +169,14 @@ export default function MovieDetailComponent() {
                   </ListItem>
                   <ListItem disablePadding sx={{ marginTop: "10px" }}>
                     <PublicRoundedIcon
-                      sx={{ color: "yellow" }}
+                      sx={{ color: "#66FCF1" }}
                     ></PublicRoundedIcon>
                     <ListItemText sx={{ marginLeft: "8px" }}>
                       {movieInfo.nation}
                     </ListItemText>
                   </ListItem>
                   <ListItem disablePadding sx={{ marginTop: "10px" }}>
-                    <PersonOffRoundedIcon sx={{ color: "yellow" }} />
+                    <PersonOffRoundedIcon sx={{ color: "#66FCF1" }} />
                     <ListItemText
                       sx={{
                         fontFamily: "'Anton', sans-serif",
