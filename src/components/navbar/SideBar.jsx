@@ -25,7 +25,7 @@ export default function SideBar({ open, onClose }) {
     >
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => navigate('/add_movies')}>
+          <ListItemButton onClick={() => navigate('/manage_movies')}>
             <ListItemIcon>
               <MovieIcon />
             </ListItemIcon>

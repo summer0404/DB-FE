@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SeatingMap from "./SeatingMap";
 import FoodBuy from "./FoodBuy";
 import ChooseShowtime from "./ChooseShowtime";
+import QuickBooking from "./QuickBooking";
 import { Box } from "@mui/material";
 
 export default function CartPage() {
@@ -23,6 +24,7 @@ export default function CartPage() {
           alignItems: "center",
         }}
       >
+        <QuickBooking />
         <ChooseShowtime onShowtimeSelect={handleShowtimeSelect} />
         <SeatingMap />
         <FoodBuy />

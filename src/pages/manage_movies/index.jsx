@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import TableMovies from '../../component/add_movies/table_movies';
+import TableMovies from '../../components/add_movies/table_movies';
 
 const theme = createTheme({
   typography: {

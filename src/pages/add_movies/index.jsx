@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import MovieForm from "../../component/add_movies/form_movies";
+import MovieForm from "../../components/add_movies/form_movies";
 
 const theme = createTheme({
   components: {

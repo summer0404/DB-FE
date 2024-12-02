@@ -1,4 +1,4 @@
-import MovieDetailComponent from "../../component/movie_details";
+import MovieDetailComponent from "../../components/movie_details";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme({
