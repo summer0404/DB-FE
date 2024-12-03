@@ -25,7 +25,7 @@ export class FilesService {
 
   async createFile(
     id: string,
-    file: Express.Multer.File,
+    files: Array<Express.Multer.File>,
     transaction: Transaction,
   ): Promise<Files> {
     const existingMovie = await this.movieService.getByIdTransaction(
@@ -33,31 +33,51 @@ export class FilesService {
       transaction,
     );
     if (existingMovie) {
-      const uploadCloud = await this.storageService.uploadFile(file);
-      const createdFile = await this.fileRepository.create(
-        {
-          ...uploadCloud, // dữ liệu trả về từ storage service
-          movieId: id,
-        },
-        { transaction },
-      );
-
+      for (let i in files) {
+        const uploadCloud = await this.storageService.uploadFile(files[i]);
+        const createdFile = await this.fileRepository.create(
+          {
+            ...uploadCloud, // dữ liệu trả về từ storage service
+            movieId: id,
+          },
+          { transaction },
+        );
+      }
       return null;
     } else {
       const existingUser = await this.userService.findOne(id);
       if (!existingUser)
         throw new BadRequestException("Không tìm thấy đối tượng phù hợp");
-      const uploadCloud = await this.storageService.uploadFile(file);
-      const createdFile = await this.fileRepository.create(
-        {
-          ...uploadCloud, // dữ liệu trả về từ storage service
-          userId: id,
-        },
-        { transaction },
-      );
+      for (let i in files) {
+        const uploadCloud = await this.storageService.uploadFile(files[i]);
+        const createdFile = await this.fileRepository.create(
+          {
+            ...uploadCloud, // dữ liệu trả về từ storage service
+            userId: id,
+          },
+          { transaction },
+        );
+      }
 
       return null;
     }
+  }
+
+  async createFileFastfood(
+    id: string,
+    file: Express.Multer.File,
+    transaction: Transaction,
+  ): Promise<Files> {
+    const uploadCloud = await this.storageService.uploadFile(file);
+    const createdFile = await this.fileRepository.create(
+      {
+        ...uploadCloud, // dữ liệu trả về từ storage service
+        fastfoodId: id,
+      },
+      { transaction },
+    );
+
+    return null;
   }
 
   async findById(id: string): Promise<Files> {

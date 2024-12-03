@@ -6,7 +6,7 @@ import {
   IsNumber,
   IsDate,
   IsOptional,
-  ValidateNested,
+  IsArray,
 } from "class-validator";
 import { createActors } from "src/features/actors/dtos/create.dto";
 import { createDirectors } from "src/features/directors/dtos/create.dto";
@@ -64,13 +64,15 @@ export class CreateMovies {
   description: string;
 
   @ApiProperty({
-    description: "File của phim",
+    description: "Danh sách file của phim",
     type: "string",
     format: "binary",
-    required: false, // Nếu file có thể không bắt buộc
+    required: false, // Nếu các file không bắt buộc
+    isArray: true, // Chỉ định đây là mảng
   })
   @IsOptional()
-  file: Express.Multer.File;
+  @IsArray()
+  files: Array<Express.Multer.File>; // Định nghĩa mảng các file
 
   @ApiProperty({
     description: "Danh sách các diễn viên",

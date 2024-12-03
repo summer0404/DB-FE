@@ -13,6 +13,7 @@ import {
 } from "sequelize-typescript";
 import { Users } from "../users/users.entity";
 import { Movies } from "../movies/movies.entity";
+import { Fastfoods } from "../fastfoods/fastfoods.entity";
 
 @Table
 export class Files extends Model<Files> {
@@ -56,6 +57,14 @@ export class Files extends Model<Files> {
 
   @BelongsTo(() => Movies, { onDelete: "CASCADE" })
   movie: Movies;
+
+  @ForeignKey(() => Fastfoods)
+  @AllowNull(true)
+  @Column(DataType.UUID)
+  fastfoodId: string;
+
+  @BelongsTo(() => Fastfoods, { onDelete: "CASCADE" })
+  fastfood: Fastfoods;
 
   @BeforeValidate
   static async validateFileOwnership(instance: Files) {

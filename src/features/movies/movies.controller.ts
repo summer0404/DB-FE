@@ -84,11 +84,11 @@ export class MoviesController {
     },
   })
   @ApiConsumes("multipart/form-data")
-  @UseInterceptors(FileInterceptor("file"))
+  @UseInterceptors(FileInterceptor("files"))
   async create(
     @Res() res,
     @Body() createDto: CreateMovies,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
     let transaction = await this.dbSource.transaction();
     try {
@@ -97,7 +97,7 @@ export class MoviesController {
         newMovieDto as CreateMovies,
         transaction,
       );
-      await this.filesService.createFile(temp?.id, file, transaction);
+      await this.filesService.createFile(temp?.id, files, transaction);
       if (actors) {
         for (let i in actors) {
           actors[i].movieId = temp.id;

@@ -1,15 +1,17 @@
-import { UUIDV4 } from 'sequelize';
+import { UUIDV4 } from "sequelize";
 import {
   AllowNull,
   Column,
   DataType,
   Default,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Book } from '../book/book.entity';
+} from "sequelize-typescript";
+import { Book } from "../book/book.entity";
+import { Files } from "../files/files.entity";
 
 @Table
 export class Fastfoods extends Model<Fastfoods> {
@@ -26,6 +28,9 @@ export class Fastfoods extends Model<Fastfoods> {
   @Column(DataType.FLOAT)
   price: number;
 
-  @HasMany(() => Book, { onDelete: 'CASCADE' })
+  @HasMany(() => Book, { onDelete: "CASCADE" })
   books: Book[];
+
+  @HasOne(() => Files, { onDelete: "CASCADE" })
+  file: Files[];
 }
