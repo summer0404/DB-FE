@@ -10,6 +10,7 @@ import { FilesModule } from "../files/files.module";
 import { StorageModule } from "../storage/storage.module";
 import { ActorsModule } from "../actors/actors.module";
 import { DirectorsModule } from "../directors/directors.module";
+import { GenreModule } from "../genre/genre.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DirectorsModule } from "../directors/directors.module";
     forwardRef(() => FilesModule),
     ActorsModule,
     DirectorsModule,
+    GenreModule,
   ],
   providers: [
     MoviesService,

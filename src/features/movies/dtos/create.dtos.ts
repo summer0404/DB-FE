@@ -8,8 +8,10 @@ import {
   IsOptional,
   IsArray,
 } from "class-validator";
+import { MovieGenre } from "src/common/constants";
 import { createActors } from "src/features/actors/dtos/create.dto";
 import { createDirectors } from "src/features/directors/dtos/create.dto";
+import { CreateGenreDto } from "src/features/genre/dtos/create.dto";
 
 export class CreateMovies {
   @ApiProperty({
@@ -109,4 +111,20 @@ export class CreateMovies {
   )
   @Type(() => createDirectors)
   directors: createDirectors[];
+
+  @ApiProperty({
+    description: "Danh sách các diễn viên",
+    example: [
+      {
+        movieId: "a",
+        genre: MovieGenre.ACTION,
+      },
+    ],
+  })
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  @Type(() => CreateGenreDto)
+  genres: CreateGenreDto[];
 }

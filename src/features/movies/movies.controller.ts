@@ -31,6 +31,8 @@ import { Sequelize } from "sequelize-typescript";
 import { FilesService } from "../files/files.service";
 import { ActorsService } from "../actors/actors.service";
 import { DirectorsService } from "../directors/directors.service";
+import { MovieInterceptor } from "src/common/interceptors/movie.interceptor";
+import { GenreService } from "../genre/genre.service";
 
 @Controller("movies")
 export class MoviesController {
@@ -41,6 +43,7 @@ export class MoviesController {
     private readonly logger: LoggerService,
     private readonly actorService: ActorsService,
     private readonly directorService: DirectorsService,
+    private readonly genreService: GenreService,
     private readonly response: Response,
     @Inject(SEQUELIZE)
     private readonly dbSource: Sequelize,
@@ -83,6 +86,7 @@ export class MoviesController {
     },
   })
   @ApiConsumes("multipart/form-data")
+  @UseInterceptors(MovieInterceptor)
   @UseInterceptors(AnyFilesInterceptor())
   async create(
     @Res() res,
@@ -91,7 +95,7 @@ export class MoviesController {
   ) {
     let transaction = await this.dbSource.transaction();
     try {
-      let { actors, directors, ...newMovieDto } = createDto;
+      let { actors, directors, genres, ...newMovieDto } = createDto;
       const temp = await this.movieService.createMovie(
         newMovieDto as CreateMovies,
         transaction,
@@ -109,6 +113,12 @@ export class MoviesController {
         }
         await this.directorService.createTransaction(directors, transaction);
       }
+      if (genres) {
+        for (let i in genres) {
+          genres[i].movieId = temp.id;
+        }
+        await this.genreService.createTransaction(genres, transaction);
+      }
       const newMovie = await this.movieService.getByIdTransaction(
         temp.id,
         transaction,
@@ -124,7 +134,7 @@ export class MoviesController {
         this.response.initResponse(false, error.message, null);
         return res.status(error.getStatus()).json(this.response);
       } else {
-        this.response.initResponse(false, "Lỗi trong quá trình..", null);
+        this.response.initResponse(false, error.message, null);
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
       }
     }
