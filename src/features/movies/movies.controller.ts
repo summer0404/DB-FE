@@ -11,7 +11,6 @@ import {
   Post,
   Put,
   Res,
-  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from "@nestjs/common";
@@ -26,7 +25,7 @@ import {
   ApiParam,
   ApiResponse,
 } from "@nestjs/swagger";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { AnyFilesInterceptor } from "@nestjs/platform-express";
 import { SEQUELIZE } from "src/common/constants";
 import { Sequelize } from "sequelize-typescript";
 import { FilesService } from "../files/files.service";
@@ -84,7 +83,7 @@ export class MoviesController {
     },
   })
   @ApiConsumes("multipart/form-data")
-  @UseInterceptors(FileInterceptor("files"))
+  @UseInterceptors(AnyFilesInterceptor())
   async create(
     @Res() res,
     @Body() createDto: CreateMovies,

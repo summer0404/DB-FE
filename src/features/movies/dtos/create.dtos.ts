@@ -76,12 +76,14 @@ export class CreateMovies {
 
   @ApiProperty({
     description: "Danh sách các diễn viên",
-    example: {
-      movieId: "a",
-      age: 12,
-      firstName: "a",
-      lastName: "hihi",
-    },
+    example: [
+      {
+        movieId: "a",
+        age: 12,
+        firstName: "a",
+        lastName: "hihi",
+      },
+    ],
   })
   @IsOptional()
   @Transform(({ value }) =>
@@ -92,12 +94,14 @@ export class CreateMovies {
 
   @ApiProperty({
     description: "Danh sách các diễn viên",
-    example: {
-      movieId: "a",
-      age: 12,
-      firstName: "a",
-      lastName: "hihi",
-    },
+    example: [
+      {
+        movieId: "a",
+        age: 12,
+        firstName: "a",
+        lastName: "hihi",
+      },
+    ],
   })
   @IsOptional()
   @Transform(({ value }) =>
