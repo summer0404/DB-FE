@@ -1,13 +1,12 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { MOVIES_REPOSITORY } from "src/common/constants";
 import { Movies } from "./movies.entity";
-import { CreateMovies } from "./dtos/create.dtos";
 import { UpdateMovies } from "./dtos/update.dtos";
-import { NotContains } from "sequelize-typescript";
 import { Transaction } from "sequelize";
 import { Files } from "../files/files.entity";
 import { Actors } from "../actors/actors.entity";
 import { Directors } from "../directors/directors.entity";
+import { Genre } from "../genre/genre.entity";
 
 @Injectable()
 export class MoviesService {
@@ -38,7 +37,26 @@ export class MoviesService {
     return remove;
   }
   async getAll() {
-    const allMovies = await this.moviesRepository.findAll();
+    const allMovies = await this.moviesRepository.findAll({
+      include: [
+        {
+          model: Files,
+          as: "files",
+        },
+        {
+          model: Genre,
+          as: "genres",
+        },
+        {
+          model: Actors,
+          as: "actors",
+        },
+        {
+          model: Directors,
+          as: "directors",
+        },
+      ],
+    });
     if (allMovies.length == 0) return [];
     return allMovies;
   }
@@ -59,6 +77,10 @@ export class MoviesService {
           model: Directors,
           as: "directors",
         },
+        {
+          model: Genre,
+          as: "genres",
+        },
       ],
     });
 
@@ -69,7 +91,26 @@ export class MoviesService {
   }
 
   async getById(id: string) {
-    const isMovie = await this.moviesRepository.findByPk(id);
+    const isMovie = await this.moviesRepository.findByPk(id, {
+      include: [
+        {
+          model: Files,
+          as: "files",
+        },
+        {
+          model: Genre,
+          as: "genres",
+        },
+        {
+          model: Actors,
+          as: "actors",
+        },
+        {
+          model: Directors,
+          as: "directors",
+        },
+      ],
+    });
     if (!isMovie) {
       throw new NotFoundException("Không tìm thấy bộ phim phù hợp");
     }
