@@ -96,6 +96,8 @@ export class MoviesController {
     let transaction = await this.dbSource.transaction();
     try {
       let { actors, directors, genres, ...newMovieDto } = createDto;
+      console.log(actors, directors, genres);
+
       const temp = await this.movieService.createMovie(
         newMovieDto as CreateMovies,
         transaction,
