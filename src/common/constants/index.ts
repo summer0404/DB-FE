@@ -62,3 +62,9 @@ export enum PaymentStatus {
   IN_PROGRESS = "Đang chờ thanh toán",
   OK = "Thành công",
 }
+
+export enum fastfoodGroup {
+  SNACK = "Snack",
+  SOFTDRINK = "Softdrink",
+  POPCORN = "Popcorn",
+}

@@ -12,6 +12,7 @@ import {
 } from "sequelize-typescript";
 import { Book } from "../book/book.entity";
 import { Files } from "../files/files.entity";
+import { fastfoodGroup } from "src/common/constants";
 
 @Table
 export class Fastfoods extends Model<Fastfoods> {
@@ -23,6 +24,16 @@ export class Fastfoods extends Model<Fastfoods> {
   @AllowNull(false)
   @Column(DataType.STRING(30))
   name: string;
+
+  @AllowNull(false)
+  @Column(
+    DataType.ENUM(
+      fastfoodGroup.POPCORN,
+      fastfoodGroup.SNACK,
+      fastfoodGroup.SOFTDRINK,
+    ),
+  )
+  group: fastfoodGroup;
 
   @AllowNull(false)
   @Column(DataType.FLOAT)

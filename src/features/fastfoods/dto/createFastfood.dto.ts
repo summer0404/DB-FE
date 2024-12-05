@@ -1,6 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
+import { fastfoodGroup } from "src/common/constants";
 
 export class CreateFastfoodDto {
   @ApiProperty({
@@ -10,6 +17,16 @@ export class CreateFastfoodDto {
   @IsNotEmpty({ message: "Tên của thức ăn nhanh không được để trống" })
   @IsString({ message: "Tên của thức ăn nhanh phải có dạng chuỗi" })
   name: string;
+
+  @ApiProperty({
+    description: "Loại thức ăn nhanh",
+    example: fastfoodGroup.POPCORN,
+  })
+  @IsNotEmpty({ message: "Loại thức ăn nhanh không được để trống" })
+  @IsEnum(fastfoodGroup, {
+    message: `Loại thức ăn nhanh phải là ${fastfoodGroup.POPCORN} hoặc ${fastfoodGroup.SNACK} hoặc ${fastfoodGroup.SOFTDRINK}`,
+  })
+  group: fastfoodGroup;
 
   @ApiProperty({
     description: "Giá của thức ăn nhanh",

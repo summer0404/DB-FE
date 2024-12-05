@@ -14,9 +14,6 @@ export class MovieInterceptor implements NestInterceptor {
   ): Observable<any> {
     const httpContext = context.switchToHttp();
     const request = httpContext.getRequest();
-    console.log(request.body.directors);
-    console.log(request.body.actors);
-    console.log(request.body.genres);
 
     if (
       request?.body?.directors != undefined &&
@@ -134,10 +131,6 @@ export class MovieInterceptor implements NestInterceptor {
       // hihi = "[" + hihi + "]";
       request.body.genres = JSON.parse(hihi);
     }
-
-    console.log("direc ", request.body.directors);
-    console.log("acto ", request.body.actors);
-    console.log("gen ", request.body.genres);
 
     return next.handle();
   }
