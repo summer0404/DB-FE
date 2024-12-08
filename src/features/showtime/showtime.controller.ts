@@ -5,6 +5,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  InternalServerErrorException,
   Param,
   Post,
   Put,
@@ -16,6 +17,7 @@ import { ShowtimeService } from "./showtime.service";
 import { CreateShowtimeDto } from "./dtos/create.dto";
 import { UpdateShowtimeDto } from "./dtos/update.dto";
 import { ApiParam, ApiResponse } from "@nestjs/swagger";
+import * as dayjs from "dayjs";
 
 @Controller("showtime")
 export class ShowtimeController {
@@ -286,6 +288,45 @@ export class ShowtimeController {
         this.response.initResponse(false, "Lỗi trong quá trình..", null);
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
       }
+    }
+  }
+  @Get("/:movieId")
+  async getShowTimeByMovieId(@Param("movieId") movieId: string, @Res() res) {
+    try {
+      const showTimes =
+        await this.showtimeService.getShowTimeByMovieId(movieId);
+
+      // Nhóm lịch chiếu theo ngày
+      const groupedShowtimes = showTimes.reduce((result, showtime) => {
+        const day = dayjs(showtime.startTime).format("DD/MM/YYYY"); // Định dạng ngày
+        const time = dayjs(showtime.startTime).format("hh:mm A"); // Định dạng giờ
+
+        // Nếu đã có ngày này trong nhóm, thêm giờ chiếu vào mảng
+        if (result[day]) {
+          result[day].push(time);
+        } else {
+          // Nếu chưa có, khởi tạo ngày và mảng giờ
+          result[day] = [time];
+        }
+        return result;
+      }, {});
+
+      // Chuyển đổi đối tượng groupedShowtimes thành mảng object
+      const response = Object.entries(groupedShowtimes).map(([day, times]) => ({
+        day,
+        times,
+      }));
+
+      this.response.initResponse(
+        true,
+        "Lấy thông tin suất chiếu thành công",
+        response,
+      );
+      return res.status(HttpStatus.OK).json(this.response);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        "Xảy ra lỗi trong quá trình lấy lịch chiếu của phim",
+      );
     }
   }
 }

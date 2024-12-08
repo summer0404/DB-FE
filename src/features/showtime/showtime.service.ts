@@ -1,60 +1,74 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { SHOWTIMES_REPOSITORY } from 'src/common/constants';
-import { Showtime } from './showtime.entity';
-import { CreateShowtimeDto } from './dtos/create.dto';
-import { UpdateShowtimeDto } from './dtos/update.dto';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { SHOWTIMES_REPOSITORY } from "src/common/constants";
+import { Showtime } from "./showtime.entity";
+import { CreateShowtimeDto } from "./dtos/create.dto";
+import { UpdateShowtimeDto } from "./dtos/update.dto";
 
 @Injectable()
 export class ShowtimeService {
-    constructor(
-        @Inject(SHOWTIMES_REPOSITORY)
-        private readonly showtimesRepository: typeof Showtime
-    ) { }
-    async create(createShowtime: CreateShowtimeDto) {
-        const createdShowtime = await this.showtimesRepository.create(createShowtime)
-        return createdShowtime
+  constructor(
+    @Inject(SHOWTIMES_REPOSITORY)
+    private readonly showtimesRepository: typeof Showtime,
+  ) {}
+  async create(createShowtime: CreateShowtimeDto) {
+    const createdShowtime =
+      await this.showtimesRepository.create(createShowtime);
+    return createdShowtime;
+  }
+  async updateShowtime(updateShowtimeDto: UpdateShowtimeDto) {
+    const isShowtime = await this.showtimesRepository.findOne({
+      where: {
+        roomId: updateShowtimeDto.roomId,
+        movieId: updateShowtimeDto.movieId,
+      },
+    });
+    if (!isShowtime) {
+      throw new NotFoundException("Không tìm thấy suất chiếu phù hợp");
     }
-    async updateShowtime(updateShowtimeDto: UpdateShowtimeDto) {
-        const isShowtime = await this.showtimesRepository.findOne({
-            where: {
-                roomId: updateShowtimeDto.roomId,
-                movieId: updateShowtimeDto.movieId
-            }
-        })
-        if (!isShowtime) {
-            throw new NotFoundException("Không tìm thấy suất chiếu phù hợp")
-        }
-        const updateData = await isShowtime.update(updateShowtimeDto)
-        return updateData
+    const updateData = await isShowtime.update(updateShowtimeDto);
+    return updateData;
+  }
+  async removeShowtime(roomId: string, movieId: string) {
+    const isShowtime = await this.showtimesRepository.findOne({
+      where: {
+        roomId: roomId,
+        movieId: movieId,
+      },
+    });
+    if (!isShowtime) {
+      throw new NotFoundException("Không tìm thấy suất chiếu phù hợp");
     }
-    async removeShowtime(roomId: string, movieId: string) {
-        const isShowtime = await this.showtimesRepository.findOne({
-            where: {
-                roomId: roomId,
-                movieId: movieId
-            }
-        })
-        if (!isShowtime) {
-            throw new NotFoundException("Không tìm thấy suất chiếu phù hợp")
-        }
-        const remove = await isShowtime.destroy()
-        return remove
+    const remove = await isShowtime.destroy();
+    return remove;
+  }
+  async getAll() {
+    const allShowtimes = await this.showtimesRepository.findAll();
+    if (allShowtimes.length == 0) return [];
+    return allShowtimes;
+  }
+  async getByIds(roomId: string, movieId: string) {
+    const isShowtime = await this.showtimesRepository.findOne({
+      where: {
+        roomId: roomId,
+        movieId: movieId,
+      },
+    });
+    if (!isShowtime) {
+      throw new NotFoundException("Không tìm thấy suất chiếu phù hợp");
     }
-    async getAll() {
-        const allShowtimes = await this.showtimesRepository.findAll()
-        if (allShowtimes.length == 0) return []
-        return allShowtimes
+    return isShowtime;
+  }
+
+  async getShowTimeByMovieId(movieId: string): Promise<Showtime[]> {
+    try {
+      const showTimes = await this.showtimesRepository.findAll({
+        where: {
+          movieId: movieId,
+        },
+      });
+      return showTimes;
+    } catch (error) {
+        throw new InternalServerErrorException("Xảy ra lỗi trong quá trình lấy lịch chiếu của phim")
     }
-    async getByIds(roomId: string, movieId: string) {
-        const isShowtime = await this.showtimesRepository.findOne({
-            where: {
-                roomId: roomId,
-                movieId: movieId
-            }
-        })
-        if (!isShowtime) {
-            throw new NotFoundException("Không tìm thấy suất chiếu phù hợp")
-        }
-        return isShowtime
-    }
+  }
 }
