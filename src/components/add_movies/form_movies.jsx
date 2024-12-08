@@ -1,12 +1,13 @@
 //form_movies.jsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
   Chip,
   Box,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -14,6 +15,13 @@ import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
 import { AddCircleOutlineOutlined, CloudUpload } from "@mui/icons-material";
+import dayjs from "dayjs";
+import {
+  createMovie,
+  deleteMovie,
+  fetchCountries,
+} from "../../service/manage_movies";
+import { formatDate } from "../../hepler";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -27,13 +35,15 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const MovieForm = () => {
+const MovieForm = (props) => {
   // Nhập các thông tin cơ bản
   const [movieData, setMovieData] = useState({
-    name: "",
-    releaseDate: "",
-    length: 0,
-    ageLimit: 0,
+    name: props.form?.data?.name || "",
+    publishDay: formatDate(props.form?.data?.publishDay) || "",
+    length: props.form?.data?.length || 0,
+    ageLimitation: props.form?.data?.ageLimitation || 0,
+    country: props.form?.data?.country || "",
+    description: props.form?.data?.description || "",
   });
 
   const handleMovieDataChange = (field, value) => {
@@ -44,32 +54,33 @@ const MovieForm = () => {
   };
 
   // Nhập thể loại
-  const [inputCategory, setInputCategory] = useState("");
-  const [categories, setCategories] = useState([]);
+  const [inputGenres, setInputGenres] = useState("");
+
+  const [genres, setgenres] = useState(props.form?.data?.genres || []);
 
   const handleKeyPressCategory = (e) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
-      const trimmedValue = inputCategory.trim();
-      if (trimmedValue && !categories.includes(trimmedValue)) {
-        setCategories([...categories, trimmedValue]);
+      const newGenre = {
+        genre: inputGenres.trim(),
+      };
+      if (newGenre.genre && !genres.find((g) => g.genre === newGenre.genre)) {
+        setgenres([...genres, newGenre]);
       }
-      setInputCategory("");
+      setInputGenres("");
     }
   };
 
   const handleDeleteCatory = (valueToDelete) => {
-    setCategories(categories.filter((value) => value !== valueToDelete));
+    setgenres(genres.filter((g) => g.genre !== valueToDelete));
   };
 
   const handleChangeCategory = (e) => {
-    setInputCategory(e.target.value);
+    setInputGenres(e.target.value);
   };
 
   // Nhập đạo diễn
-  const [directors, setDirectors] = useState([
-    { firstName: "", lastName: "", age: "" },
-  ]);
+  const [directors, setDirectors] = useState(props.form?.data?.directors || []);
 
   const handleDirectorChange = (index, field, value) => {
     const newDirectors = [...directors];
@@ -78,9 +89,7 @@ const MovieForm = () => {
   };
 
   // Nhập diễn viên
-  const [actors, setActors] = useState([
-    { firstName: "", lastName: "", age: "" },
-  ]);
+  const [actors, setActors] = useState(props.form?.data?.actors || []);
 
   const handleActorChange = (index, field, value) => {
     const newActors = [...actors];
@@ -89,13 +98,21 @@ const MovieForm = () => {
   };
 
   // Tải ảnh lên
-  const [posterPreviews, setPosterPreviews] = useState([]); // Lưu danh sách URL của hình ảnh đã chọn
+  const [posterPreviews, setPosterPreviews] = useState(props.form?.data?.files.map(file => {
+    return file.path;
+  }) || []); // Lưu danh sách URL của hình ảnh đã chọn
+  const [posters, setPosters] = useState([]);
 
   const handleImageUpload = (event) => {
     const files = event.target.files;
-    const fileArray = Array.from(files);
+    const fileArray = Array.from(files).filter((file) =>
+      ["image/jpeg", "image/png", "image/gif"].includes(file.type)
+    ); // Lọc chỉ lấy file ảnh
 
-    // Đảm bảo chỉ thêm những file ảnh hợp lệ
+    console.log("File được chọn:", fileArray); // Log file được chọn
+
+    setPosters((prevPosters) => [...prevPosters, ...fileArray]);
+
     const newPosterPreviews = fileArray.map((file) =>
       URL.createObjectURL(file)
     );
@@ -105,35 +122,76 @@ const MovieForm = () => {
     ]);
   };
 
+  const handleCategoryChange = (event) => {
+    const value = event.target.value;
+    if (value.length <= 500) {
+      setMovieData((prevData) => ({
+        ...prevData,
+        description: value,
+      }));
+    }
+  };
+
+  const [countries, setCountries] = useState([]);
+  useEffect(() => {
+    const loadCountries = async () => {
+      try {
+        const countryData = await fetchCountries();
+        setCountries(countryData);
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách quốc gia:", error);
+      }
+    };
+
+    loadCountries(); // Gọi hàm bất đồng bộ
+  }, []);
+
+  const handleCreate = async () => {
+    try {
+      const newData = {
+        name: movieData.name,
+        publishDay: movieData.publishDay,
+        length: movieData.length,
+        ageLimitation: movieData.ageLimitation,
+        country: movieData.country,
+        description: movieData.description,
+        genres: genres, // Nếu có danh mục
+        files: posters, // Mảng các file tải lên
+        actors: actors, // Danh sách diễn viên
+        directors: directors, // Danh sách đạo diễn
+      };
+      props.setOpen(false);
+      // Gọi API tạo mới phim
+      const response = await createMovie(newData);
+      console.log("Tạo phim thành công:", response);
+
+      // Nếu cần, thực hiện thêm logic ở đây (reset form, thông báo...)
+    } catch (error) {
+      console.error("Lỗi khi tạo phim:");
+      // Hiển thị lỗi hoặc thông báo người dùng
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 shadow-md rounded-lg w-[80%] flex flex-col gap-5">
       <h1 className="text-2xl text-black font-bold mb-6">Thêm phim mới</h1>
-
       <Box className="basic-info w-[100%] flex flex-col gap-3">
-        <Typography className="text-black">Thông tin phim</Typography>
         <TextField
           label="Tên phim"
           value={movieData.name || ""}
           onChange={(e) => handleMovieDataChange("name", e.target.value)}
           fullWidth
+          InputProps={{
+            readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+          }}
         />
+
         <Box
           className="flex flex-row"
           sx={{
             gap: "16px", // Khoảng cách giữa các phần tử con
           }}
         >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Ngày khởi chiếu"
-              value={movieData.releaseDate || null}
-              onChange={(newValue) => {
-                handleMovieDataChange("releaseDate", newValue);
-              }}
-              renderInput={(params) => <TextField {...params} fullWidth />}
-            />
-          </LocalizationProvider>
-
           <TextField
             label="Thời lượng (phút)"
             value={movieData.length || ""}
@@ -143,21 +201,100 @@ const MovieForm = () => {
                 handleMovieDataChange("length", value);
               }
             }}
+            sx={{ flex: 1 }}
             type="number"
+            InputProps={{
+              readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+            }}
           />
 
           <TextField
             label="Giới hạn độ tuổi"
-            value={movieData.ageLimit || ""}
+            value={movieData.ageLimitation || ""}
             onChange={(e) => {
               const value = e.target.value;
               if (!isNaN(value) && Number(value) >= 0) {
-                handleMovieDataChange("ageLimit", value);
+                handleMovieDataChange("ageLimitation", value);
               }
             }}
+            sx={{ flex: 1 }}
             type="number"
+            InputProps={{
+              readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+            }}
           />
         </Box>
+
+        <Box
+          className="flex flex-row w-[100%]"
+          sx={{
+            gap: "16px", // Khoảng cách giữa các phần tử con
+          }}
+        >
+          <LocalizationProvider dateAdapter={AdapterDayjs} sx={{ flex: 1 }}>
+            <DatePicker
+              label="Ngày khởi chiếu"
+              value={
+                movieData.publishDay
+                  ? dayjs(movieData.publishDay, "DD/MM/YYYY") // Chuyển chuỗi dd/mm/yyyy thành dayjs
+                  : null
+              }
+              onChange={(newValue) => {
+                const formattedValue = newValue
+                  ? dayjs(newValue).format("DD/MM/YYYY") // Lưu thành chuỗi dd/mm/yyyy
+                  : null;
+                handleMovieDataChange("publishDay", formattedValue);
+              }}
+              readOnly={props.form.state === "info"} // Vô hiệu hóa nếu ở trạng thái info
+              renderInput={(params) => <TextField {...params} fullWidth />}
+            />
+          </LocalizationProvider>
+
+          <Autocomplete
+            options={countries}
+            value={movieData.country || ""}
+            onChange={(e, newValue) => {
+              handleMovieDataChange("country", newValue); // Cập nhật giá trị được chọn
+            }}
+            sx={{
+              flex: 1,
+            }}
+            readOnly={props.form.state === "info"}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Tên quốc gia"
+                placeholder="Nhập tên quốc gia"
+                fullWidth
+              />
+            )}
+          />
+        </Box>
+      </Box>
+
+      <Box className="flex flex-col gap-3">
+        <Typography variant="h6" color="text.primary">
+          Mô tả phim
+        </Typography>
+        <TextField
+          variant="outlined"
+          fullWidth
+          multiline
+          minRows={4}
+          maxRows={8}
+          placeholder="Nhập mô tả cho phim (tối đa 500 ký tự)"
+          value={movieData.description}
+          onChange={handleCategoryChange}
+          inputProps={{
+            maxLength: 500,
+          }}
+          InputProps={{
+            readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+          }}
+        />
+        <Typography variant="body2" color="text.secondary">
+          {movieData.description.length}/500 ký tự
+        </Typography>
       </Box>
 
       <Box className="flex flex-col gap-2">
@@ -171,18 +308,22 @@ const MovieForm = () => {
           padding={1}
           borderRadius={2}
         >
-          {categories.map((category, index) => (
+          {genres.map((g, index) => (
             <Chip
-              key={index}
-              label={category}
-              onDelete={() => handleDeleteCatory(category)}
+              key={g.genre}
+              label={g.genre}
+              onDelete={
+                props.form.state !== "info"
+                  ? () => handleDeleteCatory(g.genre)
+                  : undefined
+              }
               color="primary"
             />
           ))}
           <TextField
             variant="outlined"
             size="small"
-            value={inputCategory}
+            value={inputGenres}
             onChange={handleChangeCategory}
             onKeyDown={handleKeyPressCategory}
             style={{ minWidth: 150, flex: 1 }}
@@ -191,6 +332,7 @@ const MovieForm = () => {
                 border: "none", // Loại bỏ viền
                 boxShadow: "none", // Loại bỏ bóng
               },
+              readOnly: props.form.state === "info",
             }}
             sx={{
               "& fieldset": {
@@ -208,18 +350,20 @@ const MovieForm = () => {
       >
         <Box className="flex flex-row">
           <h2 className="text-[20px] text-black">Đạo diễn</h2>
-          <Button
-            startIcon={<AddCircleOutlineOutlined />}
-            onClick={() =>
-              setDirectors([
-                ...directors,
-                { firstName: "", lastName: "", age: "" },
-              ])
-            }
-            className="mt-2"
-          >
-            Thêm mới
-          </Button>
+          {props?.form?.state != "info" && (
+            <Button
+              startIcon={<AddCircleOutlineOutlined />}
+              onClick={() =>
+                setDirectors([
+                  ...directors,
+                  { firstName: "", lastName: "", age: "" },
+                ])
+              }
+              className="mt-2"
+            >
+              Thêm mới
+            </Button>
+          )}
         </Box>
 
         {directors.map((director, index) => (
@@ -230,6 +374,9 @@ const MovieForm = () => {
               onChange={(e) =>
                 handleDirectorChange(index, "firstName", e.target.value)
               }
+              InputProps={{
+                readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+              }}
             />
             <TextField
               label="Last Name"
@@ -237,6 +384,9 @@ const MovieForm = () => {
               onChange={(e) =>
                 handleDirectorChange(index, "lastName", e.target.value)
               }
+              InputProps={{
+                readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+              }}
             />
             <TextField
               label="Age"
@@ -244,15 +394,20 @@ const MovieForm = () => {
               onChange={(e) =>
                 handleDirectorChange(index, "age", e.target.value)
               }
+              InputProps={{
+                readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+              }}
               type="number"
             />
-            <IconButton
-              onClick={() =>
-                setDirectors(directors.filter((_, i) => i !== index))
-              }
-            >
-              <DeleteIcon />
-            </IconButton>
+            {props?.form?.state != "info" && (
+              <IconButton
+                onClick={() =>
+                  setDirectors(directors.filter((_, i) => i !== index))
+                }
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
           </div>
         ))}
       </Box>
@@ -264,15 +419,17 @@ const MovieForm = () => {
       >
         <Box className="flex flex-row">
           <h2 className="text-[20px] text-black">Diễn viên</h2>
-          <Button
-            startIcon={<AddCircleOutlineOutlined />}
-            onClick={() =>
-              setActors([...actors, { firstName: "", lastName: "", age: "" }])
-            }
-            className="mt-2"
-          >
-            Thêm mới
-          </Button>
+          {props?.form?.state != "info" && (
+            <Button
+              startIcon={<AddCircleOutlineOutlined />}
+              onClick={() =>
+                setActors([...actors, { firstName: "", lastName: "", age: "" }])
+              }
+              className="mt-2"
+            >
+              Thêm mới
+            </Button>
+          )}
         </Box>
 
         {actors.map((actor, index) => (
@@ -283,6 +440,9 @@ const MovieForm = () => {
               onChange={(e) =>
                 handleActorChange(index, "firstName", e.target.value)
               }
+              InputProps={{
+                readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+              }}
             />
             <TextField
               label="Last Name"
@@ -290,18 +450,26 @@ const MovieForm = () => {
               onChange={(e) =>
                 handleActorChange(index, "lastName", e.target.value)
               }
+              InputProps={{
+                readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+              }}
             />
             <TextField
               label="Age"
               value={actor.age}
               onChange={(e) => handleActorChange(index, "age", e.target.value)}
               type="number"
+              InputProps={{
+                readOnly: props.form.state === "info", // Đặt chỉ đọc khi state là "info"
+              }}
             />
-            <IconButton
-              onClick={() => setActors(actors.filter((_, i) => i !== index))}
-            >
-              <DeleteIcon />
-            </IconButton>
+            {props?.form?.state != "info" && (
+              <IconButton
+                onClick={() => setActors(actors.filter((_, i) => i !== index))}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
           </div>
         ))}
       </Box>
@@ -309,20 +477,22 @@ const MovieForm = () => {
       <Box>
         <Box className="flex flex-wrap items-center gap-5">
           <h2 className="text-[20px] text-black">Poster</h2>
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<CloudUpload />}
-          >
-            Tải lên
-            <VisuallyHiddenInput
-              type="file"
-              onChange={handleImageUpload}
-              multiple
-            />
-          </Button>
+          {props?.form?.state != "info" && (
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUpload />}
+            >
+              Tải lên
+              <VisuallyHiddenInput
+                type="file"
+                onChange={handleImageUpload}
+                multiple
+              />
+            </Button>
+          )}
         </Box>
 
         <div className="flex flex-wrap gap-4 mt-4">
@@ -334,31 +504,35 @@ const MovieForm = () => {
                 className="w-auto h-40 object-cover rounded-lg border"
               />
 
-              <IconButton
-                className="absolute top-1 right-1 bg-white rounded-full"
-                size="small"
-                onClick={() => {
-                  setPosterPreviews(
-                    posterPreviews.filter((_, i) => i !== index)
-                  );
-                }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
+              {props?.form?.state != "info" && (
+                <IconButton
+                  className="absolute top-1 right-1 bg-white rounded-full"
+                  size="small"
+                  onClick={() => {
+                    setPosterPreviews(
+                      posterPreviews.filter((_, i) => i !== index)
+                    );
+                  }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              )}
             </div>
           ))}
         </div>
       </Box>
 
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        className="mt-6"
-        onClick={() => console.log(movieData)}
-      >
-        Submit
-      </Button>
+      {props?.form?.state != "info" && (
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          className="mt-6"
+          onClick={handleCreate}
+        >
+          Tạo mới
+        </Button>
+      )}
     </div>
   );
 };
