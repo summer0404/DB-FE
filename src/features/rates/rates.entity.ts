@@ -1,14 +1,15 @@
 import {
   AllowNull,
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Movies } from '../movies/movies.entity';
-import { Users } from '../users/users.entity';
+} from "sequelize-typescript";
+import { Movies } from "../movies/movies.entity";
+import { Users } from "../users/users.entity";
 
 @Table
 export class Rates extends Model<Rates> {
@@ -27,4 +28,10 @@ export class Rates extends Model<Rates> {
   @AllowNull(true)
   @Column(DataType.DATE)
   rateTime: Date;
+
+  @BelongsTo(() => Users, { onDelete: "CASCADE" })
+  user: Users;
+
+  @BelongsTo(() => Movies, { onDelete: "CASCADE" })
+  movie: Movies;
 }

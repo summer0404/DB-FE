@@ -1,4 +1,4 @@
-import { UUIDV4 } from 'sequelize';
+import { UUIDV4 } from "sequelize";
 import {
   AllowNull,
   Column,
@@ -9,13 +9,13 @@ import {
   Table,
   Model,
   HasMany,
-} from 'sequelize-typescript';
-import { UserType } from 'src/common/constants';
-import { Staffs } from '../staffs/staffs.entity';
-import { Customers } from '../customers/customers.entity';
-import { Files } from '../files/files.entity';
-import { Comments } from '../comments/comments.entity';
-import { Rates } from '../rates/rates.entity';
+} from "sequelize-typescript";
+import { UserType } from "src/common/constants";
+import { Staffs } from "../staffs/staffs.entity";
+import { Customers } from "../customers/customers.entity";
+import { Files } from "../files/files.entity";
+import { Comments } from "../comments/comments.entity";
+import { Rates } from "../rates/rates.entity";
 
 @Table
 export class Users extends Model<Users> {
@@ -44,22 +44,26 @@ export class Users extends Model<Users> {
   phoneNumber: string;
 
   @AllowNull(false)
-  @Default(UserType.CUSTOMER)
-  @Column(DataType.ENUM(UserType.CUSTOMER, UserType.STAFF))
-  userType: UserType;
+  @Default([UserType.CUSTOMER])
+  @Column(DataType.ARRAY(DataType.STRING))
+  userType: UserType[];
 
-  @HasOne(() => Staffs, { onDelete: 'CASCADE' })
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  refreshToken: string;
+
+  @HasOne(() => Staffs, { onDelete: "CASCADE" })
   staff: Staffs;
 
-  @HasOne(() => Customers, { onDelete: 'CASCADE' })
+  @HasOne(() => Customers, { onDelete: "CASCADE" })
   customer: Customers;
 
-  @HasOne(() => Files, { onDelete: 'SET NULL' })
+  @HasOne(() => Files, { onDelete: "SET NULL" })
   file: Files;
 
-  @HasOne(() => Rates, { onDelete: 'CASCADE' })
+  @HasOne(() => Rates, { onDelete: "CASCADE" })
   rate: Rates;
 
-  @HasMany(() => Comments, { onDelete: 'CASCADE' })
+  @HasMany(() => Comments, { onDelete: "CASCADE" })
   comments: Comments[];
 }

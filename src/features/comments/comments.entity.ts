@@ -7,9 +7,9 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Movies } from '../movies/movies.entity';
-import { Users } from '../users/users.entity';
+} from "sequelize-typescript";
+import { Movies } from "../movies/movies.entity";
+import { Users } from "../users/users.entity";
 
 @Table
 export class Comments extends Model<Comments> {
@@ -23,8 +23,11 @@ export class Comments extends Model<Comments> {
   @Column(DataType.UUID)
   userId: string;
 
-  @BelongsTo(() => Users, { onDelete: 'CASCADE' })
+  @BelongsTo(() => Users, { onDelete: "CASCADE" })
   user: Users;
+
+  @BelongsTo(() => Movies, { onDelete: "CASCADE" })
+  movie: Movies;
 
   @AllowNull(false)
   @Column(DataType.DATE)

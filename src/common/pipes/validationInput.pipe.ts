@@ -4,7 +4,7 @@ import {
   Injectable,
   ValidationError,
   ValidationPipe,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
 @Injectable()
 export class ValidationInputPipe extends ValidationPipe {
@@ -12,7 +12,7 @@ export class ValidationInputPipe extends ValidationPipe {
     super({
       skipMissingProperties: false, // Thuoc tinh khong duoc phep thieu
       whitelist: true, // Xoa cac thuoc tinh khong khai bao trong DTO
-      forbidNonWhitelisted: true, // Cam cac thuoc tinh khong co trong DTO
+      forbidNonWhitelisted: false, // Cam cac thuoc tinh khong co trong DTO
       forbidUnknownValues: true, // Cam cac gia tri khong xac dinh
       stopAtFirstError: false, // Dung lai khi gap loi dau tien
       exceptionFactory: (errors: ValidationError[]) => {
@@ -23,7 +23,7 @@ export class ValidationInputPipe extends ValidationPipe {
               property: error.property,
               constraints: `Thuộc tính ${error.property} phải tồn tại.`,
             };
-          } else if (error.value == '') {
+          } else if (error.value == "") {
             return {
               property: error.property,
               constraints: `Thuộc tính '${error.property}' không được để trống.`,
@@ -39,12 +39,12 @@ export class ValidationInputPipe extends ValidationPipe {
           }
           return {
             property: error.property,
-            constraints: Object.values(error.constraints).join(', '),
+            constraints: Object.values(error.constraints).join(", "),
           };
         });
 
         return new BadRequestException({
-          message: 'Dữ liệu đầu vào không hợp lệ',
+          message: "Dữ liệu đầu vào không hợp lệ",
           errors: formattedErrors,
         });
       },
