@@ -10,7 +10,6 @@ import {
   Table,
 } from "sequelize-typescript";
 import { Showtime } from "../showtime/showtime.entity";
-import { Seats } from "../seats/seats.entity";
 import { Orders } from "../orders/orders.entity";
 import { UUIDV4 } from "sequelize";
 
