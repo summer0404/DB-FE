@@ -44,7 +44,7 @@ export class Fastfoods extends Model<Fastfoods> {
   books: Book[];
 
   @HasOne(() => Files, { onDelete: "CASCADE" })
-  file: Files[];
+  file: Files;
 
   static async generateCustomId(instance: Fastfoods) {
     // Lấy phần tử cuối cùng trong bảng

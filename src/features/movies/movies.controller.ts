@@ -264,45 +264,88 @@ export class MoviesController {
   async update(
     @Res() res,
     @Body() updateDto: UpdateMovies,
-    @Body() updateGenreDto: UpdateGenreDto,
+    @Body() any,
     @Param("id", UUIDv4ValidationPipe) id: string,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ): Promise<Response> {
-    console.log(updateGenreDto);
-    console.log(updateDto);
-
-    return;
-    // let transaction = await this.dbSource.transaction();
-    // try {
-    //   const oldMovie = await this.movieService.getById(id);
-    //   for (let i in oldMovie.files) {
-    //     await this.filesService.deleteFile(oldMovie.files[i].id);
-    //   }
-    //   await this.filesService.createFile(id, files, transaction);
-    //   const temp = await this.movieService.updateMovieTransaction(
-    //     id,
-    //     updateDto,
-    //     transaction,
-    //   );
-    //   transaction.commit();
-    //   this.logger.debug("Cập nhật thông tin bộ phim thành công");
-    //   this.response.initResponse(
-    //     true,
-    //     "Cập nhật thông tin bộ phim thành công",
-    //     temp,
-    //   );
-    //   return res.status(HttpStatus.OK).json(this.response);
-    // } catch (error) {
-    //   transaction.rollback();
-    //   this.logger.error(error.message, error.stack);
-    //   if (error instanceof HttpException) {
-    //     this.response.initResponse(false, error.message, null);
-    //     return res.status(error.getStatus()).json(this.response);
-    //   } else {
-    //     this.response.initResponse(false, "Lỗi trong quá trình..", null);
-    //     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
-    //   }
-    // }
+    let transaction = await this.dbSource.transaction();
+    try {
+      const oldMovie = await this.movieService.getById(id);
+      if (files && files.length > 0) {
+        for (let i in oldMovie?.files) {
+          await this.filesService.deleteFile(oldMovie.files[i].id);
+        }
+        await this.filesService.createFile(id, files, transaction);
+      }
+      if (any?.genres) {
+        let newGenres = any?.genres;
+        const tempGenres = oldMovie?.genres;
+        for (let i in tempGenres) {
+          await this.genreService.removeGenreTransaction(
+            id,
+            oldMovie?.genres[i].genre,
+            transaction,
+          );
+        }
+        for (let i in newGenres) {
+          newGenres[i].movieId = id;
+        }
+        await this.genreService.createTransaction(newGenres, transaction);
+      }
+      if (any?.actors) {
+        let newActors = any?.actors;
+        const tempActors = oldMovie?.actors;
+        for (let i in tempActors) {
+          await this.actorService.removeActorTransaction(
+            id,
+            oldMovie?.actors[i].id,
+            transaction,
+          );
+        }
+        for (let i in newActors) {
+          newActors[i].movieId = id;
+        }
+        await this.actorService.createTransaction(newActors, transaction);
+      }
+      if (any?.directors) {
+        let newDirectors = any?.directors;
+        const tempDirectors = oldMovie?.directors;
+        for (let i in tempDirectors) {
+          await this.directorService.removeDirectorTransaction(
+            id,
+            oldMovie?.directors[i].id,
+            transaction,
+          );
+        }
+        for (let i in newDirectors) {
+          newDirectors[i].movieId = id;
+        }
+        await this.directorService.createTransaction(newDirectors, transaction);
+      }
+      const temp = await this.movieService.updateMovieTransaction(
+        id,
+        updateDto,
+        transaction,
+      );
+      transaction.commit();
+      this.logger.debug("Cập nhật thông tin bộ phim thành công");
+      this.response.initResponse(
+        true,
+        "Cập nhật thông tin bộ phim thành công",
+        temp,
+      );
+      return res.status(HttpStatus.OK).json(this.response);
+    } catch (error) {
+      transaction.rollback();
+      this.logger.error(error.message, error.stack);
+      if (error instanceof HttpException) {
+        this.response.initResponse(false, error.message, null);
+        return res.status(error.getStatus()).json(this.response);
+      } else {
+        this.response.initResponse(false, "Lỗi trong quá trình..", null);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
+      }
+    }
   }
 
   @Delete("/:id")

@@ -12,7 +12,6 @@ import {
   Table,
 } from "sequelize-typescript";
 import { Staffs } from "../staffs/staffs.entity";
-import { Customers } from "../customers/customers.entity";
 import { Coupons } from "../coupons/coupons.entity";
 import { Book } from "../book/book.entity";
 import { PaymentMethod, PaymentStatus } from "src/common/constants";
@@ -27,6 +26,7 @@ export class Orders extends Model<Orders> {
   id: string;
 
   @AllowNull(false)
+  @Default(new Date())
   @Column(DataType.DATE)
   createdTime: Date;
 

@@ -53,6 +53,23 @@ export class ActorsService {
     const remove = await isActor.destroy();
     return remove;
   }
+  async removeActorTransaction(
+    movieId: string,
+    id: string,
+    transaction: Transaction,
+  ) {
+    const isActor = await this.actorsRepository.findOne({
+      where: {
+        movieId: movieId,
+        id: id,
+      },
+    });
+    if (!isActor) {
+      throw new NotFoundException("Không tìm thấy diễn viên phù hợp");
+    }
+    const remove = await isActor.destroy({ transaction });
+    return remove;
+  }
   async getAll() {
     const allActors = await this.actorsRepository.findAll();
     if (allActors.length == 0) return [];

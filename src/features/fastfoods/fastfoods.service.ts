@@ -93,6 +93,27 @@ export class FastfoodsService {
     return numRecordUpdates > 0 ? updateRecordData : null;
   }
 
+  async updateTransaction(
+    id: string,
+    updateFastfoodDto,
+    transaction: Transaction,
+  ): Promise<Fastfoods> {
+    const existingFastfood = await this.fastfoodRepository.findByPk(id);
+
+    if (!existingFastfood)
+      throw new BadRequestException("Không tồn tại thức ăn nhanh");
+
+    const [numRecordUpdates, [updateRecordData]] =
+      await this.fastfoodRepository.update(updateFastfoodDto, {
+        where: {
+          id: id,
+        },
+        transaction,
+        returning: true,
+      });
+    return numRecordUpdates > 0 ? updateRecordData : null;
+  }
+
   async remove(id: string) {
     const existingFastfood = await this.fastfoodRepository.findByPk(id);
 
