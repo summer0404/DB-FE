@@ -40,19 +40,10 @@ export class Orders extends Model<Orders> {
   @Column(DataType.UUID)
   staffId: string;
 
-  @BelongsTo(() => Staffs, { onDelete: "SET NULL" })
-  staff: Staffs;
-
   @ForeignKey(() => Coupons)
   @AllowNull(true)
   @Column(DataType.UUID)
   couponId: string;
-
-  @BelongsTo(() => Coupons)
-  coupon: Coupons;
-
-  @HasMany(() => Book)
-  books: Book[];
 
   @ForeignKey(() => Users)
   @AllowNull(false)
@@ -77,6 +68,15 @@ export class Orders extends Model<Orders> {
   @Default(0)
   @Column(DataType.FLOAT)
   realPrice: number;
+
+  @BelongsTo(() => Staffs, { onDelete: "SET NULL" })
+  staff: Staffs;
+
+  @BelongsTo(() => Coupons)
+  coupon: Coupons;
+
+  @HasMany(() => Book)
+  books: Book[];
 
   @HasMany(() => Tickets, { onDelete: "SET NULL" })
   tickets: Tickets[];

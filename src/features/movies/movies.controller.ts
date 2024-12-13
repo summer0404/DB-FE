@@ -10,7 +10,6 @@ import {
   Inject,
   Param,
   Post,
-  Put,
   Res,
   UploadedFiles,
   UseInterceptors,
@@ -38,7 +37,6 @@ import { RoomsService } from "../rooms/rooms.service";
 import { Showtime } from "../showtime/showtime.entity";
 import { ShowtimeService } from "../showtime/showtime.service";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
-import { UpdateGenreDto } from "../genre/dtos/update.dto";
 
 @Controller("movies")
 export class MoviesController {

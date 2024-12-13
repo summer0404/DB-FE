@@ -19,15 +19,6 @@ export class CreateOrderDto {
   @IsNumber({}, { message: "Tổng giá của đơn hàng phải có dạng số" })
   totalPrice: number;
 
-  // @ApiProperty({
-  //   description: 'Thời gian tạo đơn hàng',
-  //   example: '2024-11-28 15:37:55.831+07',
-  // })
-  // @IsNotEmpty({ message: 'Thời gian tạo đơn hàng không được để trống' })
-  // @Type(() => Date)
-  // @IsDate({ message: 'Thời gian tạo đơn hàng phải có dạng Date' })
-  // createdTime: Date;
-
   @ApiProperty({
     description: "ID của nhân viên",
     example: "dfde6cb0-92b6-4b5f-bfb6-b9615045d898",
@@ -75,7 +66,7 @@ export class CreateOrderDto {
     description: "Chức vụ của nhân viên",
     example: "dfde6cb0-92b6-4b5f-bfb6-b9615045d898",
   })
-  @IsNotEmpty({ message: "Trạng thái thanh toán không được để trống" })
+  @IsOptional()
   @IsEnum(PaymentStatus, {
     message: `Loại người dùng phải là ${PaymentStatus.CANCELLED} hoặc ${PaymentStatus.IN_PROGRESS} hoặc ${PaymentStatus.OK}`,
   })

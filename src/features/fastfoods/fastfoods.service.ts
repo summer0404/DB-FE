@@ -1,6 +1,4 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
-import { CreateFastfoodDto } from "./dto/createFastfood.dto";
-import { UpdateFastfoodDto } from "./dto/updateFastfood.dto";
 import { FASTFOOD_REPOSITORY } from "src/common/constants";
 import { Fastfoods } from "./fastfoods.entity";
 import { Transaction } from "sequelize";

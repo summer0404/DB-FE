@@ -50,7 +50,7 @@ export class CreateTicketDto {
   })
   @IsNotEmpty({ message: "Vị trí của vé không được để trống" })
   @IsNumber({}, { message: "Vị trí của vé phải có dạng số nguyên" })
-  position: number;
+  seatPosition: number;
 
   @ApiProperty({
     description: "ID của đơn hàng",

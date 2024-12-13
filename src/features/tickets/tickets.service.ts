@@ -4,6 +4,7 @@ import { UpdateTicketDto } from "./dto/updateTicket.dto";
 import { TICKET_REPOSITORY } from "src/common/constants";
 import { Tickets } from "./tickets.entity";
 import { GetTicketByShowtimeDto } from "./dto/getTicketByShowtime.dto";
+import { Transaction } from "sequelize";
 
 @Injectable()
 export class TicketsService {
@@ -14,6 +15,18 @@ export class TicketsService {
 
   async create(createTicketDto: CreateTicketDto): Promise<Tickets> {
     return await this.ticketRepository.create(createTicketDto);
+  }
+
+  async createAllTransaction(
+    createTicketDtos,
+    transaction: Transaction,
+  ): Promise<Tickets[]> {
+    let createdTickets = [];
+    for (let i of createTicketDtos) {
+      let temp = await this.ticketRepository.create(i, { transaction });
+      createdTickets.push(temp);
+    }
+    return createdTickets;
   }
 
   async findAll(): Promise<Tickets[]> {

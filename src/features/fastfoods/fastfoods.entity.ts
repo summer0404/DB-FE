@@ -34,7 +34,7 @@ export class Fastfoods extends Model<Fastfoods> {
       fastfoodGroup.SOFTDRINK,
     ),
   )
-  group: fastfoodGroup;
+  foodGroup: fastfoodGroup;
 
   @AllowNull(false)
   @Column(DataType.FLOAT)

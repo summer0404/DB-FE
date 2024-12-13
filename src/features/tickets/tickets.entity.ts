@@ -44,7 +44,7 @@ export class Tickets extends Model<Tickets> {
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  position: number;
+  seatPosition: number;
 
   // Liên kết tới Showtime
   @BelongsTo(() => Showtime, {

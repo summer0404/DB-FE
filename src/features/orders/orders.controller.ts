@@ -9,6 +9,8 @@ import {
   HttpStatus,
   HttpException,
   Put,
+  Inject,
+  BadRequestException,
 } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
 import { CreateOrderDto } from "./dto/createOrder.dto";
@@ -17,6 +19,12 @@ import { LoggerService } from "../logger/logger.service";
 import { Response } from "../response/response.entity";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import { PaymentStatus, SEQUELIZE } from "src/common/constants";
+import { Sequelize } from "sequelize-typescript";
+import { CouponsService } from "../coupons/coupons.service";
+import { UsersService } from "../users/users.service";
+import { TicketsService } from "../tickets/tickets.service";
+import { BookService } from "../book/book.service";
 
 @Controller("orders")
 export class OrdersController {
@@ -24,6 +32,12 @@ export class OrdersController {
     private readonly ordersService: OrdersService,
     private readonly logger: LoggerService,
     private readonly response: Response,
+    private readonly couponService: CouponsService,
+    private readonly userService: UsersService,
+    private readonly ticketService: TicketsService,
+    private readonly bookService: BookService,
+    @Inject(SEQUELIZE)
+    private readonly dbSource: Sequelize,
   ) {}
 
   @Post()
@@ -73,14 +87,114 @@ export class OrdersController {
   })
   async create(
     @Body() createOrderDto: CreateOrderDto,
+    @Body() any,
     @Res() res,
   ): Promise<Response> {
+    let transaction = await this.dbSource.transaction();
     try {
-      const newOrder = await this.ordersService.create(createOrderDto);
+      let realPrice = 0;
+      let isUsed = [];
+      let createdTickets = [];
+      let createdBooks = [];
+      if (createOrderDto?.couponId && createOrderDto?.couponId != undefined) {
+        const coupon = await this.couponService.findOne(
+          createOrderDto.couponId,
+        );
+        const user = await this.userService.findOne(createOrderDto.userId);
+        if (
+          coupon.isUsed.includes(user?.email) ||
+          coupon.expirationDate < new Date()
+        )
+          throw new BadRequestException(
+            "Phiếu giảm giá đã hết hạn hoặc đã được sử dụng",
+          );
+        realPrice = Number(
+          ((createOrderDto.totalPrice * (100 - coupon.percent)) / 100).toFixed(
+            2,
+          ),
+        );
+        isUsed = coupon.isUsed;
+        await this.couponService.updateTransaction(
+          coupon.id,
+          { isUsed: [user.email] },
+          transaction,
+        );
+      }
+      const newOrder = await this.ordersService.createTransaction(
+        createOrderDto,
+        transaction,
+      );
+      if (any?.tickets && any?.tickets != undefined) {
+        let tickets = any.tickets;
+        for (let i in tickets) tickets[i].orderId = newOrder.id;
+        let temp = await this.ticketService.createAllTransaction(
+          tickets,
+          transaction,
+        );
+        temp.map((item) => {
+          createdTickets.push(item.id);
+        });
+      }
+      if (any?.books && any?.books != undefined) {
+        let books = any.books;
+        for (let i in books) books[i].orderId = newOrder.id;
+        let temp = await this.bookService.createAllTransaction(
+          books,
+          transaction,
+        );
+        temp.map((item) => {
+          createdBooks.push({
+            orderId: item.orderId,
+            fastfoodId: item.fastfoodId,
+          });
+        });
+      }
+      if (realPrice != 0) {
+        await this.ordersService.updateTransaction(
+          newOrder.id,
+          { realPrice } as UpdateOrderDto,
+          transaction,
+        );
+      }
+      const order = await this.ordersService.findOneTransaction(
+        newOrder.id,
+        transaction,
+      );
+      transaction.commit();
+      setTimeout(
+        async () => {
+          try {
+            const checkOrder = await this.ordersService.findOneToCheck(
+              newOrder.id,
+            );
+            if (checkOrder.paymentStatus == PaymentStatus.IN_PROGRESS) {
+              await this.ordersService.update(newOrder.id, {
+                paymentStatus: PaymentStatus.CANCELLED,
+              });
+
+              await this.couponService.updateNew(createOrderDto.couponId, {
+                isUsed,
+              });
+
+              if (createdBooks.length > 0) {
+                for (let i of createdBooks)
+                  await this.bookService.removeNew(i.orderId, i.fastfoodId);
+              }
+
+              if (createdTickets.length > 0) {
+                for (let i of createdTickets)
+                  await this.ticketService.remove(i);
+              }
+            }
+          } catch (err) {}
+        },
+        5 * 60 * 1000,
+      );
       this.logger.debug("Tạo đơn hàng thành công");
-      this.response.initResponse(true, "Tạo đơn hàng thành công", newOrder);
+      this.response.initResponse(true, "Tạo đơn hàng thành công", order);
       return res.status(HttpStatus.CREATED).json(this.response);
     } catch (error) {
+      transaction.rollback();
       this.logger.error("Xảy ra lỗi trong quá trình tạo đơn hàng", error.stack);
       if (error instanceof HttpException) {
         this.response.initResponse(false, error.message, null);
