@@ -20,14 +20,36 @@ export class MoviesService {
     });
     return createdMovie;
   }
-  async updateMovie(updateMovieDto: UpdateMovies) {
-    const isMovie = await this.moviesRepository.findByPk(updateMovieDto.id);
+  async updateMovie(id: string, updateMovieDto: UpdateMovies) {
+    const isMovie = await this.moviesRepository.findByPk(id);
     if (!isMovie) {
       throw new NotFoundException("Không tìm thấy bộ phim phù hợp");
     }
     const updateData = await isMovie.update(updateMovieDto);
     return updateData;
   }
+
+  async updateMovieTransaction(
+    id: string,
+    updateMovieDto: UpdateMovies,
+    transaction: Transaction,
+  ) {
+    const isMovie = await this.moviesRepository.findByPk(id);
+    if (!isMovie) {
+      throw new NotFoundException("Không tìm thấy bộ phim phù hợp");
+    }
+
+    const [affectedRow, [updatedMovie]] = await this.moviesRepository.update(
+      updateMovieDto,
+      {
+        where: { id },
+        returning: true,
+        transaction,
+      },
+    );
+    return affectedRow > 0 ? updatedMovie : null;
+  }
+
   async removeMovie(id: string) {
     const isMovie = await this.moviesRepository.findByPk(id);
     if (!isMovie) {
@@ -61,7 +83,10 @@ export class MoviesService {
     return allMovies;
   }
 
-  async getByIdTransaction(id: string, transaction: Transaction) {
+  async getByIdTransaction(
+    id: string,
+    transaction: Transaction,
+  ): Promise<Movies> {
     const isMovie = await this.moviesRepository.findByPk(id, {
       transaction,
       include: [

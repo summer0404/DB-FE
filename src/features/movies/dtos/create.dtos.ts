@@ -113,7 +113,7 @@ export class CreateMovies {
   directors: createDirectors[];
 
   @ApiProperty({
-    description: "Danh sách các diễn viên",
+    description: "Danh sách thể loại",
     example: [
       {
         movieId: "a",
@@ -127,4 +127,26 @@ export class CreateMovies {
   )
   @Type(() => CreateGenreDto)
   genres: CreateGenreDto[];
+
+  @ApiProperty({
+    description: "Danh sách giờ bắt đầu các suất chiếu",
+    example: ["2024-12-12T14:01:31.192+07:00", "2024-12-12T14:02:06.785+07:00"],
+  })
+  @IsNotEmpty({
+    message: "startTime không được để trống",
+  }) // Áp dụng kiểm tra với từng phần tử
+  @IsArray({ message: "startTime phải là một mảng" }) // Kiểm tra kiểu dữ liệu mảng
+  @Type(() => Date) // Chuyển đổi từng phần tử trong mảng thành kiểu Date
+  startTime: Date[];
+
+  @ApiProperty({
+    description: "Danh sách giờ kết thúc các suất chiếu",
+    example: ["2024-12-12T14:01:31.192+07:00", "2024-12-12T14:02:06.785+07:00"],
+  })
+  @IsNotEmpty({
+    message: "endTime không được để trống",
+  }) // Áp dụng kiểm tra với từng phần tử
+  @IsArray({ message: "endTime phải là một mảng" }) // Kiểm tra kiểu dữ liệu mảng
+  @Type(() => Date) // Chuyển đổi từng phần tử trong mảng thành kiểu Date
+  endTime: Date[];
 }

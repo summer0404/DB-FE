@@ -1,8 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateTicketDto } from './dto/createTicket.dto';
-import { UpdateTicketDto } from './dto/updateTicket.dto';
-import { TICKET_REPOSITORY } from 'src/common/constants';
-import { Tickets } from './tickets.entity';
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { CreateTicketDto } from "./dto/createTicket.dto";
+import { UpdateTicketDto } from "./dto/updateTicket.dto";
+import { TICKET_REPOSITORY } from "src/common/constants";
+import { Tickets } from "./tickets.entity";
+import { GetTicketByShowtimeDto } from "./dto/getTicketByShowtime.dto";
 
 @Injectable()
 export class TicketsService {
@@ -19,6 +20,17 @@ export class TicketsService {
     return this.ticketRepository.findAll();
   }
 
+  async getAllTickets(
+    getTicketByShowtime: GetTicketByShowtimeDto,
+  ): Promise<Tickets[]> {
+    return await this.ticketRepository.findAll({
+      where: {
+        startTime: getTicketByShowtime.startTime,
+        movieId: getTicketByShowtime.movieId,
+      },
+    });
+  }
+
   async findOne(id: string): Promise<Tickets> {
     return await this.ticketRepository.findByPk(id);
   }
@@ -26,7 +38,7 @@ export class TicketsService {
   async update(id: string, updateTicketDto: UpdateTicketDto): Promise<Tickets> {
     const existingTicket = await this.ticketRepository.findByPk(id);
 
-    if (!existingTicket) throw new BadRequestException('Không tồn tại vé');
+    if (!existingTicket) throw new BadRequestException("Không tồn tại vé");
 
     const [numRecordUpdates, [updateRecordData]] =
       await this.ticketRepository.update(updateTicketDto, {
@@ -42,7 +54,7 @@ export class TicketsService {
     const existingTicket = await this.ticketRepository.findByPk(id);
 
     if (!existingTicket)
-      throw new BadRequestException('Không tồn tại vé tương ứng');
+      throw new BadRequestException("Không tồn tại vé tương ứng");
 
     await this.ticketRepository.destroy({ where: { id } });
   }

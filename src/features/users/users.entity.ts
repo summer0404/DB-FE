@@ -44,9 +44,9 @@ export class Users extends Model<Users> {
   phoneNumber: string;
 
   @AllowNull(false)
-  @Default([UserType.CUSTOMER])
-  @Column(DataType.ARRAY(DataType.STRING))
-  userType: UserType[];
+  @Default(UserType.CUSTOMER)
+  @Column(DataType.STRING)
+  userType: UserType;
 
   @AllowNull(true)
   @Column(DataType.STRING)

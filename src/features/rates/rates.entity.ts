@@ -5,7 +5,6 @@ import {
   DataType,
   ForeignKey,
   Model,
-  PrimaryKey,
   Table,
 } from "sequelize-typescript";
 import { Movies } from "../movies/movies.entity";
@@ -24,6 +23,10 @@ export class Rates extends Model<Rates> {
   @AllowNull(false)
   @Column(DataType.FLOAT)
   stars: number;
+
+  @AllowNull(true)
+  @Column(DataType.TEXT)
+  comment: string;
 
   @AllowNull(true)
   @Column(DataType.DATE)

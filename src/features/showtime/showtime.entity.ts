@@ -1,4 +1,5 @@
 import {
+  AllowNull,
   BelongsTo,
   Column,
   DataType,
@@ -21,13 +22,13 @@ export class Showtime extends Model<Showtime> {
   @Column(DataType.DATE)
   startTime: Date;
 
-  @PrimaryKey
+  @AllowNull(false)
   @Column(DataType.DATE)
   endTime: Date;
 
   @ForeignKey(() => Rooms)
-  @Column(DataType.UUID)
-  roomId: string;
+  @Column(DataType.INTEGER)
+  roomId: number;
 
   @BelongsTo(() => Movies, { onDelete: "CASCADE" })
   movie: Movies;

@@ -11,6 +11,8 @@ import { StorageModule } from "../storage/storage.module";
 import { ActorsModule } from "../actors/actors.module";
 import { DirectorsModule } from "../directors/directors.module";
 import { GenreModule } from "../genre/genre.module";
+import { RoomsModule } from "../rooms/rooms.module";
+import { ShowtimeModule } from "../showtime/showtime.module";
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { GenreModule } from "../genre/genre.module";
     ActorsModule,
     DirectorsModule,
     GenreModule,
+    RoomsModule,
+    ShowtimeModule,
   ],
   providers: [
     MoviesService,

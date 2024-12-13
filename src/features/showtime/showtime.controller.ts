@@ -15,7 +15,8 @@ import { LoggerService } from "../logger/logger.service";
 import { ShowtimeService } from "./showtime.service";
 import { CreateShowtimeDto } from "./dtos/create.dto";
 import { UpdateShowtimeDto } from "./dtos/update.dto";
-import { ApiParam, ApiResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
+import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
 
 @Controller("showtime")
 export class ShowtimeController {
@@ -24,6 +25,7 @@ export class ShowtimeController {
     private readonly logger: LoggerService,
     private readonly response: Response,
   ) {}
+
   @Post()
   @ApiResponse({
     status: 200,
@@ -70,6 +72,7 @@ export class ShowtimeController {
       }
     }
   }
+
   @Put()
   @ApiResponse({
     status: 200,
@@ -120,6 +123,7 @@ export class ShowtimeController {
       }
     }
   }
+
   @Delete("/:userId/:movieId")
   @ApiParam({ name: "userId", description: "ID của người dùng" })
   @ApiParam({ name: "movieId", description: "ID của bộ phim" })
@@ -170,6 +174,7 @@ export class ShowtimeController {
       }
     }
   }
+
   @Get()
   @ApiResponse({
     status: 200,
@@ -232,6 +237,7 @@ export class ShowtimeController {
       }
     }
   }
+
   @Get("/:roomId/:movieId")
   @ApiParam({ name: "roomId", description: "ID của phòng chiếu" })
   @ApiParam({ name: "movieId", description: "ID của bộ phim" })
@@ -284,6 +290,84 @@ export class ShowtimeController {
         return res.status(error.getStatus()).json(this.response);
       } else {
         this.response.initResponse(false, "Lỗi trong quá trình..", null);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
+      }
+    }
+  }
+
+  @Get(":movieId")
+  @ApiOperation({
+    summary: "API tìm kiếm thông tin các suất chiếu của phim qua movieId",
+    description: "Cần truyền vào id của phim dạng UUIDv4",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Lấy toàn bộ thông tin suất chiếu theo phim thành công.",
+    schema: {
+      example: {
+        success: true,
+        message: "Lấy toàn bộ thông tin suất chiếu theo phim thành công",
+        data: [
+          {
+            movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+            startTime: "2024-12-12T15:00:00.192Z",
+            endTime: "2024-12-12T16:00:00.192Z",
+            roomId: 1,
+            createdAt: "2024-12-12T10:35:57.678Z",
+            updatedAt: "2024-12-12T10:36:00.743Z",
+          },
+          {
+            movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+            startTime: "2024-12-12T12:00:00.192Z",
+            endTime: "2024-12-12T13:30:00.192Z",
+            roomId: 2,
+            createdAt: "2024-12-12T10:35:57.678Z",
+            updatedAt: "2024-12-12T10:36:00.747Z",
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 204,
+    description: "Không có dữ liệu.",
+    schema: {
+      example: {
+        success: true,
+        message: "Không có dữ liệu",
+        data: [],
+      },
+    },
+  })
+  async getByMovieId(
+    @Res() res,
+    @Param("movieId", UUIDv4ValidationPipe) movieId: string,
+  ) {
+    try {
+      const temp = await this.showtimeService.getByMovie(movieId);
+      this.logger.debug(
+        "Lấy toàn bộ thông tin suất chiếu theo phim thành công",
+      );
+      this.response.initResponse(
+        true,
+        "Lấy toàn bộ thông tin suất chiếu theo phim thành công",
+        temp,
+      );
+      if (temp.length == 0) {
+        return res.status(HttpStatus.NO_CONTENT).json(this.response);
+      }
+      return res.status(HttpStatus.OK).json(this.response);
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+      if (error instanceof HttpException) {
+        this.response.initResponse(false, error.message, null);
+        return res.status(error.getStatus()).json(this.response);
+      } else {
+        this.response.initResponse(
+          false,
+          "Lỗi trong quá trình lấy thông tin suất chiếu theo phimphim",
+          null,
+        );
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
       }
     }

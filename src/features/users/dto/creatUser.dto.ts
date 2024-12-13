@@ -60,6 +60,8 @@ export class CreateUserDto {
     example: UserType.CUSTOMER,
   })
   @IsOptional()
-  @IsArray()
-  userType: UserType[];
+  @IsEnum(UserType, {
+    message: `Loại người dùng phải là ${UserType.CUSTOMER} hoặc ${UserType.STAFF}`,
+  })
+  userType: UserType;
 }

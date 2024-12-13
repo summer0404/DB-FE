@@ -3,6 +3,7 @@ import { ROOMS_REPOSITORY } from "src/common/constants";
 import { Rooms } from "./rooms.entity";
 import { CreateRoomDto } from "./dtos/create.dto";
 import { UpdateRoomDto } from "./dtos/update.dto";
+import { Showtime } from "../showtime/showtime.entity";
 
 @Injectable()
 export class RoomsService {
@@ -23,7 +24,7 @@ export class RoomsService {
     const updateData = await isRoom.update(name);
     return updateData;
   }
-  async removeRoom(id: string) {
+  async removeRoom(id: number) {
     const isRoom = await this.roomsRepository.findByPk(id);
     if (!isRoom) {
       throw new NotFoundException("Không tìm thấy phòng chiếu phù hợp");
@@ -32,7 +33,13 @@ export class RoomsService {
     return remove;
   }
   async getAll() {
-    const allRooms = await this.roomsRepository.findAll();
+    const allRooms = await this.roomsRepository.findAll({
+      include: [
+        {
+          model: Showtime,
+        },
+      ],
+    });
     if (allRooms.length == 0) return [];
     return allRooms;
   }

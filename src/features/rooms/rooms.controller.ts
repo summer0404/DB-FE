@@ -142,7 +142,7 @@ export class RoomsController {
       },
     },
   })
-  async delete(@Res() res, @Param("id") id: string) {
+  async delete(@Res() res, @Param("id") id: number) {
     try {
       const temp = await this.roomService.removeRoom(id);
       this.logger.debug("Xóa bỏ thông tin phòng chiếu phim thành công");

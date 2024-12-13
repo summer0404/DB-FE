@@ -8,6 +8,7 @@ import {
   Model,
   PrimaryKey,
   Table,
+  Unique,
 } from "sequelize-typescript";
 import { Showtime } from "../showtime/showtime.entity";
 import { Orders } from "../orders/orders.entity";

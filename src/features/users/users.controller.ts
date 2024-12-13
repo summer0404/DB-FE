@@ -365,7 +365,7 @@ export class UsersController {
         userType != null &&
         userType != existingUser.userType
       ) {
-        if (userType.includes(UserType.CUSTOMER)) {
+        if (userType == UserType.CUSTOMER) {
           await this.staffsService.removeTransaction(
             existingUser.id,
             transaction,
