@@ -11,6 +11,7 @@ import { UsersModule } from "../users/users.module";
 import { TicketsModule } from "../tickets/tickets.module";
 import { BookModule } from "../book/book.module";
 import { FastfoodsModule } from "../fastfoods/fastfoods.module";
+import { ShowtimeModule } from "../showtime/showtime.module";
 
 @Module({
   controllers: [OrdersController],
@@ -31,6 +32,7 @@ import { FastfoodsModule } from "../fastfoods/fastfoods.module";
     TicketsModule,
     BookModule,
     FastfoodsModule,
+    ShowtimeModule,
   ],
 })
 export class OrdersModule {}
