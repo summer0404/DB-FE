@@ -10,6 +10,7 @@ import { CouponsModule } from "../coupons/coupons.module";
 import { UsersModule } from "../users/users.module";
 import { TicketsModule } from "../tickets/tickets.module";
 import { BookModule } from "../book/book.module";
+import { FastfoodsModule } from "../fastfoods/fastfoods.module";
 
 @Module({
   controllers: [OrdersController],
@@ -29,6 +30,7 @@ import { BookModule } from "../book/book.module";
     UsersModule,
     TicketsModule,
     BookModule,
+    FastfoodsModule,
   ],
 })
 export class OrdersModule {}

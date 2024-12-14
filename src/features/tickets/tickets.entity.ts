@@ -33,7 +33,6 @@ export class Tickets extends Model<Tickets> {
   @Column(DataType.DATE)
   startTime: Date;
 
-  @ForeignKey(() => Showtime)
   @AllowNull(false)
   @Column(DataType.DATE)
   endTime: Date;
