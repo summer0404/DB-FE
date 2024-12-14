@@ -106,6 +106,8 @@ export class MoviesController {
   ) {
     let transaction = await this.dbSource.transaction();
     try {
+      console.log(1);
+
       let { actors, directors, genres, ...newMovieDto } = createDto;
 
       if (createDto?.endTime?.length != createDto?.startTime?.length)
@@ -138,7 +140,6 @@ export class MoviesController {
 
       // Lấy danh sách phòng
       const rooms = await this.roomsService.getAll();
-
       const validList = [];
 
       // Hàm kiểm tra xung đột thời gian
