@@ -135,8 +135,9 @@ export class CreateMovies {
   @IsNotEmpty({
     message: "startTime không được để trống",
   }) // Áp dụng kiểm tra với từng phần tử
-  // @IsArray({ message: "startTime phải là một mảng" }) // Kiểm tra kiểu dữ liệu mảng
-  @Type(() => Date) // Chuyển đổi từng phần tử trong mảng thành kiểu Date
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   startTime: Date[];
 
   @ApiProperty({
@@ -146,7 +147,8 @@ export class CreateMovies {
   @IsNotEmpty({
     message: "endTime không được để trống",
   }) // Áp dụng kiểm tra với từng phần tử
-  //@IsArray({ message: "endTime phải là một mảng" }) // Kiểm tra kiểu dữ liệu mảng
-  @Type(() => Date) // Chuyển đổi từng phần tử trong mảng thành kiểu Date
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   endTime: Date[];
 }
