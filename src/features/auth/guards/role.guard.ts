@@ -1,27 +1,23 @@
-import { ROLE } from "src/common/constants";
+import { UserType } from "src/common/constants";
 import RequestWithUserDto from "../request_with_user.dto";
 import { CanActivate, ExecutionContext, mixin, Type } from "@nestjs/common";
 
-const RoleGuard = (role: ROLE): Type<CanActivate> => {
+const RoleGuard = (userType: UserType): Type<CanActivate> => {
   class RoleGuardMixin implements CanActivate {
     canActivate(context: ExecutionContext) {
       const request = context.switchToHttp().getRequest<RequestWithUserDto>();
       const { user } = request;
       const listRole = {
-        [ROLE.ADMIN]: 3,
-        [ROLE.STAFF]: 2,
-        [ROLE.CUSTOMER]: 1,
+        [UserType.STAFF]: 2,
+        [UserType.CUSTOMER]: 1,
       };
 
       let priority = 0;
-      if (user?.roles.includes(ROLE.ADMIN)) 
-        priority = listRole[ROLE.ADMIN];
-      else if (user?.roles.includes(ROLE.STAFF))
-        priority = listRole[ROLE.STAFF];
-      else if (user?.roles.includes(ROLE.CUSTOMER))
-        priority = listRole[ROLE.CUSTOMER];
+      if (user?.userType == UserType.STAFF) priority = listRole[UserType.STAFF];
+      else if (user?.userType == UserType.CUSTOMER)
+        priority = listRole[UserType.CUSTOMER];
 
-      return priority >= listRole[role];
+      return priority >= listRole[userType];
     }
   }
 

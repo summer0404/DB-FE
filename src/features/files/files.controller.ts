@@ -6,6 +6,7 @@ import {
   Res,
   HttpStatus,
   HttpException,
+  UseGuards,
 } from "@nestjs/common";
 import { FilesService } from "./files.service";
 import { UpdateFileDto } from "./dto/updateFile.dto";
@@ -13,6 +14,9 @@ import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { LoggerService } from "../logger/logger.service";
 import { Response } from "../response/response.entity";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import RoleGuard from "../auth/guards/role.guard";
+import { UserType } from "src/common/constants";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("files")
 export class FilesController {
@@ -66,6 +70,8 @@ export class FilesController {
   //   }
   // }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API để tìm thông tin các files trên hệ thống",
@@ -136,6 +142,8 @@ export class FilesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/:id")
   @ApiOperation({
     summary: "API để tìm thông tin file theo id",
@@ -221,6 +229,8 @@ export class FilesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/movie/:movieId")
   @ApiOperation({
     summary: "API để tìm các files của một phim dựa trên movieId",
@@ -321,6 +331,8 @@ export class FilesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/user/:id")
   @ApiOperation({
     summary: "API để tìm thông tin file theo người dùng",
@@ -411,6 +423,8 @@ export class FilesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete("/:id")
   @ApiOperation({
     summary: "API để xóa file",

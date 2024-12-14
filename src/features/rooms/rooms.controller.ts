@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { RoomsService } from "./rooms.service";
 import { LoggerService } from "../logger/logger.service";
@@ -16,6 +17,9 @@ import { Response } from "../response/response.entity";
 import { CreateRoomDto } from "./dtos/create.dto";
 import { UpdateRoomDto } from "./dtos/update.dto";
 import { ApiParam, ApiResponse } from "@nestjs/swagger";
+import RoleGuard from "../auth/guards/role.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
+import { UserType } from "src/common/constants";
 
 @Controller("rooms")
 export class RoomsController {
@@ -24,6 +28,9 @@ export class RoomsController {
     private readonly logger: LoggerService,
     private readonly response: Response,
   ) {}
+
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiResponse({
     status: 200,
@@ -69,6 +76,9 @@ export class RoomsController {
       }
     }
   }
+
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put()
   @ApiResponse({
     status: 200,
@@ -118,6 +128,9 @@ export class RoomsController {
       }
     }
   }
+
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete("/:id")
   @ApiParam({ name: "id", description: "ID của phòng chiếu cần xóa" })
   @ApiResponse({
@@ -163,6 +176,9 @@ export class RoomsController {
       }
     }
   }
+
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiResponse({
     status: 200,
@@ -223,6 +239,9 @@ export class RoomsController {
       }
     }
   }
+
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/:id")
   @ApiParam({ name: "id", description: "ID của phòng chiếu phim" })
   @ApiResponse({

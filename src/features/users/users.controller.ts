@@ -10,6 +10,7 @@ import {
   HttpException,
   Put,
   Inject,
+  UseGuards,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/creatUser.dto";
@@ -22,6 +23,8 @@ import { CustomersService } from "../customers/customers.service";
 import { StaffsService } from "../staffs/staffs.service";
 import { SEQUELIZE, UserType } from "src/common/constants";
 import { Sequelize } from "sequelize-typescript";
+import RoleGuard from "../auth/guards/role.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("users")
 export class UsersController {
@@ -35,6 +38,8 @@ export class UsersController {
     private readonly dbSource: Sequelize,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: "API để tạo người dùng",
@@ -117,6 +122,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API để lấy thông tin tất cả người dùng",
@@ -211,6 +218,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
   @ApiOperation({
     summary: "API tìm kiếm thông tin của người dùng qua id",
@@ -296,6 +305,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put(":id")
   @ApiOperation({
     summary: "API cập nhật thông tin người dùng",
@@ -413,6 +424,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   @ApiOperation({
     summary: "API xóa người dùng",

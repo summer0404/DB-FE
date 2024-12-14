@@ -9,6 +9,7 @@ import {
   HttpStatus,
   HttpException,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import { TicketsService } from "./tickets.service";
 import { CreateTicketDto } from "./dto/createTicket.dto";
@@ -18,6 +19,9 @@ import { Response } from "../response/response.entity";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
 import { GetTicketByShowtimeDto } from "./dto/getTicketByShowtime.dto";
+import RoleGuard from "../auth/guards/role.guard";
+import { UserType } from "src/common/constants";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("tickets")
 export class TicketsController {
@@ -27,6 +31,8 @@ export class TicketsController {
     private readonly response: Response,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: "API để tạo vé",
@@ -99,6 +105,8 @@ export class TicketsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API để lấy thông tin tất cả vé",
@@ -159,6 +167,8 @@ export class TicketsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Post("/showtime")
   @ApiOperation({
     summary: "API để lấy thông tin tất cả vé theo showtime",
@@ -235,6 +245,8 @@ export class TicketsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
   @ApiOperation({
     summary: "API tìm kiếm thông tin của vé qua id",
@@ -312,6 +324,8 @@ export class TicketsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Put(":id")
   @ApiOperation({
     summary: "API cập nhật thông tin vé",
@@ -400,6 +414,8 @@ export class TicketsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   @ApiOperation({
     summary: "API xóa vé",

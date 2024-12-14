@@ -10,6 +10,7 @@ import {
   HttpException,
   Inject,
   BadRequestException,
+  UseGuards,
 } from "@nestjs/common";
 import { CustomersService } from "./customers.service";
 import { UpdateCustomerDto } from "./dto/updateCustomer.dto";
@@ -17,8 +18,10 @@ import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
 import { LoggerService } from "../logger/logger.service";
 import { Response } from "../response/response.entity";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
-import { SEQUELIZE } from "src/common/constants";
+import { SEQUELIZE, UserType } from "src/common/constants";
 import { Sequelize } from "sequelize-typescript";
+import RoleGuard from "../auth/guards/role.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("customers")
 export class CustomersController {
@@ -35,6 +38,8 @@ export class CustomersController {
   //   return this.customersService.create(createCustomerDto);
   // }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API tìm kiếm tất cả khách hàng",
@@ -98,6 +103,8 @@ export class CustomersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
   @ApiOperation({
     summary: "API tìm kiếm tất cả khách hàng",
@@ -175,6 +182,8 @@ export class CustomersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put(":id")
   @ApiOperation({
     summary: "API cập nhật thông tin khách hàng",
@@ -280,6 +289,8 @@ export class CustomersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   @ApiOperation({
     summary: "API xóa khách hàng",

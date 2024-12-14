@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "../response/response.entity";
 import { LoggerService } from "../logger/logger.service";
@@ -17,6 +18,9 @@ import { CreateRateDto } from "./dtos/create.dto";
 import { UpdateRateDto } from "./dtos/update.dto";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import RoleGuard from "../auth/guards/role.guard";
+import { UserType } from "src/common/constants";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("rates")
 export class RatesController {
@@ -26,6 +30,8 @@ export class RatesController {
     private readonly response: Response,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiResponse({
     status: 200,
@@ -74,6 +80,8 @@ export class RatesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Put()
   @ApiResponse({
     status: 200,
@@ -126,6 +134,8 @@ export class RatesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Delete("/:userId/:movieId")
   @ApiParam({
     name: "userId",
@@ -176,6 +186,8 @@ export class RatesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiResponse({
     status: 200,
@@ -238,6 +250,8 @@ export class RatesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/:userId/:movieId")
   @ApiParam({
     name: "userId",
@@ -303,6 +317,8 @@ export class RatesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/:movieId")
   @ApiOperation({
     summary: "API để lấy các bình luận và đánh giá theo phim",

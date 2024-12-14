@@ -9,6 +9,8 @@ import { JwtStrategy } from "./strategy/jwt.strategy";
 import { JwtRefreshTokenStrategy } from "./strategy/jwt_refresh.strategy";
 import { LoggerModule } from "../logger/logger.module";
 import { UsersModule } from "../users/users.module";
+import { CustomersModule } from "../customers/customers.module";
+import { StaffsModule } from "../staffs/staffs.module";
 
 @Module({
   imports: [
@@ -19,13 +21,16 @@ import { UsersModule } from "../users/users.module";
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
     }),
+    LoggerModule,
+    CustomersModule,
+    StaffsModule,
   ],
   providers: [
     AuthService,
     GoogleStrategy,
     JwtStrategy,
-    JwtRefreshTokenStrategy,
     LoggerModule,
+    JwtRefreshTokenStrategy,
   ],
   controllers: [AuthController],
 })

@@ -11,6 +11,7 @@ import {
   Put,
   Inject,
   BadRequestException,
+  UseGuards,
 } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
 import { CreateOrderDto } from "./dto/createOrder.dto";
@@ -19,12 +20,14 @@ import { LoggerService } from "../logger/logger.service";
 import { Response } from "../response/response.entity";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
-import { PaymentStatus, SEQUELIZE } from "src/common/constants";
+import { PaymentStatus, SEQUELIZE, UserType } from "src/common/constants";
 import { Sequelize } from "sequelize-typescript";
 import { CouponsService } from "../coupons/coupons.service";
 import { UsersService } from "../users/users.service";
 import { TicketsService } from "../tickets/tickets.service";
 import { BookService } from "../book/book.service";
+import RoleGuard from "../auth/guards/role.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("orders")
 export class OrdersController {
@@ -40,6 +43,8 @@ export class OrdersController {
     private readonly dbSource: Sequelize,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: "API để tạo đơn hàng",
@@ -212,6 +217,8 @@ export class OrdersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API để lấy thông tin tất cả đơn hàng",
@@ -274,6 +281,8 @@ export class OrdersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
   @ApiOperation({
     summary: "API tìm kiếm thông tin của đơn hàng qua id",
@@ -353,6 +362,8 @@ export class OrdersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Put(":id")
   @ApiOperation({
     summary: "API cập nhật thông tin đơn hàng",
@@ -440,6 +451,8 @@ export class OrdersController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   @ApiOperation({
     summary: "API xóa đơn hàng",

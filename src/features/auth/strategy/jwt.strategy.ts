@@ -10,7 +10,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          return request.cookies?.sid
+          return request.cookies?.sid;
         },
       ]),
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: TokenPayload) {
     return {
       userId: payload.userId,
-      roles: payload.roles
+      userType: payload.userType,
     };
   }
 }

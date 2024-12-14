@@ -32,7 +32,7 @@ export class Users extends Model<Users> {
   @Column(DataType.STRING(30))
   lastName: string;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.DATE)
   dateOfBirth: Date;
 

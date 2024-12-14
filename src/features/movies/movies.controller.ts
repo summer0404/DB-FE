@@ -12,6 +12,7 @@ import {
   Post,
   Res,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { MoviesService } from "./movies.service";
@@ -26,7 +27,7 @@ import {
   ApiResponse,
 } from "@nestjs/swagger";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
-import { SEQUELIZE } from "src/common/constants";
+import { SEQUELIZE, UserType } from "src/common/constants";
 import { Sequelize } from "sequelize-typescript";
 import { FilesService } from "../files/files.service";
 import { ActorsService } from "../actors/actors.service";
@@ -37,6 +38,8 @@ import { RoomsService } from "../rooms/rooms.service";
 import { Showtime } from "../showtime/showtime.entity";
 import { ShowtimeService } from "../showtime/showtime.service";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
+import RoleGuard from "../auth/guards/role.guard";
 
 @Controller("movies")
 export class MoviesController {
@@ -55,6 +58,8 @@ export class MoviesController {
     private readonly dbSource: Sequelize,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: "API để tạo phim",
@@ -220,6 +225,8 @@ export class MoviesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post("/update/:id")
   @ApiOperation({
     summary: "API để cập nhật thông tin phim",
@@ -346,6 +353,8 @@ export class MoviesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete("/:id")
   @ApiOperation({
     summary: "API để xóa phim",
@@ -443,6 +452,8 @@ export class MoviesController {
   @ApiOperation({
     summary: "API lấy toàn bộ thông tin phim",
   })
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAll(@Res() res) {
     try {
@@ -469,6 +480,8 @@ export class MoviesController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/:id")
   @ApiOperation({
     summary: "API để lấy thông tin tất cả phim",

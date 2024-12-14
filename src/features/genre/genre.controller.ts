@@ -9,13 +9,15 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { GenreService } from "./genre.service";
 import { LoggerService } from "../logger/logger.service";
 import { Response } from "../response/response.entity";
 import { CreateGenreDto } from "./dtos/create.dto";
-import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
-import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import RoleGuard from "../auth/guards/role.guard";
+import { UserType } from "src/common/constants";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("genre")
 export class GenreController {
@@ -25,6 +27,8 @@ export class GenreController {
     private readonly response: Response,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   async getHello(@Res() res, @Body() createDto: CreateGenreDto) {
     try {
@@ -44,6 +48,8 @@ export class GenreController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete("/:movieId/:genre")
   async delete(
     @Res() res,
@@ -70,6 +76,9 @@ export class GenreController {
       }
     }
   }
+
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAll(@Res() res) {
     try {
@@ -183,6 +192,8 @@ export class GenreController {
   //     }
   //   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/:movieId/:genre")
   async getById(
     @Res() res,

@@ -9,6 +9,7 @@ import {
   HttpStatus,
   HttpException,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import { CouponsService } from "./coupons.service";
 import { CreateCouponDto } from "./dto/createCoupon.dto";
@@ -17,6 +18,9 @@ import { LoggerService } from "../logger/logger.service";
 import { Response } from "../response/response.entity";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import { UserType } from "src/common/constants";
+import RoleGuard from "../auth/guards/role.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("coupons")
 export class CouponsController {
@@ -26,6 +30,8 @@ export class CouponsController {
     private readonly response: Response,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: "API để tạo phiếu giảm giá",
@@ -103,6 +109,8 @@ export class CouponsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API để lấy thông tin tất cả phiếu giảm giá",
@@ -168,6 +176,8 @@ export class CouponsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
   @ApiOperation({
     summary: "API tìm kiếm thông tin của phiếu giảm giá qua id",
@@ -250,6 +260,8 @@ export class CouponsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put(":id")
   @ApiOperation({
     summary: "API cập nhật thông tin phiếu giảm giá",
@@ -338,6 +350,8 @@ export class CouponsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   @ApiOperation({
     summary: "API xóa phiếu giảm giá",

@@ -9,16 +9,18 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { Sequelize } from "sequelize-typescript";
 import { AuthService } from "../auth.service";
-import { UserService } from "src/modules/user/user.service";
 import { SEQUELIZE } from "src/common/constants";
-import { CreateUserDto } from "src/modules/user/dtos/createUser.dto";
+import { UsersService } from "src/features/users/users.service";
+import { CreateUserDto } from "src/features/users/dto/creatUser.dto";
+import { CustomersService } from "src/features/customers/customers.service";
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard("google") {
   private gid: string;
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService,
+    private readonly userService: UsersService,
+    private readonly customerService: CustomersService,
     @Inject(SEQUELIZE) private readonly dbSource: Sequelize,
   ) {
     super();
@@ -53,25 +55,31 @@ export class GoogleAuthGuard extends AuthGuard("google") {
       if (!tokenInfo.email.endsWith("@hcmut.edu.vn")) {
         throw new BadRequestException("Email phải thuộc miền @hcmut.edu.vn");
       }
-      
+
       let user = await this.userService.findByEmail(tokenInfo.email);
 
       if (!user) {
         const transaction = await this.dbSource.transaction();
         try {
-          const userData: CreateUserDto = {
+          const userData = {
             firstName: tokenInfo.family_name,
             lastName: tokenInfo.given_name,
-            email: tokenInfo.email
+            email: tokenInfo.email,
           };
-          user = await this.userService.create(userData, transaction);
+          user = await this.userService.create(
+            userData as CreateUserDto,
+            transaction,
+          );
+          await this.customerService.create(user.id, transaction);
           await transaction.commit();
         } catch (error) {
+          console.log(error);
+
           await transaction.rollback();
           throw error;
         }
-      } 
-      request.user = { userId: user.id, gid: gid, roles: user.roles };
+      }
+      request.user = { userId: user.id, gid: gid, userType: user.userType };
       return true;
     } catch (error) {
       throw new BadRequestException("Đăng nhập bằng google không thành công");

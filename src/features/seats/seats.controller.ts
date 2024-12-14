@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { SeatsService } from "./seats.service";
 import { Response } from "../response/response.entity";
@@ -16,6 +17,9 @@ import { LoggerService } from "../logger/logger.service";
 import { CreateSeatDto } from "./dtos/create.dto";
 import { UpdateSeatDto } from "./dtos/update.dto";
 import { ApiParam, ApiResponse } from "@nestjs/swagger";
+import RoleGuard from "../auth/guards/role.guard";
+import { UserType } from "src/common/constants";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("seats")
 export class SeatsController {
@@ -25,6 +29,8 @@ export class SeatsController {
     private readonly response: Response,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiResponse({
     status: 200,
@@ -72,6 +78,8 @@ export class SeatsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put()
   @ApiResponse({
     status: 200,
@@ -119,6 +127,8 @@ export class SeatsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete("/:roomId/:name")
   @ApiParam({ name: "roomId", description: "ID của phòng chiếu chứa ghế" })
   @ApiParam({ name: "name", description: "Tên của ghế cần xóa" })
@@ -166,6 +176,8 @@ export class SeatsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiResponse({
     status: 200,
@@ -228,6 +240,8 @@ export class SeatsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/:roomId/:name")
   @ApiParam({ name: "roomId", description: "ID của phòng chiếu chứa ghế" })
   @ApiParam({ name: "name", description: "Tên của ghế cần tìm" })

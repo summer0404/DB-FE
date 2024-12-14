@@ -4,20 +4,20 @@ import {
   Inject,
   Injectable,
   UnauthorizedException,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
-import { Observable } from 'rxjs';
-import { Sequelize } from 'sequelize-typescript';
-import { AuthService } from '../auth.service';
-import { UserService } from 'src/modules/user/user.service';
-import { SEQUELIZE } from 'src/common/constants';
+} from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { Request } from "express";
+import { Observable } from "rxjs";
+import { Sequelize } from "sequelize-typescript";
+import { AuthService } from "../auth.service";
+import { SEQUELIZE } from "src/common/constants";
+import { UsersService } from "src/features/users/users.service";
 
 @Injectable()
-export class GoogleTestGuard extends AuthGuard('google_test') {
+export class GoogleTestGuard extends AuthGuard("google_test") {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService,
+    private readonly userService: UsersService,
     @Inject(SEQUELIZE) private readonly dbSource: Sequelize,
   ) {
     super();
@@ -28,7 +28,7 @@ export class GoogleTestGuard extends AuthGuard('google_test') {
       throw (
         err ||
         new UnauthorizedException(
-          'Đăng nhập bằng tài khoản google không thành công',
+          "Đăng nhập bằng tài khoản google không thành công",
         )
       );
     }

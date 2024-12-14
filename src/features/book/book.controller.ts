@@ -10,6 +10,7 @@ import {
   HttpStatus,
   HttpException,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import { BookService } from "./book.service";
 import { CreateBookDto } from "./dto/createBook.dto";
@@ -18,6 +19,9 @@ import { LoggerService } from "../logger/logger.service";
 import { Response } from "../response/response.entity";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
+import { UserType } from "src/common/constants";
+import RoleGuard from "../auth/guards/role.guard";
 
 @Controller("books")
 export class BookController {
@@ -27,6 +31,8 @@ export class BookController {
     private readonly response: Response,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: "API để tạo lần đặt thức ăn nhanh",
@@ -103,6 +109,8 @@ export class BookController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API để lấy thông tin tất cả lần đặt thức ăn nhanh",
@@ -167,6 +175,8 @@ export class BookController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get(":orderId")
   @ApiOperation({
     summary:
@@ -249,6 +259,8 @@ export class BookController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put(":orderId")
   @ApiOperation({
     summary: "API cập nhật thông tin lần đặt thức ăn nhanh",
@@ -333,6 +345,8 @@ export class BookController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   @ApiOperation({
     summary: "API xóa lần đặt thức ăn nhanh",

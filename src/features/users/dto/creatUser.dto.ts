@@ -34,7 +34,7 @@ export class CreateUserDto {
     description: "Ngày sinh của người dùng",
     example: new Date(),
   })
-  @IsNotEmpty({ message: "Ngày sinh không được để trống" })
+  @IsOptional()
   @Type(() => Date)
   @IsDate({ message: "Ngày sinh phải có định dạng là Date" })
   dateOfBirth: Date;

@@ -11,6 +11,7 @@ import {
   Inject,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
 } from "@nestjs/common";
 import { FastfoodsService } from "./fastfoods.service";
 import { CreateFastfoodDto } from "./dto/createFastfood.dto";
@@ -25,9 +26,11 @@ import {
 } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
 import { FilesService } from "../files/files.service";
-import { SEQUELIZE } from "src/common/constants";
+import { SEQUELIZE, UserType } from "src/common/constants";
 import { Sequelize } from "sequelize-typescript";
 import { FileInterceptor } from "@nestjs/platform-express";
+import RoleGuard from "../auth/guards/role.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("fastfoods")
 export class FastfoodsController {
@@ -40,6 +43,8 @@ export class FastfoodsController {
     private readonly dbSource: Sequelize,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: "API để tạo thức ăn nhanh",
@@ -143,6 +148,8 @@ export class FastfoodsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API để lấy thông tin tất cả thức ăn nhanh",
@@ -220,6 +227,8 @@ export class FastfoodsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
   @ApiOperation({
     summary: "API tìm kiếm thông tin của thức ăn nhanh qua id",
@@ -314,6 +323,8 @@ export class FastfoodsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post("/update/:id")
   @ApiOperation({
     summary: "API để cập nhật thức ăn nhanh",
@@ -420,6 +431,8 @@ export class FastfoodsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   @ApiOperation({
     summary: "API xóa thức ăn nhanh",

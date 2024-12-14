@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "../response/response.entity";
 import { LoggerService } from "../logger/logger.service";
@@ -18,6 +19,9 @@ import { CreateShowtimeDto } from "./dtos/create.dto";
 import { UpdateShowtimeDto } from "./dtos/update.dto";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import RoleGuard from "../auth/guards/role.guard";
+import { UserType } from "src/common/constants";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("showtime")
 export class ShowtimeController {
@@ -27,6 +31,8 @@ export class ShowtimeController {
     private readonly response: Response,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiResponse({
     status: 200,
@@ -74,6 +80,8 @@ export class ShowtimeController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put()
   @ApiResponse({
     status: 200,
@@ -125,6 +133,8 @@ export class ShowtimeController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete("/:userId/:movieId")
   @ApiParam({ name: "userId", description: "ID của người dùng" })
   @ApiParam({ name: "movieId", description: "ID của bộ phim" })
@@ -176,6 +186,8 @@ export class ShowtimeController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiResponse({
     status: 200,
@@ -239,6 +251,8 @@ export class ShowtimeController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get("/:roomId/:movieId")
   @ApiParam({ name: "roomId", description: "ID của phòng chiếu" })
   @ApiParam({ name: "movieId", description: "ID của bộ phim" })
@@ -296,6 +310,8 @@ export class ShowtimeController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.CUSTOMER))
+  @UseGuards(JwtAuthGuard)
   @Get(":movieId")
   @ApiOperation({
     summary: "API tìm kiếm thông tin các suất chiếu của phim qua movieId",

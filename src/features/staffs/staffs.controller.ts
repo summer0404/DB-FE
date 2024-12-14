@@ -8,6 +8,7 @@ import {
   HttpStatus,
   HttpException,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import { StaffsService } from "./staffs.service";
 import { UpdateStaffDto } from "./dto/updateStaff.dto";
@@ -20,6 +21,9 @@ import {
   ApiResponse,
 } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import RoleGuard from "../auth/guards/role.guard";
+import { UserType } from "src/common/constants";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @Controller("staffs")
 export class StaffsController {
@@ -34,6 +38,8 @@ export class StaffsController {
   //   return this.staffsService.create(createStaffDto);
   // }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({
     summary: "API tìm kiếm tất cả nhân viên",
@@ -97,6 +103,8 @@ export class StaffsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Get("/:id")
   @ApiOperation({
     summary: "API tìm kiếm tất cả nhân viên",
@@ -169,6 +177,8 @@ export class StaffsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put(":id")
   @ApiOperation({
     summary: "API cập nhật thông tin nhân viên",
@@ -253,6 +263,8 @@ export class StaffsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   @ApiOperation({
     summary: "API xóa nhân viên",

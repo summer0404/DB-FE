@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { ActorsService } from "./actors.service";
 import { LoggerService } from "../logger/logger.service";
@@ -16,6 +17,9 @@ import { Response } from "../response/response.entity";
 import { createActors } from "./dtos/create.dto";
 import { updateActors } from "./dtos/update.dto";
 import { ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import RoleGuard from "../auth/guards/role.guard";
+import { UserType } from "src/common/constants";
+import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
 @ApiTags("Actors")
 @Controller("actors")
@@ -26,6 +30,8 @@ export class ActorsController {
     private readonly response: Response,
   ) {}
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiResponse({
     status: 200,
@@ -75,6 +81,8 @@ export class ActorsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Put()
   @ApiResponse({
     status: 200,
@@ -128,6 +136,8 @@ export class ActorsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Delete("/:movieId/:id")
   @ApiParam({
     name: "movieId",
@@ -187,6 +197,8 @@ export class ActorsController {
     }
   }
 
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiResponse({
     status: 200,
@@ -264,6 +276,9 @@ export class ActorsController {
       }
     }
   }
+
+  @UseGuards(RoleGuard(UserType.STAFF))
+  @UseGuards(JwtAuthGuard)
   @Get("/:movieId/:id")
   @ApiParam({
     name: "movieId",
