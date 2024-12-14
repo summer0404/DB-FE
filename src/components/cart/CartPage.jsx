@@ -13,10 +13,7 @@ import {
   getShowTimeOfMovie,
 } from "../../service/cart";
 
-export default function CartPage(props) {
-  //const {movieId} = props;
-  const movieId = "b17451f7-1fb0-4824-bb77-2a095a8e1a6d";
-
+export default function CartPage({ movieId }) {
   const [movieInfo, setMovieInfo] = useState({
     id: "",
     name: "",
@@ -62,7 +59,7 @@ export default function CartPage(props) {
                 orderId: "a",
                 size: "Big",
                 quantity: change,
-                price
+                price,
               },
             ]
           : prevSelectedFoods;
@@ -115,6 +112,8 @@ export default function CartPage(props) {
         return {
           foodId: food.id,
           quantity: food.quantity,
+          orderId: "a",
+          size: "Big"
         };
       });
     }
