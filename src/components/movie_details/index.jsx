@@ -16,7 +16,7 @@ import {
   Paper,
   BottomNavigation,
 } from "@mui/material";
-import { getMovieInfo } from "../../service/movie-details";
+
 import StyleIcon from "@mui/icons-material/Style";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
@@ -24,53 +24,16 @@ import PersonOffRoundedIcon from "@mui/icons-material/PersonOffRounded";
 import ShowSchedule from "./schedule";
 import Comment from "./comment";
 import ButtonOrder from "./button_order";
+import { formatDatetoDDMMYYYY } from "../../service/cart";
 
-export default function MovieDetailComponent() {
-  const [movieInfo, setMovieInfo] = useState({
-    id: "",
-    name: "",
-    category: "",
-    length: 0,
-    nation: "",
-    limitAge: 0,
-    director: [],
-    actor: [],
-    premiereSchedule: "",
-    content: "",
-    rating: 4.8,
-    numberOfRating: 0,
-    showSchedule: [],
-  });
-
-  // Hàm xử lý để lọc các ngày chiếu
-  function getDay(timeArray) {
-    // Sử dụng Set để loại bỏ các ngày trùng lặp
-    const days = new Set();
-
-    timeArray.forEach((time) => {
-      const [_, day] = time.split(" "); // Tách thời gian và ngày
-      days.add(day); // Thêm ngày vào Set (Set tự động loại bỏ trùng lặp)
-    });
-
-    // Chuyển Set thành mảng và trả về
-    return [...days];
-  }
-
-  const [day, setDay] = useState("");
-  const [startTime, setStartTime] = useState("");
-
-  useEffect(() => {
-    const movieInfo = getMovieInfo();
-    const days = getDay(movieInfo.showSchedule);
-    setDay(days);
-    setMovieInfo(movieInfo);
-  }, []);
+export default function MovieDetailComponent({ movieInfo, comments, handleOrder }) {
   return (
     <Box
       className="flex flex-col justify-center p-[6px] w-[95%] md:w-7/12 items-center"
-      sx={{ padding: "0px 8px",
-        marginBottom: '100px' // Added margin at the bottom
-       }}
+      sx={{
+        padding: "0px 8px",
+        marginBottom: "100px", // Added margin at the bottom
+      }}
     >
       {/* Thông tin phim  */}
       <Box className="w-full">
@@ -86,7 +49,7 @@ export default function MovieDetailComponent() {
           <Box className="w-[50%] aspect-[3/4] overflow-hidden">
             <CardMedia
               component="img" // Quan trọng để hiển thị ảnh
-              image="https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F11-2024%2Flinh-mieu-official.png&w=2048&q=75"
+              image={movieInfo.urlFile}
               sx={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           </Box>
@@ -162,10 +125,7 @@ export default function MovieDetailComponent() {
                     <AccessTimeRoundedIcon
                       sx={{ color: "#66FCF1" }}
                     ></AccessTimeRoundedIcon>
-                    <ListItemText
-                      sx={{ marginLeft: "8px" }}
-                      primaryTypographyProps={{ sx: { fontSize: "10px" } }}
-                    >
+                    <ListItemText sx={{ marginLeft: "8px" }}>
                       {movieInfo.length}'
                     </ListItemText>
                   </ListItem>
@@ -221,7 +181,8 @@ export default function MovieDetailComponent() {
                     </ListItem>
                     <ListItem disablePadding>
                       <ListItemText>
-                        Khởi chiếu: {movieInfo.premiereSchedule}
+                        Khởi chiếu:{" "}
+                        {formatDatetoDDMMYYYY(movieInfo.premiereSchedule)}
                       </ListItemText>
                     </ListItem>
                   </List>
@@ -283,7 +244,7 @@ export default function MovieDetailComponent() {
               </ListItem>
               <ListItem disablePadding>
                 <ListItemText>
-                  Khởi chiếu: {movieInfo.premiereSchedule}
+                  Khởi chiếu: {formatDatetoDDMMYYYY(movieInfo.premiereSchedule)}
                 </ListItemText>
               </ListItem>
             </List>
@@ -318,26 +279,17 @@ export default function MovieDetailComponent() {
       {/* ================== */}
 
       <Box
-        className="flex flex-col justify-center items-center mt-[60px]"
-        sx={{
-          width: { xs: "100%", md: "60%" },
-        }}
-      >
-        {/* <ShowSchedule></ShowSchedule> */}
-      </Box>
-
-      <Box
         className="flex flex-col justify-center"
         sx={{
           width: { xs: "100%", md: "60%" },
           marginTop: "60px",
         }}
       >
-        <Comment></Comment>
+        <Comment comments={comments}></Comment>
       </Box>
 
       <Box sx={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        {/* <ButtonOrder></ButtonOrder> */}
+        <ButtonOrder handleOrder={handleOrder}></ButtonOrder>
       </Box>
     </Box>
   );

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardMedia, Typography, Button, Box } from "@mui/material";
 
-const FoodDetail = ({ image, title, description, price }) => {
+const FoodDetail = ({ id, image, title, description, price, handleSelectFood }) => {
+  const [number, setNumber] = useState(0);
   return (
     <Card
       sx={{
@@ -23,7 +24,7 @@ const FoodDetail = ({ image, title, description, price }) => {
           {description}
         </Typography>
         <Typography variant="h6" color="#66FCF1">
-          {price}
+          {`${price * 1000} VND`}
         </Typography>
         <Box
           sx={{
@@ -36,13 +37,19 @@ const FoodDetail = ({ image, title, description, price }) => {
           <Button
             variant="outlined"
             sx={{ color: "#fff", borderColor: "#66FCF1" }}
+            onClick={() => {
+              setNumber(prev => Math.max(0, prev - 1));
+              handleSelectFood(id, price, -1)}}
           >
             -
           </Button>
-          <Typography variant="body1">0</Typography>
+          <Typography variant="body1">{number}</Typography>
           <Button
             variant="outlined"
             sx={{ color: "#fff", borderColor: "#66FCF1" }}
+            onClick={() => {
+              setNumber(prev => Math.max(0, prev + 1));
+              handleSelectFood(id, price, 1)}}
           >
             +
           </Button>
