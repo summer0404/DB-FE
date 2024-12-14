@@ -49,7 +49,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
           <Box className="w-[50%] aspect-[3/4] overflow-hidden">
             <CardMedia
               component="img" // Quan trọng để hiển thị ảnh
-              image={movieInfo.urlFile}
+              image={movieInfo?.urlFile}
               sx={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           </Box>
@@ -66,7 +66,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                   fontWeight: 400, // Định dạng lại thành số (fontWeight không dùng px)
                 }}
               >
-                {movieInfo.name.toUpperCase()}
+                {movieInfo?.name?.toUpperCase()}
               </Typography>
 
               <Box
@@ -84,7 +84,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                       fontWeight: 400,
                     }}
                   >
-                    {movieInfo.rating}
+                    {movieInfo?.rating}
                   </Typography>
                   <Rating
                     name="half-rating-read"
@@ -104,7 +104,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                     borderColor: "#F8FAFC",
                   }}
                 >
-                  {movieInfo.numberOfRating} lượt đánh giá
+                  {movieInfo?.numberOfRating} lượt đánh giá
                 </Typography>
               </Box>
               <nav aria-label="main mailbox folders">
@@ -118,7 +118,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                         marginLeft: "8px",
                       }}
                     >
-                      {movieInfo.category}
+                      {movieInfo?.category}
                     </ListItemText>
                   </ListItem>
                   <ListItem disablePadding sx={{ marginTop: "10px" }}>
@@ -126,7 +126,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                       sx={{ color: "#66FCF1" }}
                     ></AccessTimeRoundedIcon>
                     <ListItemText sx={{ marginLeft: "8px" }}>
-                      {movieInfo.length}'
+                      {movieInfo?.length}'
                     </ListItemText>
                   </ListItem>
                   <ListItem disablePadding sx={{ marginTop: "10px" }}>
@@ -134,7 +134,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                       sx={{ color: "#66FCF1" }}
                     ></PublicRoundedIcon>
                     <ListItemText sx={{ marginLeft: "8px" }}>
-                      {movieInfo.nation}
+                      {movieInfo?.nation}
                     </ListItemText>
                   </ListItem>
                   <ListItem disablePadding sx={{ marginTop: "10px" }}>
@@ -146,8 +146,8 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                         fontSize: { xs: "16px", md: "24px" },
                       }}
                     >
-                      T{movieInfo.limitAge}: Phim dành cho khán giả từ đủ{" "}
-                      {movieInfo.limitAge} tuổi trở lên ({movieInfo.limitAge}
+                      T{movieInfo?.limitAge}: Phim dành cho khán giả từ đủ{" "}
+                      {movieInfo?.limitAge} tuổi trở lên ({movieInfo?.limitAge}
                       +)
                     </ListItemText>
                   </ListItem>
@@ -171,18 +171,18 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                   <List>
                     <ListItem disablePadding>
                       <ListItemText>
-                        Đạo diễn: {Object.values(movieInfo.director).join(", ")}
+                        Đạo diễn: {movieInfo?.director ? Object.values(movieInfo?.director).join(", ") : ""}
                       </ListItemText>
                     </ListItem>
                     <ListItem disablePadding>
                       <ListItemText>
-                        Diễn viên: {Object.values(movieInfo.actor).join(", ")}
+                        Diễn viên: {movieInfo?.actor ? Object.values(movieInfo?.actor).join(", ") : ""}
                       </ListItemText>
                     </ListItem>
                     <ListItem disablePadding>
                       <ListItemText>
                         Khởi chiếu:{" "}
-                        {formatDatetoDDMMYYYY(movieInfo.premiereSchedule)}
+                        {formatDatetoDDMMYYYY(movieInfo?.premiereSchedule)}
                       </ListItemText>
                     </ListItem>
                   </List>
@@ -210,7 +210,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
                     },
                   }}
                 >
-                  {movieInfo.content}
+                  {movieInfo?.content}
                 </Typography>
               </Box>
             </Box>
@@ -234,17 +234,17 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
             <List>
               <ListItem disablePadding>
                 <ListItemText>
-                  Đạo diễn: {Object.values(movieInfo.director).join(", ")}
+                  Đạo diễn: {movieInfo?.director ? Object.values(movieInfo?.director).join(", ") : ""}
                 </ListItemText>
               </ListItem>
               <ListItem disablePadding>
                 <ListItemText>
-                  Diễn viên: {Object.values(movieInfo.actor).join(", ")}
+                  Diễn viên: {movieInfo?.actor ? Object.values(movieInfo?.actor).join(", ") : ""}
                 </ListItemText>
               </ListItem>
               <ListItem disablePadding>
                 <ListItemText>
-                  Khởi chiếu: {formatDatetoDDMMYYYY(movieInfo.premiereSchedule)}
+                  Khởi chiếu: {formatDatetoDDMMYYYY(movieInfo?.premiereSchedule)}
                 </ListItemText>
               </ListItem>
             </List>
@@ -272,7 +272,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
               },
             }}
           >
-            {movieInfo.content}
+            {movieInfo?.content}
           </Typography>
         </Box>
       </Box>
