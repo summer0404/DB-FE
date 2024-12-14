@@ -1,4 +1,4 @@
-import { UUIDV4 } from 'sequelize';
+import { UUIDV4 } from "sequelize";
 import {
   AllowNull,
   BelongsTo,
@@ -10,14 +10,13 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Staffs } from '../staffs/staffs.entity';
-import { Customers } from '../customers/customers.entity';
-import { Coupons } from '../coupons/coupons.entity';
-import { Book } from '../book/book.entity';
-import { PaymentMethod, PaymentStatus } from 'src/common/constants';
-import { Users } from '../users/users.entity';
-import { Tickets } from '../tickets/tickets.entity';
+} from "sequelize-typescript";
+import { Staffs } from "../staffs/staffs.entity";
+import { Coupons } from "../coupons/coupons.entity";
+import { Book } from "../book/book.entity";
+import { PaymentMethod, PaymentStatus } from "src/common/constants";
+import { Users } from "../users/users.entity";
+import { Tickets } from "../tickets/tickets.entity";
 
 @Table
 export class Orders extends Model<Orders> {
@@ -27,6 +26,7 @@ export class Orders extends Model<Orders> {
   id: string;
 
   @AllowNull(false)
+  @Default(new Date())
   @Column(DataType.DATE)
   createdTime: Date;
 
@@ -40,19 +40,10 @@ export class Orders extends Model<Orders> {
   @Column(DataType.UUID)
   staffId: string;
 
-  @BelongsTo(() => Staffs, { onDelete: 'SET NULL' })
-  staff: Staffs;
-
   @ForeignKey(() => Coupons)
   @AllowNull(true)
   @Column(DataType.UUID)
   couponId: string;
-
-  @BelongsTo(() => Coupons)
-  coupon: Coupons;
-
-  @HasMany(() => Book)
-  books: Book[];
 
   @ForeignKey(() => Users)
   @AllowNull(false)
@@ -73,6 +64,20 @@ export class Orders extends Model<Orders> {
   @Column(DataType.ENUM(...Object.values(PaymentStatus)))
   paymentStatus: PaymentStatus;
 
-  @HasMany(() => Tickets, { onDelete: 'SET NULL' })
+  @AllowNull(false)
+  @Default(0)
+  @Column(DataType.FLOAT)
+  realPrice: number;
+
+  @BelongsTo(() => Staffs, { onDelete: "SET NULL" })
+  staff: Staffs;
+
+  @BelongsTo(() => Coupons)
+  coupon: Coupons;
+
+  @HasMany(() => Book)
+  books: Book[];
+
+  @HasMany(() => Tickets, { onDelete: "SET NULL" })
   tickets: Tickets[];
 }

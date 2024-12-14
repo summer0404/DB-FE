@@ -17,6 +17,7 @@ import { LoggerService } from "../logger/logger.service";
 import { Response } from "../response/response.entity";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
+import { GetTicketByShowtimeDto } from "./dto/getTicketByShowtime.dto";
 
 @Controller("tickets")
 export class TicketsController {
@@ -38,14 +39,15 @@ export class TicketsController {
         success: true,
         message: "Tạo vé thành công",
         data: {
-          id: "78f14bc2-dd45-47d4-adb1-216a0f7abc9f",
-          movieId: "1ad861eb-5ba0-4432-a72c-270ef964d184",
-          startTime: "2024-11-25T03:06:00.129Z",
+          id: "932e62e7-db47-4d31-a8c6-3bbf3a481a58",
+          movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+          startTime: "2024-12-12T15:00:00.192Z",
+          endTime: "2024-12-12T16:00:00.192Z",
           price: 100,
-          seatId: "0ee9fc42-79d4-4a65-a928-937624b3aeb8",
-          orderId: "3317511f-b767-4088-937b-1ffbf0cc80fa",
-          updatedAt: "2024-12-02T12:00:20.938Z",
-          createdAt: "2024-12-02T12:00:20.938Z",
+          seatPosition: 1,
+          updatedAt: "2024-12-12T12:04:57.354Z",
+          createdAt: "2024-12-12T12:04:57.354Z",
+          orderId: null,
         },
       },
     },
@@ -110,14 +112,15 @@ export class TicketsController {
         message: "Tìm tất cả vé thành công",
         data: [
           {
-            id: "78f14bc2-dd45-47d4-adb1-216a0f7abc9f",
-            movieId: "1ad861eb-5ba0-4432-a72c-270ef964d184",
-            startTime: "2024-11-25T03:06:00.129Z",
+            id: "932e62e7-db47-4d31-a8c6-3bbf3a481a58",
+            movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+            startTime: "2024-12-12T15:00:00.192Z",
+            endTime: "2024-12-12T16:00:00.192Z",
             price: 100,
-            seatId: "0ee9fc42-79d4-4a65-a928-937624b3aeb8",
-            orderId: "3317511f-b767-4088-937b-1ffbf0cc80fa",
-            createdAt: "2024-12-02T12:00:20.938Z",
-            updatedAt: "2024-12-02T12:00:20.938Z",
+            seatPosition: 1,
+            orderId: null,
+            createdAt: "2024-12-12T12:04:57.354Z",
+            updatedAt: "2024-12-12T12:04:57.354Z",
           },
         ],
       },
@@ -156,6 +159,82 @@ export class TicketsController {
     }
   }
 
+  @Post("/showtime")
+  @ApiOperation({
+    summary: "API để lấy thông tin tất cả vé theo showtime",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Tìm tất cả vé theo suất chiếu thành công",
+    schema: {
+      example: {
+        success: true,
+        message: "Tìm tất cả vé thành công theo suất chiếu",
+        data: [
+          {
+            id: "932e62e7-db47-4d31-a8c6-3bbf3a481a58",
+            movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+            startTime: "2024-12-12T15:00:00.192Z",
+            endTime: "2024-12-12T16:00:00.192Z",
+            price: 100,
+            seatPosition: 1,
+            orderId: null,
+            createdAt: "2024-12-12T12:04:57.354Z",
+            updatedAt: "2024-12-12T12:04:57.354Z",
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Lỗi hệ thống trong quá trình tìm vé",
+    schema: {
+      example: {
+        success: false,
+        message: "Lỗi hệ thống trong quá trình tìm vé",
+        data: null,
+      },
+    },
+  })
+  async getAllTicketsByShowtime(
+    @Res() res,
+    @Body()
+    getTicketByShowtimeDto: GetTicketByShowtimeDto,
+  ): Promise<Response> {
+    try {
+      const tickets = await this.ticketsService.getAllTickets(
+        getTicketByShowtimeDto,
+      );
+      // const tickets = await this.showtimeService.getAllTickets(
+      //   getTicketByShowtimeDto,
+      // );
+      this.logger.debug("Tìm tất cả vé thành công theo suất chiếu");
+      this.response.initResponse(
+        true,
+        "Tìm tất cả vé thành công theo suất chiếu",
+        tickets,
+      );
+      return res.status(HttpStatus.OK).json(this.response);
+    } catch (error) {
+      this.logger.error(
+        "Xảy ra lỗi trong quá trình tìm vé theo suất chiếu",
+        error.stack,
+      );
+      if (error instanceof HttpException) {
+        this.response.initResponse(false, error.message, null);
+        return res.status(error.getStatus()).json(this.response);
+      } else {
+        this.response.initResponse(
+          false,
+          "Lỗi hệ thống trong quá trình tìm vé theo suất chiếu",
+          null,
+        );
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
+      }
+    }
+  }
+
   @Get(":id")
   @ApiOperation({
     summary: "API tìm kiếm thông tin của vé qua id",
@@ -173,14 +252,15 @@ export class TicketsController {
         success: true,
         message: "Tìm kiếm vé thành công",
         data: {
-          id: "78f14bc2-dd45-47d4-adb1-216a0f7abc9f",
-          movieId: "1ad861eb-5ba0-4432-a72c-270ef964d184",
-          startTime: "2024-11-25T03:06:00.129Z",
+          id: "932e62e7-db47-4d31-a8c6-3bbf3a481a58",
+          movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+          startTime: "2024-12-12T15:00:00.192Z",
+          endTime: "2024-12-12T16:00:00.192Z",
           price: 100,
-          seatId: "0ee9fc42-79d4-4a65-a928-937624b3aeb8",
-          orderId: "3317511f-b767-4088-937b-1ffbf0cc80fa",
-          createdAt: "2024-12-02T12:00:20.938Z",
-          updatedAt: "2024-12-02T12:00:20.938Z",
+          seatPosition: 1,
+          orderId: null,
+          createdAt: "2024-12-12T12:04:57.354Z",
+          updatedAt: "2024-12-12T12:04:57.354Z",
         },
       },
     },
@@ -249,14 +329,15 @@ export class TicketsController {
         success: true,
         message: "Cập nhật thông tin vé thành công",
         data: {
-          id: "78f14bc2-dd45-47d4-adb1-216a0f7abc9f",
-          movieId: "1ad861eb-5ba0-4432-a72c-270ef964d184",
-          startTime: "2024-11-25T03:06:00.129Z",
+          id: "932e62e7-db47-4d31-a8c6-3bbf3a481a58",
+          movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+          startTime: "2024-12-12T15:00:00.192Z",
+          endTime: "2024-12-12T16:00:00.192Z",
           price: 200,
-          seatId: "0ee9fc42-79d4-4a65-a928-937624b3aeb8",
-          orderId: "3317511f-b767-4088-937b-1ffbf0cc80fa",
-          createdAt: "2024-12-02T12:00:20.938Z",
-          updatedAt: "2024-12-02T12:04:27.031Z",
+          seatPosition: 1,
+          orderId: null,
+          createdAt: "2024-12-12T12:04:57.354Z",
+          updatedAt: "2024-12-12T12:12:36.904Z",
         },
       },
     },

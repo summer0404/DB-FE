@@ -1,4 +1,5 @@
 import {
+  AllowNull,
   BelongsTo,
   Column,
   DataType,
@@ -6,9 +7,9 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Movies } from '../movies/movies.entity';
-import { Rooms } from '../rooms/rooms.entity';
+} from "sequelize-typescript";
+import { Movies } from "../movies/movies.entity";
+import { Rooms } from "../rooms/rooms.entity";
 
 @Table
 export class Showtime extends Model<Showtime> {
@@ -21,10 +22,17 @@ export class Showtime extends Model<Showtime> {
   @Column(DataType.DATE)
   startTime: Date;
 
-  @ForeignKey(() => Rooms)
-  @Column(DataType.UUID)
-  roomId: string;
+  @AllowNull(false)
+  @Column(DataType.DATE)
+  endTime: Date;
 
-  @BelongsTo(() => Rooms, { onDelete: 'CASCADE' })
+  @ForeignKey(() => Rooms)
+  @Column(DataType.INTEGER)
+  roomId: number;
+
+  @BelongsTo(() => Movies, { onDelete: "CASCADE" })
+  movie: Movies;
+
+  @BelongsTo(() => Rooms, { onDelete: "CASCADE" })
   room: Rooms;
 }

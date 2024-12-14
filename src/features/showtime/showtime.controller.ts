@@ -16,8 +16,8 @@ import { LoggerService } from "../logger/logger.service";
 import { ShowtimeService } from "./showtime.service";
 import { CreateShowtimeDto } from "./dtos/create.dto";
 import { UpdateShowtimeDto } from "./dtos/update.dto";
-import { ApiParam, ApiResponse } from "@nestjs/swagger";
-import * as dayjs from "dayjs";
+import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
+import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
 
 @Controller("showtime")
 export class ShowtimeController {
@@ -26,6 +26,7 @@ export class ShowtimeController {
     private readonly logger: LoggerService,
     private readonly response: Response,
   ) {}
+
   @Post()
   @ApiResponse({
     status: 200,
@@ -72,6 +73,7 @@ export class ShowtimeController {
       }
     }
   }
+
   @Put()
   @ApiResponse({
     status: 200,
@@ -122,6 +124,7 @@ export class ShowtimeController {
       }
     }
   }
+
   @Delete("/:userId/:movieId")
   @ApiParam({ name: "userId", description: "ID của người dùng" })
   @ApiParam({ name: "movieId", description: "ID của bộ phim" })
@@ -172,6 +175,7 @@ export class ShowtimeController {
       }
     }
   }
+
   @Get()
   @ApiResponse({
     status: 200,
@@ -234,6 +238,7 @@ export class ShowtimeController {
       }
     }
   }
+
   @Get("/:roomId/:movieId")
   @ApiParam({ name: "roomId", description: "ID của phòng chiếu" })
   @ApiParam({ name: "movieId", description: "ID của bộ phim" })
@@ -290,41 +295,82 @@ export class ShowtimeController {
       }
     }
   }
-  @Get("/:movieId")
-  async getMovieByMovieId(@Param("movieId") movieId: string) {
+
+  @Get(":movieId")
+  @ApiOperation({
+    summary: "API tìm kiếm thông tin các suất chiếu của phim qua movieId",
+    description: "Cần truyền vào id của phim dạng UUIDv4",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Lấy toàn bộ thông tin suất chiếu theo phim thành công.",
+    schema: {
+      example: {
+        success: true,
+        message: "Lấy toàn bộ thông tin suất chiếu theo phim thành công",
+        data: [
+          {
+            movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+            startTime: "2024-12-12T15:00:00.192Z",
+            endTime: "2024-12-12T16:00:00.192Z",
+            roomId: 1,
+            createdAt: "2024-12-12T10:35:57.678Z",
+            updatedAt: "2024-12-12T10:36:00.743Z",
+          },
+          {
+            movieId: "d49fb6f7-43fb-452a-a871-182e7681b656",
+            startTime: "2024-12-12T12:00:00.192Z",
+            endTime: "2024-12-12T13:30:00.192Z",
+            roomId: 2,
+            createdAt: "2024-12-12T10:35:57.678Z",
+            updatedAt: "2024-12-12T10:36:00.747Z",
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 204,
+    description: "Không có dữ liệu.",
+    schema: {
+      example: {
+        success: true,
+        message: "Không có dữ liệu",
+        data: [],
+      },
+    },
+  })
+  async getByMovieId(
+    @Res() res,
+    @Param("movieId", UUIDv4ValidationPipe) movieId: string,
+  ) {
     try {
-      const showTimes =
-        await this.showtimeService.getShowTimeByMovieId(movieId);
-
-      // Nhóm lịch chiếu theo ngày
-      const groupedShowtimes = showTimes.reduce((result, showtime) => {
-        const day = dayjs(showtime.startTime).format("DD/MM/YYYY"); // Định dạng ngày
-        const timeObject = {
-          time: dayjs(showtime.startTime).format("hh:mm A"), // Định dạng giờ
-          roomId: showtime.roomId, // Lấy roomId từ showtime
-        };
-
-        // Nếu đã có ngày này trong nhóm, thêm đối tượng {time, roomId} vào mảng
-        if (result[day]) {
-          result[day].push(timeObject);
-        } else {
-          // Nếu chưa có, khởi tạo ngày và mảng chứa {time, roomId}
-          result[day] = [timeObject];
-        }
-        return result;
-      }, {});
-
-      // Chuyển đổi đối tượng groupedShowtimes thành mảng object
-      const response = Object.entries(groupedShowtimes).map(([day, times]) => ({
-        day,
-        times,
-      }));
-
-      return response;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        "Xảy ra lỗi trong quá trình lấy lịch chiếu của phim",
+      const temp = await this.showtimeService.getByMovie(movieId);
+      this.logger.debug(
+        "Lấy toàn bộ thông tin suất chiếu theo phim thành công",
       );
+      this.response.initResponse(
+        true,
+        "Lấy toàn bộ thông tin suất chiếu theo phim thành công",
+        temp,
+      );
+      if (temp.length == 0) {
+        return res.status(HttpStatus.NO_CONTENT).json(this.response);
+      }
+      return res.status(HttpStatus.OK).json(this.response);
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+      if (error instanceof HttpException) {
+        this.response.initResponse(false, error.message, null);
+        return res.status(error.getStatus()).json(this.response);
+      } else {
+        this.response.initResponse(
+          false,
+          "Lỗi trong quá trình lấy thông tin suất chiếu theo phimphim",
+          null,
+        );
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
+      }
     }
   }
 }

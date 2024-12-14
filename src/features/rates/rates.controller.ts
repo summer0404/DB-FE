@@ -224,9 +224,7 @@ export class RatesController {
         "All rates retrieved successfully",
         rates,
       );
-      return res
-        .status(rates.length > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT)
-        .json(this.response);
+      return res.status(HttpStatus.OK).json(this.response);
     } catch (error) {
       this.logger.error(error.message, error.stack);
       if (error instanceof HttpException) {

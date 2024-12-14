@@ -1,6 +1,4 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
-import { CreateFastfoodDto } from "./dto/createFastfood.dto";
-import { UpdateFastfoodDto } from "./dto/updateFastfood.dto";
 import { FASTFOOD_REPOSITORY } from "src/common/constants";
 import { Fastfoods } from "./fastfoods.entity";
 import { Transaction } from "sequelize";
@@ -88,6 +86,27 @@ export class FastfoodsService {
         where: {
           id: id,
         },
+        returning: true,
+      });
+    return numRecordUpdates > 0 ? updateRecordData : null;
+  }
+
+  async updateTransaction(
+    id: string,
+    updateFastfoodDto,
+    transaction: Transaction,
+  ): Promise<Fastfoods> {
+    const existingFastfood = await this.fastfoodRepository.findByPk(id);
+
+    if (!existingFastfood)
+      throw new BadRequestException("Không tồn tại thức ăn nhanh");
+
+    const [numRecordUpdates, [updateRecordData]] =
+      await this.fastfoodRepository.update(updateFastfoodDto, {
+        where: {
+          id: id,
+        },
+        transaction,
         returning: true,
       });
     return numRecordUpdates > 0 ? updateRecordData : null;

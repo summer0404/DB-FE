@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,7 +10,6 @@ import {
   Inject,
   Param,
   Post,
-  Put,
   Res,
   UploadedFiles,
   UseInterceptors,
@@ -33,6 +33,10 @@ import { ActorsService } from "../actors/actors.service";
 import { DirectorsService } from "../directors/directors.service";
 import { MovieInterceptor } from "src/common/interceptors/movie.interceptor";
 import { GenreService } from "../genre/genre.service";
+import { RoomsService } from "../rooms/rooms.service";
+import { Showtime } from "../showtime/showtime.entity";
+import { ShowtimeService } from "../showtime/showtime.service";
+import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
 
 @Controller("movies")
 export class MoviesController {
@@ -44,6 +48,8 @@ export class MoviesController {
     private readonly actorService: ActorsService,
     private readonly directorService: DirectorsService,
     private readonly genreService: GenreService,
+    private readonly roomsService: RoomsService,
+    private readonly showtimeService: ShowtimeService,
     private readonly response: Response,
     @Inject(SEQUELIZE)
     private readonly dbSource: Sequelize,
@@ -96,7 +102,75 @@ export class MoviesController {
     let transaction = await this.dbSource.transaction();
     try {
       let { actors, directors, genres, ...newMovieDto } = createDto;
-      console.log(actors, directors, genres);
+
+      if (createDto?.endTime?.length != createDto?.startTime?.length)
+        throw new BadRequestException(
+          "Thời gian bắt đầu và thời gian kết thúc phải là 2 mảng có cùng kích thước",
+        );
+
+      const startTimes = new Set();
+      for (const startTime of createDto.startTime) {
+        const formattedTime = new Date(startTime).toISOString(); // Chuẩn hóa định dạng
+        if (startTimes.has(formattedTime)) {
+          throw new BadRequestException(
+            `Thời gian bắt đầu "${formattedTime}" bị trùng lặp`,
+          );
+        }
+        startTimes.add(formattedTime);
+      }
+
+      const newTimes = createDto.startTime.map((start, index) => {
+        const startTime = new Date(start);
+        const endTime = new Date(createDto.endTime[index]);
+
+        if (startTime >= endTime) {
+          throw new BadRequestException(
+            "Thời gian bắt đầu phải trước thời gian kết thúc",
+          );
+        }
+        return { startTime, endTime };
+      });
+
+      // Lấy danh sách phòng
+      const rooms = await this.roomsService.getAll();
+
+      const validList = [];
+
+      // Hàm kiểm tra xung đột thời gian
+      const isTimeConflict = (newTime, existingTime) =>
+        newTime.startTime < existingTime.endTime &&
+        newTime.endTime > existingTime.startTime;
+
+      // Kiểm tra và thêm suất chiếu mới
+      for (const newTime of newTimes) {
+        const validRoom = rooms.find((room) => {
+          // Nếu phòng không có suất chiếu hoặc không có xung đột thời gian
+          return room.showtimes.every((showtime) => {
+            const existingTime = {
+              startTime: new Date(showtime.startTime),
+              endTime: new Date(showtime.endTime),
+            };
+            return !isTimeConflict(newTime, existingTime);
+          });
+        });
+
+        if (!validRoom) {
+          this.response.initResponse(false, "Showtime không hợp lệ", newTime);
+          return res.status(HttpStatus.BAD_REQUEST).json(this.response);
+        }
+
+        // Thêm suất chiếu mới vào phòng hợp lệ
+        const newShowtime = {
+          movieId: "a",
+          startTime: newTime.startTime,
+          endTime: newTime.endTime,
+          roomId: validRoom.id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        validList.push(newShowtime);
+        validRoom.showtimes.push(newShowtime as Showtime); // Cập nhật phòng
+      }
 
       const temp = await this.movieService.createMovie(
         newMovieDto as CreateMovies,
@@ -121,6 +195,10 @@ export class MoviesController {
         }
         await this.genreService.createTransaction(genres, transaction);
       }
+      for (let i in validList) {
+        validList[i].movieId = temp.id;
+        await this.showtimeService.createTransaction(validList[i], transaction);
+      }
       const newMovie = await this.movieService.getByIdTransaction(
         temp.id,
         transaction,
@@ -142,7 +220,7 @@ export class MoviesController {
     }
   }
 
-  @Put()
+  @Post("/update/:id")
   @ApiOperation({
     summary: "API để cập nhật thông tin phim",
   })
@@ -178,9 +256,76 @@ export class MoviesController {
       },
     },
   })
-  async update(@Res() res, @Body() updateDto: UpdateMovies) {
+  @ApiConsumes("multipart/form-data")
+  @UseInterceptors(MovieInterceptor)
+  @UseInterceptors(AnyFilesInterceptor())
+  async update(
+    @Res() res,
+    @Body() updateDto: UpdateMovies,
+    @Body() any,
+    @Param("id", UUIDv4ValidationPipe) id: string,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ): Promise<Response> {
+    let transaction = await this.dbSource.transaction();
     try {
-      const temp = await this.movieService.updateMovie(updateDto);
+      const oldMovie = await this.movieService.getById(id);
+      if (files && files.length > 0) {
+        for (let i in oldMovie?.files) {
+          await this.filesService.deleteFile(oldMovie.files[i].id);
+        }
+        await this.filesService.createFile(id, files, transaction);
+      }
+      if (any?.genres) {
+        let newGenres = any?.genres;
+        const tempGenres = oldMovie?.genres;
+        for (let i in tempGenres) {
+          await this.genreService.removeGenreTransaction(
+            id,
+            oldMovie?.genres[i].genre,
+            transaction,
+          );
+        }
+        for (let i in newGenres) {
+          newGenres[i].movieId = id;
+        }
+        await this.genreService.createTransaction(newGenres, transaction);
+      }
+      if (any?.actors) {
+        let newActors = any?.actors;
+        const tempActors = oldMovie?.actors;
+        for (let i in tempActors) {
+          await this.actorService.removeActorTransaction(
+            id,
+            oldMovie?.actors[i].id,
+            transaction,
+          );
+        }
+        for (let i in newActors) {
+          newActors[i].movieId = id;
+        }
+        await this.actorService.createTransaction(newActors, transaction);
+      }
+      if (any?.directors) {
+        let newDirectors = any?.directors;
+        const tempDirectors = oldMovie?.directors;
+        for (let i in tempDirectors) {
+          await this.directorService.removeDirectorTransaction(
+            id,
+            oldMovie?.directors[i].id,
+            transaction,
+          );
+        }
+        for (let i in newDirectors) {
+          newDirectors[i].movieId = id;
+        }
+        await this.directorService.createTransaction(newDirectors, transaction);
+      }
+      const temp = await this.movieService.updateMovieTransaction(
+        id,
+        updateDto,
+        transaction,
+      );
+      transaction.commit();
       this.logger.debug("Cập nhật thông tin bộ phim thành công");
       this.response.initResponse(
         true,
@@ -189,6 +334,7 @@ export class MoviesController {
       );
       return res.status(HttpStatus.OK).json(this.response);
     } catch (error) {
+      transaction.rollback();
       this.logger.error(error.message, error.stack);
       if (error instanceof HttpException) {
         this.response.initResponse(false, error.message, null);

@@ -36,6 +36,24 @@ export class GenreService {
     const remove = await isGenre.destroy();
     return remove;
   }
+  async removeGenreTransaction(
+    movieId: string,
+    genre: string,
+    transaction: Transaction,
+  ) {
+    const isGenre = await this.genresRepository.findOne({
+      where: {
+        movieId: movieId,
+        genre: genre,
+      },
+      transaction,
+    });
+    if (!isGenre) {
+      throw new NotFoundException("Không tìm thấy thể loại phim phù hợp");
+    }
+    const remove = await isGenre.destroy();
+    return remove;
+  }
   async getAll() {
     const allGenres = await this.genresRepository.findAll();
     if (allGenres.length == 0) return [];

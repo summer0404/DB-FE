@@ -1,8 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateBookDto } from './dto/createBook.dto';
-import { UpdateBookDto } from './dto/updateBook.dto';
-import { BOOK_REPOSITORY } from 'src/common/constants';
-import { Book } from './book.entity';
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { CreateBookDto } from "./dto/createBook.dto";
+import { UpdateBookDto } from "./dto/updateBook.dto";
+import { BOOK_REPOSITORY } from "src/common/constants";
+import { Book } from "./book.entity";
+import { Transaction } from "sequelize";
 
 @Injectable()
 export class BookService {
@@ -13,6 +14,20 @@ export class BookService {
 
   async create(createBookDto: CreateBookDto): Promise<Book> {
     return await this.bookRepository.create(createBookDto);
+  }
+
+  async createAllTransaction(
+    createBookDtos,
+    transaction: Transaction,
+  ): Promise<Book[]> {
+    let createdBooks = [];
+    for (let createBookDto of createBookDtos) {
+      let temp = await this.bookRepository.create(createBookDto, {
+        transaction,
+      });
+      createdBooks.push(temp);
+    }
+    return createdBooks;
   }
 
   async findAll(): Promise<Book[]> {
@@ -29,7 +44,7 @@ export class BookService {
     });
 
     if (!existingBook)
-      throw new BadRequestException('Không tồn tại thức ăn nhanh');
+      throw new BadRequestException("Không tồn tại thức ăn nhanh");
 
     const [numRecordUpdates, [updateRecordData]] =
       await this.bookRepository.update(updateBookDto, {
@@ -47,8 +62,19 @@ export class BookService {
     });
 
     if (!existingBook)
-      throw new BadRequestException('Không tồn tại thức ăn nhanh tương ứng');
+      throw new BadRequestException("Không tồn tại thức ăn nhanh tương ứng");
 
     await this.bookRepository.destroy({ where: { orderId } });
+  }
+
+  async removeNew(orderId: string, fastfoodId: string) {
+    const existingBook = await this.bookRepository.findOne({
+      where: { orderId, fastfoodId },
+    });
+
+    if (!existingBook)
+      throw new BadRequestException("Không tồn tại thức ăn nhanh tương ứng");
+
+    await this.bookRepository.destroy({ where: { orderId, fastfoodId } });
   }
 }

@@ -2,26 +2,36 @@ import {
   AllowNull,
   Column,
   DataType,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Rooms } from '../rooms/rooms.entity';
-import { SeatStatus } from 'src/common/constants';
+} from "sequelize-typescript";
+import { Rooms } from "../rooms/rooms.entity";
+import { SeatStatus } from "src/common/constants";
+import { UUIDV4 } from "sequelize";
+import { IsUUID } from "class-validator";
 
 @Table
 export class Seats extends Model<Seats> {
   @PrimaryKey
-  @ForeignKey(() => Rooms)
+  @Default(UUIDV4)
+  @IsUUID(4, { message: "ID phải có dạng UUIDv4" })
   @Column(DataType.UUID)
-  roomId: string;
+  id: string;
 
-  @PrimaryKey
+  @AllowNull(false)
+  @ForeignKey(() => Rooms)
+  @Column(DataType.INTEGER)
+  roomId: number;
+
+  @AllowNull(false)
   @Column(DataType.STRING)
   name: string;
 
   @AllowNull(false)
-  @Column(DataType.ENUM(SeatStatus.EMPTY, SeatStatus.FULL))
+  @Default(SeatStatus.IN_USE)
+  @Column(DataType.ENUM(SeatStatus.IN_USE, SeatStatus.MAINTENANCE))
   status: SeatStatus;
 }

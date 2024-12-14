@@ -23,9 +23,11 @@ export class Movies extends Model<Movies> {
   @Column(DataType.UUID)
   id: string;
 
+  @AllowNull(true)
   @Column(DataType.DATE)
   publishDay: Date;
 
+  @AllowNull(true)
   @Column(DataType.FLOAT)
   length: number;
 
@@ -37,9 +39,11 @@ export class Movies extends Model<Movies> {
   @Column(DataType.STRING)
   name: string;
 
+  @AllowNull(true)
   @Column(DataType.STRING(30))
   country: string;
 
+  @AllowNull(true)
   @Column(DataType.TEXT)
   description: string;
 

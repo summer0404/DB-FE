@@ -26,7 +26,7 @@ export class CreateFastfoodDto {
   @IsEnum(fastfoodGroup, {
     message: `Loại thức ăn nhanh phải là ${fastfoodGroup.POPCORN} hoặc ${fastfoodGroup.SNACK} hoặc ${fastfoodGroup.SOFTDRINK}`,
   })
-  group: fastfoodGroup;
+  foodGroup: fastfoodGroup;
 
   @ApiProperty({
     description: "Giá của thức ăn nhanh",

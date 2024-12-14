@@ -29,8 +29,8 @@ export enum UserType {
 }
 
 export enum SeatStatus {
-  EMPTY = "Empty",
-  FULL = "Full",
+  MAINTENANCE = "Maintenance",
+  IN_USE = "In use",
 }
 
 export enum MovieGenre {
