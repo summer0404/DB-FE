@@ -15,7 +15,8 @@ import { LoggerService } from "../logger/logger.service";
 import { RatesService } from "./rates.service";
 import { CreateRateDto } from "./dtos/create.dto";
 import { UpdateRateDto } from "./dtos/update.dto";
-import { ApiParam, ApiResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
+import { UUIDv4ValidationPipe } from "src/common/pipes/validationUUIDv4.pipe";
 
 @Controller("rates")
 export class RatesController {
@@ -279,6 +280,73 @@ export class RatesController {
   ) {
     try {
       const rate = await this.rateService.getRateByIds(userId, movieId);
+      this.logger.debug("Rate details retrieved successfully");
+      this.response.initResponse(
+        true,
+        "Rate details retrieved successfully",
+        rate,
+      );
+      return res.status(HttpStatus.OK).json(this.response);
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+      if (error instanceof HttpException) {
+        this.response.initResponse(false, error.message, null);
+        return res.status(error.getStatus()).json(this.response);
+      } else {
+        this.response.initResponse(
+          false,
+          "Error retrieving rate details",
+          null,
+        );
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
+      }
+    }
+  }
+
+  @Get("/:movieId")
+  @ApiOperation({
+    summary: "API để lấy các bình luận và đánh giá theo phim",
+  })
+  @ApiParam({
+    name: "movieId",
+    description: "ID của phim",
+  })
+  @ApiParam({ name: "movieId", description: "ID của bộ phim được đánh giá" })
+  @ApiResponse({
+    status: 200,
+    description: "Lấy thông tin đánh giá thành công.",
+    schema: {
+      example: {
+        success: true,
+        message: "Rate details retrieved successfully",
+        data: {
+          movieId: "movie123",
+          userId: "user456",
+          stars: 5,
+          rateTime: "2024-11-29T10:30:00Z",
+          updatedAt: "2024-11-28T14:04:31.171Z",
+          createdAt: "2024-11-28T14:04:31.171Z",
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Lỗi trong quá trình lấy thông tin đánh giá.",
+    schema: {
+      example: {
+        success: false,
+        message: "Error retrieving rate details",
+        data: null,
+      },
+    },
+  })
+  async getRatesByMovie(
+    @Res() res,
+    @Param("movieId", UUIDv4ValidationPipe) movieId: string,
+  ) {
+    try {
+      const rate = await this.rateService.getByMovie(movieId);
       this.logger.debug("Rate details retrieved successfully");
       this.response.initResponse(
         true,

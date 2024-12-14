@@ -124,6 +124,9 @@ export class OrdersController {
         createOrderDto,
         transaction,
       );
+      if (realPrice == 0) {
+        realPrice = newOrder.totalPrice;
+      }
       if (any?.tickets && any?.tickets != undefined) {
         let tickets = any.tickets;
         for (let i in tickets) tickets[i].orderId = newOrder.id;
@@ -149,13 +152,12 @@ export class OrdersController {
           });
         });
       }
-      if (realPrice != 0) {
-        await this.ordersService.updateTransaction(
-          newOrder.id,
-          { realPrice } as UpdateOrderDto,
-          transaction,
-        );
-      }
+      await this.ordersService.updateTransaction(
+        newOrder.id,
+        { realPrice } as UpdateOrderDto,
+        transaction,
+      );
+
       const order = await this.ordersService.findOneTransaction(
         newOrder.id,
         transaction,

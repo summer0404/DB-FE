@@ -1,70 +1,84 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { RATES_REPOSITORY } from 'src/common/constants';
-import { Rates } from './rates.entity';
-import { CreateRateDto } from './dtos/create.dto';
-import { UpdateRateDto } from './dtos/update.dto';
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { RATES_REPOSITORY } from "src/common/constants";
+import { Rates } from "./rates.entity";
+import { CreateRateDto } from "./dtos/create.dto";
+import { UpdateRateDto } from "./dtos/update.dto";
 
 @Injectable()
 export class RatesService {
-    constructor(
-        @Inject(RATES_REPOSITORY)
-        private readonly ratesRepository: typeof Rates
-    ) { }
+  constructor(
+    @Inject(RATES_REPOSITORY)
+    private readonly ratesRepository: typeof Rates,
+  ) {}
 
-    async create(createRateDto: CreateRateDto) {
-        const createdRate = await this.ratesRepository.create(createRateDto);
-        return createdRate;
+  async create(createRateDto: CreateRateDto) {
+    const createdRate = await this.ratesRepository.create(createRateDto);
+    return createdRate;
+  }
+
+  async updateRate(updateRateDto: UpdateRateDto) {
+    const rate = await this.ratesRepository.findOne({
+      where: {
+        userId: updateRateDto.userId,
+        movieId: updateRateDto.movieId,
+      },
+    });
+
+    if (!rate) {
+      throw new NotFoundException("Rate not found");
     }
 
-    async updateRate(updateRateDto: UpdateRateDto) {
-        const rate = await this.ratesRepository.findOne({
-            where: {
-                userId: updateRateDto.userId,
-                movieId: updateRateDto.movieId
-            }
-        });
+    const updatedRate = await rate.update(updateRateDto);
+    return updatedRate;
+  }
 
-        if (!rate) {
-            throw new NotFoundException("Rate not found");
-        }
+  async removeRate(userId: string, movieId: string) {
+    const rate = await this.ratesRepository.findOne({
+      where: {
+        userId: userId,
+        movieId: movieId,
+      },
+    });
 
-        const updatedRate = await rate.update(updateRateDto);
-        return updatedRate;
+    if (!rate) {
+      throw new NotFoundException("Rate not found");
     }
 
-    async removeRate(userId: string, movieId: string) {
-        const rate = await this.ratesRepository.findOne({
-            where: {
-                userId: userId,
-                movieId: movieId
-            }
-        });
+    await rate.destroy();
+    return { message: "Rate deleted successfully" };
+  }
 
-        if (!rate) {
-            throw new NotFoundException("Rate not found");
-        }
+  async getAllRates() {
+    const allRates = await this.ratesRepository.findAll();
+    return allRates.length > 0 ? allRates : [];
+  }
 
-        await rate.destroy();
-        return { message: "Rate deleted successfully" };
+  async getRateByIds(userId: string, movieId: string) {
+    const rate = await this.ratesRepository.findOne({
+      where: {
+        userId: userId,
+        movieId: movieId,
+      },
+    });
+
+    if (!rate) {
+      throw new NotFoundException("Rate not found");
     }
 
-    async getAllRates() {
-        const allRates = await this.ratesRepository.findAll();
-        return allRates.length > 0 ? allRates : [];
+    return rate;
+  }
+
+  async getByMovie(movieId: string) {
+    const rate = await this.ratesRepository.findAll({
+      where: {
+        movieId: movieId,
+      },
+    });
+
+    if (!rate) {
+      throw new NotFoundException("Rate not found");
     }
 
-    async getRateByIds(userId: string, movieId: string) {
-        const rate = await this.ratesRepository.findOne({
-            where: {
-                userId: userId,
-                movieId: movieId
-            }
-        });
-
-        if (!rate) {
-            throw new NotFoundException("Rate not found");
-        }
-
-        return rate;
-    }
+    return rate;
+  }
 }

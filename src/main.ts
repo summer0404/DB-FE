@@ -8,6 +8,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix("database/api/v1");
   app.useGlobalPipes(new ValidationInputPipe());
+  app.enableCors({
+    origin: 'http://localhost:5173',
+  })
 
   const ApiDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("api", app, ApiDocument);
