@@ -385,13 +385,23 @@ export class FastfoodsController {
       const oldFastfood = await this.fastfoodsService.findOne(id);
       if (any?.updateFile == "true") {
         await this.filesService.deleteFile(oldFastfood.file.id);
-        await this.filesService.createFile(id, [file], transaction);
+        await this.filesService.createFileFastfood(id, file, transaction);
       }
-      const temp = await this.fastfoodsService.updateTransaction(
-        id,
-        updateFastfoodDto,
-        transaction,
-      );
+      let temp;
+
+      if (
+        any?.name != undefined ||
+        any?.foodGroup != undefined ||
+        any?.price != undefined
+      ) {
+        temp = await this.fastfoodsService.updateTransaction(
+          id,
+          updateFastfoodDto,
+          transaction,
+        );
+      } else {
+        temp = await this.fastfoodsService.findOneTransaction(id, transaction);
+      }
       transaction.commit();
       this.logger.debug("cập nhật thức ăn nhanh thành công");
       this.response.initResponse(
