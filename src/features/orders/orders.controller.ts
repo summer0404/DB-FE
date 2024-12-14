@@ -25,6 +25,9 @@ import { CouponsService } from "../coupons/coupons.service";
 import { UsersService } from "../users/users.service";
 import { TicketsService } from "../tickets/tickets.service";
 import { BookService } from "../book/book.service";
+import { FastfoodsService } from "../fastfoods/fastfoods.service";
+import { NewOrderInterface } from "./newOrder.interface";
+import { Fastfoods } from "../fastfoods/fastfoods.entity";
 
 @Controller("orders")
 export class OrdersController {
@@ -36,6 +39,7 @@ export class OrdersController {
     private readonly userService: UsersService,
     private readonly ticketService: TicketsService,
     private readonly bookService: BookService,
+    private readonly fastfoodService: FastfoodsService,
     @Inject(SEQUELIZE)
     private readonly dbSource: Sequelize,
   ) {}
@@ -158,10 +162,32 @@ export class OrdersController {
         transaction,
       );
 
-      const order = await this.ordersService.findOneTransaction(
+      let order = await this.ordersService.findOneTransaction(
         newOrder.id,
         transaction,
       );
+      let result: NewOrderInterface = { order };
+      console.log(result);
+
+      let fastfoods = [];
+      if (createdBooks.length > 0) {
+        for (let i of any.books) {
+          let newfastfood: Fastfoods = await this.fastfoodService.findOneNoImg(
+            i.fastfoodId,
+          );
+          fastfoods.push({
+            id: newfastfood.id,
+            name: newfastfood.name,
+            group: newfastfood.foodGroup,
+            price: newfastfood.price,
+            size: i.size,
+            quantity: i.quantity,
+          });
+        }
+      }
+      result = { ...result, fastfoods, orderTickets: any.tickets };
+      console.log(result);
+
       transaction.commit();
       setTimeout(
         async () => {
@@ -193,7 +219,7 @@ export class OrdersController {
         5 * 60 * 1000,
       );
       this.logger.debug("Tạo đơn hàng thành công");
-      this.response.initResponse(true, "Tạo đơn hàng thành công", order);
+      this.response.initResponse(true, "Tạo đơn hàng thành công", result);
       return res.status(HttpStatus.CREATED).json(this.response);
     } catch (error) {
       transaction.rollback();

@@ -60,6 +60,10 @@ export class FastfoodsService {
     });
   }
 
+  async findOneNoImg(id: string): Promise<Fastfoods> {
+    return await this.fastfoodRepository.findByPk(id);
+  }
+
   async findOneTransaction(
     id: string,
     transaction: Transaction,

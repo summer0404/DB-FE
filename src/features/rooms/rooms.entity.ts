@@ -1,9 +1,7 @@
-import { UUIDV4 } from "sequelize";
 import {
   AllowNull,
   Column,
   DataType,
-  Default,
   HasMany,
   Model,
   PrimaryKey,
