@@ -130,7 +130,7 @@ export default function CartPage(props) {
 
   const getShowTime = async () => {
     const showTimeData = (await getShowTimeOfMovie(movieId)) || [];
-    getSeat(showTimeData[0].times[0].startTime);
+    getSeat(showTimeData[0]?.times[0].startTime);
     setShowtime(showTimeData || []);
     setSelectedTime({
       day: showTimeData[0]?.day,
@@ -199,24 +199,24 @@ export default function CartPage(props) {
         }}
       >
         <MovieDetailComponent
-          movieInfo={movieInfo}
-          comments={comments}
+          movieInfo={movieInfo || {}}
+          comments={comments || []}
           handleOrder={handleOrder}
         />
         <ChooseShowtime
-          showTime={showtime}
-          selectedTime={selectedTime}
+          showTime={showtime || []}
+          selectedTime={selectedTime || {}}
           handleSelectDay={handleChangeDay}
           handleSelectTime={handleChangeTime}
         />
         <SeatingMap
-          occupiedSeats={busySeats}
-          selectedSeats={selectedSeats}
+          occupiedSeats={busySeats || []}
+          selectedSeats={selectedSeats || []}
           setSelectedSeats={setSelectedSeats}
         />
         <FoodBuy
-          groups={fastFoods}
-          selectedFoods={selectedFoods}
+          groups={fastFoods || []}
+          selectedFoods={selectedFoods || []}
           handleSelectFood={handleSelectFood}
         />
       </Box>

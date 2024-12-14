@@ -8,7 +8,7 @@ export const getMovieInfo = async (movieId) => {
     const movieInfoResponse = await axios.get(
       `${backendUrl}/movies/${movieId}`
     );
-    const movieData = movieInfoResponse?.data?.data;
+    const movieData = movieInfoResponse?.data?.data || {};
 
     return {
       id: movieId,
@@ -32,7 +32,7 @@ export const getCommentOfMovie = async (movieId) => {
   try {
     const commentsResponse = await axios.get(`${backendUrl}/rates/${movieId}`);
 
-    const commentsData = commentsResponse?.data?.data;
+    const commentsData = commentsResponse?.data?.data || [];
 
     return commentsData.map((commentData, index) => ({
       id: index,
@@ -47,7 +47,7 @@ export const getShowTimeOfMovie = async (movieId) => {
     const showTimeResponse = await axios.get(
       `${backendUrl}/showtime/${movieId}`
     );
-    const showTimeData = showTimeResponse?.data?.data;
+    const showTimeData = showTimeResponse?.data?.data || [];
 
     // Hàm định dạng ngày từ ISO sang định dạng DD/MM/YYYY
     const formatDate = (isoDate) => {
@@ -67,7 +67,7 @@ export const getShowTimeOfMovie = async (movieId) => {
     };
 
     // Nhóm dữ liệu theo ngày
-    const groupedData = showTimeData.reduce((acc, item) => {
+    const groupedData = showTimeData?.reduce((acc, item) => {
       const day = formatDate(item.startTime);
 
       // Tìm đối tượng ngày đã tồn tại trong mảng

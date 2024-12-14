@@ -4,7 +4,7 @@ import { Grid, Button, Typography, Box } from "@mui/material";
 const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L"];
 const columns = Array.from({ length: 20 }, (_, i) => i + 1); // Columns 1 to 20
 
-const SeatingMap = ({ occupiedSeats, selectedSeats, setSelectedSeats }) => {
+const SeatingMap = ({ occupiedSeats = [], selectedSeats = [], setSelectedSeats = [] }) => {
   const toggleSeatSelection = (seat) => {
     if (occupiedSeats.includes(seat)) return; // Don't allow selection of occupied seats
     setSelectedSeats(
