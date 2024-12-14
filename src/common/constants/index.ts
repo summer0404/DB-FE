@@ -1,3 +1,5 @@
+export const userInfoUrl = " https://www.googleapis.com/oauth2/v3/userinfo";
+
 export const SEQUELIZE = "SEQUELIZE";
 export const DEVELOPMENT = "development" as const;
 export const TEST = "test" as const;

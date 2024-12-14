@@ -21,6 +21,7 @@ import { ShowtimeModule } from "./features/showtime/showtime.module";
 import { GenreModule } from "./features/genre/genre.module";
 import { RatesModule } from "./features/rates/rates.module";
 import { SeatsModule } from "./features/seats/seats.module";
+import { AuthModule } from './features/auth/auth.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { SeatsModule } from "./features/seats/seats.module";
     GenreModule,
     RatesModule,
     SeatsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

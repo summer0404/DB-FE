@@ -1,11 +1,13 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/creatUser.dto';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { USER_REPOSITORY, UserType } from 'src/common/constants';
-import { Users } from './users.entity';
-import { Transaction } from 'sequelize';
-import { Customers } from '../customers/customers.entity';
-import { Staffs } from '../staffs/staffs.entity';
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { CreateUserDto } from "./dto/creatUser.dto";
+import { UpdateUserDto } from "./dto/updateUser.dto";
+import { USER_REPOSITORY, UserType } from "src/common/constants";
+import { Users } from "./users.entity";
+import { Transaction } from "sequelize";
+import { Customers } from "../customers/customers.entity";
+import { Staffs } from "../staffs/staffs.entity";
+import { UUID } from "crypto";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UsersService {
@@ -26,7 +28,7 @@ export class UsersService {
     });
 
     if (existingUser)
-      throw new BadRequestException('Email người dùng đã tồn tại');
+      throw new BadRequestException("Email người dùng đã tồn tại");
 
     return await this.userRepository.create(createUserDto);
   }
@@ -36,11 +38,11 @@ export class UsersService {
       include: [
         {
           model: Customers,
-          as: 'customer',
+          as: "customer",
         },
         {
           model: Staffs,
-          as: 'staff',
+          as: "staff",
         },
       ],
     });
@@ -56,15 +58,15 @@ export class UsersService {
       include: [
         {
           model: Customers,
-          as: 'customer',
+          as: "customer",
         },
         {
           model: Staffs,
-          as: 'staff',
+          as: "staff",
         },
       ],
     });
-    if (!user) throw new BadRequestException('Không tồn tại người dùng');
+    if (!user) throw new BadRequestException("Không tồn tại người dùng");
     return user;
   }
 
@@ -76,7 +78,7 @@ export class UsersService {
     const existingUser = await this.userRepository.findByPk(id);
 
     if (!existingUser)
-      throw new BadRequestException('Không tồn tại người dùng');
+      throw new BadRequestException("Không tồn tại người dùng");
 
     const [affectedRow, [updatedUser]] = await this.userRepository.update(
       updateUserDto,
@@ -93,10 +95,44 @@ export class UsersService {
     const existingUser = await this.userRepository.findByPk(id);
 
     if (!existingUser)
-      throw new BadRequestException('Không tồn tại người dùng');
+      throw new BadRequestException("Không tồn tại người dùng");
 
     await this.userRepository.destroy({
       where: { id },
     });
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    const currentRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userRepository.update(
+      { refreshToken: currentRefreshToken },
+      { where: { id: userId } },
+    );
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, id: UUID) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
+  async removeRefreshToken(userId: string) {
+    return this.userRepository.update(
+      { refreshToken: null },
+      { where: { id: userId } },
+    );
   }
 }
