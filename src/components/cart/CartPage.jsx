@@ -11,12 +11,10 @@ import {
   getMovieInfo,
   getSeatOfMovie,
   getShowTimeOfMovie,
+  sendComment,
 } from "../../service/cart";
 
-export default function CartPage(props) {
-  //const {movieId} = props;
-  const movieId = "b17451f7-1fb0-4824-bb77-2a095a8e1a6d";
-
+export default function CartPage({ movieId }) {
   const [movieInfo, setMovieInfo] = useState({
     id: "",
     name: "",
@@ -62,7 +60,7 @@ export default function CartPage(props) {
                 orderId: "a",
                 size: "Big",
                 quantity: change,
-                price
+                price,
               },
             ]
           : prevSelectedFoods;
@@ -115,12 +113,13 @@ export default function CartPage(props) {
         return {
           foodId: food.id,
           quantity: food.quantity,
+          orderId: "a",
+          size: "Big"
         };
       });
     }
 
     result.totalPrice = totalPrice;
-    console.log(result);
   };
 
   const getInfo = async () => {
@@ -179,6 +178,19 @@ export default function CartPage(props) {
     setSelectedSeats([]);
   };
 
+  const addComment = async (newComment) => {
+    // Update the state with the new comment
+    setComments([...comments, newComment]);
+  
+    // Send the comment with necessary data
+    await sendComment({
+      ...newComment, // Spread newComment properties
+      userId: "ada88e22-687d-4b60-8292-cf7387e7aff4", // Add userId
+      movieId, // Add movieId
+    });
+  };
+  
+
   useEffect(() => {
     getInfo();
     getComment();
@@ -202,6 +214,7 @@ export default function CartPage(props) {
           movieInfo={movieInfo || {}}
           comments={comments || []}
           handleOrder={handleOrder}
+          addComment={addComment}
         />
         <ChooseShowtime
           showTime={showtime || []}

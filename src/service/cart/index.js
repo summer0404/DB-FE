@@ -163,3 +163,12 @@ export const getCombo = async () => {
     }));
   } catch (error) {}
 };
+
+export const sendComment = async (comment) => {
+  try {
+    await axios.post(`${backendUrl}/rates`, comment);
+    console.log("TẠO BÌNH LUẬN THÀNH CÔNG");
+  } catch (error) {
+    console.log("LLỖI KHI COMMENT", error);
+  }
+}

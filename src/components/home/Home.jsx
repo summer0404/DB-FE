@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { getAllMovie } from '../../service/home';
 import React, { useState, useEffect } from "react";
 import LandingPage from './LandingPage';
 import PopularMovies from './PopularMovies';
@@ -45,7 +47,18 @@ export default function HomePage() {
     };
 
     const categorizedMovies = categorizeMovies(movies);
-    return (
+  const [movieData, setMovieData] = useState([]);
+  const getMovies = async () => {
+    const movies = await getAllMovie();
+    console.log(movies)
+    setMovieData(movies);
+  } 
+  
+  useEffect(() => {
+    getMovies();
+  }, []);
+  
+  return (
         <div style={{ padding: '20px', backgroundColor: 'black' }}>
             <LandingPage />
 

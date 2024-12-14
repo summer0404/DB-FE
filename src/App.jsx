@@ -22,8 +22,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/add_food" element={<AddFood />} />
-          {/* <Route path="/add_movies" element={<AddMovies />} /> */}
-          <Route path="/cart" element={<Cart />} />
+          <Route path="/add_movies" element={<AddMovies />} />
+          <Route path="/cart/:id" element={<Cart />} />
           <Route path="/movie_details" element={<MovieDetails />} />
           <Route path="ticket_booking" element={<TicketBooking />} />
           <Route path="/manage_movies" element={<ManageMovies />} />

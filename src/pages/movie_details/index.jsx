@@ -1,3 +1,4 @@
+import { useParams } from "react-router-dom";
 import MovieDetailComponent from "../../components/movie_details";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 

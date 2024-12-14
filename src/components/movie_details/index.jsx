@@ -26,7 +26,7 @@ import Comment from "./comment";
 import ButtonOrder from "./button_order";
 import { formatDatetoDDMMYYYY } from "../../service/cart";
 
-export default function MovieDetailComponent({ movieInfo, comments, handleOrder }) {
+export default function MovieDetailComponent({ movieInfo, comments, handleOrder, addComment }) {
   return (
     <Box
       className="flex flex-col justify-center p-[6px] w-[95%] md:w-7/12 items-center"
@@ -285,7 +285,7 @@ export default function MovieDetailComponent({ movieInfo, comments, handleOrder 
           marginTop: "60px",
         }}
       >
-        <Comment comments={comments}></Comment>
+        <Comment comments={comments} addComment={addComment}></Comment>
       </Box>
 
       <Box sx={{ position: "fixed", bottom: "20px", right: "20px" }}>

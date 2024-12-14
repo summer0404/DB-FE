@@ -2,6 +2,7 @@ import React from "react";
 import Slider from "react-slick";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 export default function PopularMovies({ title, movies }) {
   console.log("movies", movies);
@@ -32,6 +33,8 @@ export default function PopularMovies({ title, movies }) {
     ],
   };
 
+  const navigate = useNavigate(); // Initialize navigate function
+
   return (
     <Box sx={{ backgroundColor: "#121212", padding: "20px" }}>
       {/* Section Title */}
@@ -51,6 +54,10 @@ export default function PopularMovies({ title, movies }) {
       <Slider {...settings}>
         {movies.map((item, index) => (
           <Box
+            onClick={() => {
+              window.scrollTo(0, 0);
+              navigate(`/cart/${item.id}`);
+            }} // Navigate to movie details with ID
             key={index}
             sx={{
               padding: "10px",
@@ -60,7 +67,7 @@ export default function PopularMovies({ title, movies }) {
               backgroundColor: "#222",
               cursor: "pointer",
               transition: "transform 0.3s ease, box-shadow 0.3s ease",
-              '&:hover': {
+              "&:hover": {
                 transform: "scale(1.05)",
                 boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.6)",
               },
@@ -82,7 +89,8 @@ export default function PopularMovies({ title, movies }) {
                 bottom: "0",
                 left: "0",
                 width: "100%",
-                background: "linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.3))",
+                background:
+                  "linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.3))",
                 color: "white",
                 padding: "10px",
               }}
