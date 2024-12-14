@@ -3,28 +3,28 @@ import { Link } from "react-router-dom";
 import { Box, Fab, Typography } from "@mui/material";
 import { ShoppingCartOutlined } from "@mui/icons-material";
 
-export default function ButtonOrder() {
+export default function ButtonOrder({handleOrder}) {
   return (
-    <Link to="/cart">
       <Box
+      onClick={handleOrder}
         sx={{
           backgroundColor: "#66FCF1",
-    color: "#1F2833", // Dark text for contrast
-    transition: 'all 0.3s ease',
-    border: '1px solid #45A29E',
-    '&:hover': { 
-      backgroundColor: "#1F2833",
-      color: "#66FCF1",
-      borderColor: "#66FCF1"
-    },
-    '&:active': {
-      backgroundColor: "#0B0C10",
-      borderColor: "#45A29E"
-    },
-    '&:disabled': {
-      backgroundColor: "#C5C6C7",
-      color: "#1F2833"
-    },
+          color: "#1F2833", // Dark text for contrast
+          transition: "all 0.3s ease",
+          border: "1px solid #45A29E",
+          "&:hover": {
+            backgroundColor: "#1F2833",
+            color: "#66FCF1",
+            borderColor: "#66FCF1",
+          },
+          "&:active": {
+            backgroundColor: "#0B0C10",
+            borderColor: "#45A29E",
+          },
+          "&:disabled": {
+            backgroundColor: "#C5C6C7",
+            color: "#1F2833",
+          },
           width: "auto",
           padding: "10px 8px",
           height: "auto",
@@ -51,6 +51,5 @@ export default function ButtonOrder() {
           ĐẶT VÉ NGAY
         </Typography>
       </Box>
-    </Link>
   );
 }

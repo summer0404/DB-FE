@@ -3,11 +3,8 @@ import { Grid, Button, Typography, Box } from "@mui/material";
 
 const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L"];
 const columns = Array.from({ length: 20 }, (_, i) => i + 1); // Columns 1 to 20
-const occupiedSeats = ["E09", "E08", "E07", "E06", "F09", "F08", "F07", "F06"];
 
-const SeatingMap = () => {
-  const [selectedSeats, setSelectedSeats] = useState([]);
-
+const SeatingMap = ({ occupiedSeats = [], selectedSeats = [], setSelectedSeats = [] }) => {
   const toggleSeatSelection = (seat) => {
     if (occupiedSeats.includes(seat)) return; // Don't allow selection of occupied seats
     setSelectedSeats(
