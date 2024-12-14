@@ -320,4 +320,28 @@ export class CommentsController {
       }
     }
   }
+
+  @Get("/:movieId")
+  async getCommentsOfMovie(@Res() res, @Param("movieId") movieId: string) {
+    console.log("Received movieId:", movieId);
+    try {
+      const comments = await this.commentService.getAllByMovieId(movieId);
+      this.logger.debug("Lấy bình luận của phim thành công");
+      this.response.initResponse(
+        true,
+        "Lấy bình luận của phim thành công",
+        comments,
+      );
+      return res.status(HttpStatus.OK).json(this.response);
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.response.initResponse(
+        false,
+        "Lỗi trong quá trình lấy bình luận của phim",
+        null,
+      );
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(this.response);
+    }
+  }
 }

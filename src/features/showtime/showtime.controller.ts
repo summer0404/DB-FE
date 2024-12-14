@@ -291,7 +291,7 @@ export class ShowtimeController {
     }
   }
   @Get("/:movieId")
-  async getShowTimeByMovieId(@Param("movieId") movieId: string, @Res() res) {
+  async getMovieByMovieId(@Param("movieId") movieId: string) {
     try {
       const showTimes =
         await this.showtimeService.getShowTimeByMovieId(movieId);
@@ -299,14 +299,17 @@ export class ShowtimeController {
       // Nhóm lịch chiếu theo ngày
       const groupedShowtimes = showTimes.reduce((result, showtime) => {
         const day = dayjs(showtime.startTime).format("DD/MM/YYYY"); // Định dạng ngày
-        const time = dayjs(showtime.startTime).format("hh:mm A"); // Định dạng giờ
+        const timeObject = {
+          time: dayjs(showtime.startTime).format("hh:mm A"), // Định dạng giờ
+          roomId: showtime.roomId, // Lấy roomId từ showtime
+        };
 
-        // Nếu đã có ngày này trong nhóm, thêm giờ chiếu vào mảng
+        // Nếu đã có ngày này trong nhóm, thêm đối tượng {time, roomId} vào mảng
         if (result[day]) {
-          result[day].push(time);
+          result[day].push(timeObject);
         } else {
-          // Nếu chưa có, khởi tạo ngày và mảng giờ
-          result[day] = [time];
+          // Nếu chưa có, khởi tạo ngày và mảng chứa {time, roomId}
+          result[day] = [timeObject];
         }
         return result;
       }, {});
@@ -317,12 +320,7 @@ export class ShowtimeController {
         times,
       }));
 
-      this.response.initResponse(
-        true,
-        "Lấy thông tin suất chiếu thành công",
-        response,
-      );
-      return res.status(HttpStatus.OK).json(this.response);
+      return response;
     } catch (error) {
       throw new InternalServerErrorException(
         "Xảy ra lỗi trong quá trình lấy lịch chiếu của phim",
