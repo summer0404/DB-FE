@@ -132,83 +132,83 @@ export class MovieInterceptor implements NestInterceptor {
       request.body.genres = JSON.parse(hihi);
     }
 
-    if (
-      request?.body?.startTime != undefined &&
-      typeof request?.body?.startTime != undefined &&
-      request?.body?.startTime != null
-    ) {
-      let hihi = request.body.startTime;
-      if (request?.body?.startTime.indexOf("Map ") != -1) {
-        hihi = hihi.replace(/"Map/g, "");
-        hihi = hihi.replace(/Map/g, "");
-        hihi = hihi.replace(/}"/g, "}");
-        hihi = hihi.replace(/\\/g, "");
-        if (hihi[0] != "[") {
-          hihi = "[" + hihi + "]";
-        }
-      }
-      request.body.startTime = hihi.split(",");
-      // let elements = request?.body?.genres.split("},Map {");
-      // const n = elements.length;
-      // for (let i = 0; i < n; i++) {
-      //   if (i == 0) {
-      //     elements[i] = elements[i].slice(4);
-      //     elements[i] += "}";
-      //   } else if (i < n - 1) {
-      //     elements[i] = "{" + elements[i];
-      //     elements[i] += "}";
-      //   } else {
-      //     elements[i] = "{" + elements[i];
-      //   }
-      // }
+    // if (
+    //   request?.body?.startTime != undefined &&
+    //   typeof request?.body?.startTime != undefined &&
+    //   request?.body?.startTime != null
+    // ) {
+    //   let hihi = request.body.startTime;
+    //   if (request?.body?.startTime.indexOf("Map ") != -1) {
+    //     hihi = hihi.replace(/"Map/g, "");
+    //     hihi = hihi.replace(/Map/g, "");
+    //     hihi = hihi.replace(/}"/g, "}");
+    //     hihi = hihi.replace(/\\/g, "");
+    //     if (hihi[0] != "[") {
+    //       hihi = "[" + hihi + "]";
+    //     }
+    //   }
+    //   request.body.startTime = hihi.split(",");
+    //   // let elements = request?.body?.genres.split("},Map {");
+    //   // const n = elements.length;
+    //   // for (let i = 0; i < n; i++) {
+    //   //   if (i == 0) {
+    //   //     elements[i] = elements[i].slice(4);
+    //   //     elements[i] += "}";
+    //   //   } else if (i < n - 1) {
+    //   //     elements[i] = "{" + elements[i];
+    //   //     elements[i] += "}";
+    //   //   } else {
+    //   //     elements[i] = "{" + elements[i];
+    //   //   }
+    //   // }
 
-      // let hihi = "";
-      // elements.map((item) => {
-      //   hihi += item + ",";
-      // });
-      // hihi = hihi.slice(0, -1);
-      // hihi = "[" + hihi + "]";
-      // request.body.startTime = JSON.parse(hihi);
-    }
+    //   // let hihi = "";
+    //   // elements.map((item) => {
+    //   //   hihi += item + ",";
+    //   // });
+    //   // hihi = hihi.slice(0, -1);
+    //   // hihi = "[" + hihi + "]";
+    //   // request.body.startTime = JSON.parse(hihi);
+    // }
 
-    if (
-      request?.body?.endTime != undefined &&
-      typeof request?.body?.endTime != undefined &&
-      request?.body?.endTime != null
-    ) {
-      let hihi = request.body.endTime;
-      if (request?.body?.endTime.indexOf("Map ") != -1) {
-        hihi = hihi.replace(/"Map/g, "");
-        hihi = hihi.replace(/Map/g, "");
-        hihi = hihi.replace(/}"/g, "}");
-        hihi = hihi.replace(/\\/g, "");
-        if (hihi[0] != "[") {
-          hihi = "[" + hihi + "]";
-        }
-      }
-      request.body.endTime = hihi.split(",");
-      // let elements = request?.body?.genres.split("},Map {");
-      // const n = elements.length;
-      // for (let i = 0; i < n; i++) {
-      //   if (i == 0) {
-      //     elements[i] = elements[i].slice(4);
-      //     elements[i] += "}";
-      //   } else if (i < n - 1) {
-      //     elements[i] = "{" + elements[i];
-      //     elements[i] += "}";
-      //   } else {
-      //     elements[i] = "{" + elements[i];
-      //   }
-      // }
+    // if (
+    //   request?.body?.endTime != undefined &&
+    //   typeof request?.body?.endTime != undefined &&
+    //   request?.body?.endTime != null
+    // ) {
+    //   let hihi = request.body.endTime;
+    //   if (request?.body?.endTime.indexOf("Map ") != -1) {
+    //     hihi = hihi.replace(/"Map/g, "");
+    //     hihi = hihi.replace(/Map/g, "");
+    //     hihi = hihi.replace(/}"/g, "}");
+    //     hihi = hihi.replace(/\\/g, "");
+    //     if (hihi[0] != "[") {
+    //       hihi = "[" + hihi + "]";
+    //     }
+    //   }
+    //   request.body.endTime = hihi.split(",");
+    //   // let elements = request?.body?.genres.split("},Map {");
+    //   // const n = elements.length;
+    //   // for (let i = 0; i < n; i++) {
+    //   //   if (i == 0) {
+    //   //     elements[i] = elements[i].slice(4);
+    //   //     elements[i] += "}";
+    //   //   } else if (i < n - 1) {
+    //   //     elements[i] = "{" + elements[i];
+    //   //     elements[i] += "}";
+    //   //   } else {
+    //   //     elements[i] = "{" + elements[i];
+    //   //   }
+    //   // }
 
-      // let hihi = "";
-      // elements.map((item) => {
-      //   hihi += item + ",";
-      // });
-      // hihi = hihi.slice(0, -1);
-      // hihi = "[" + hihi + "]";
-      // request.body.endTime = JSON.parse(hihi);
-    }
+    //   // let hihi = "";
+    //   // elements.map((item) => {
+    //   //   hihi += item + ",";
+    //   // });
+    //   // hihi = hihi.slice(0, -1);
+    //   // hihi = "[" + hihi + "]";
+    //   // request.body.endTime = JSON.parse(hihi);
+    // }
 
     return next.handle();
   }
