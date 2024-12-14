@@ -8,6 +8,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MovieIcon from '@mui/icons-material/Movie';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import { useNavigate } from 'react-router-dom';
 
 export default function SideBar({ open, onClose }) {
@@ -16,6 +17,7 @@ export default function SideBar({ open, onClose }) {
   const DrawerList = (
     <Box
       sx={{
+        marginTop: 4,
         width: 250,
         '& .MuiListItemIcon-root': { color: '#66FCF1' },
         '& .MuiListItemButton-root:hover': { backgroundColor: 'rgba(102, 252, 241, 0.1)' },
@@ -32,12 +34,22 @@ export default function SideBar({ open, onClose }) {
             <ListItemText primary="Quản lý phim" />
           </ListItemButton>
         </ListItem>
+
         <ListItem disablePadding>
           <ListItemButton onClick={() => navigate('/add_food')}>
             <ListItemIcon>
               <FastfoodIcon />
             </ListItemIcon>
             <ListItemText primary="Quản lý thức ăn" />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => navigate('/manage_order')}>
+            <ListItemIcon>
+              <ReceiptIcon />
+            </ListItemIcon>
+            <ListItemText primary="Quản lý đơn hàng" />
           </ListItemButton>
         </ListItem>
       </List>

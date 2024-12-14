@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 export default function PopularMovies({ title, movies }) {
+  console.log("movies", movies);
   // Settings for the slider
   const settings = {
     dots: true,
@@ -97,17 +98,7 @@ export default function PopularMovies({ title, movies }) {
               >
                 {item.title}
               </Typography>
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  color: "#ccc",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {item.genre}
-              </Typography>
+
             </Box>
           </Box>
         ))}

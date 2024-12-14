@@ -1,18 +1,92 @@
-import React, { useState } from "react";
-import { Button, Select, MenuItem, Box, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Button,
+  Select,
+  MenuItem,
+  Box,
+  Typography,
+  InputLabel,
+} from "@mui/material";
 import PopularMovies from "../home/PopularMovies";
 import { useNavigate } from "react-router-dom";
+import { getAllMovies } from "../../api/movies.api";
+import { getShowtimeByMovieId } from "../../api/showtime.api";
 
 const QuickBooking = () => {
   const [movie, setMovie] = useState("");
-  const [date, setDate] = useState("");
   const [showtime, setShowtime] = useState("");
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showtimes, setShowtimes] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [availableDates, setAvailableDates] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
 
   const navigate = useNavigate();
 
   const handleBooking = () => {
     navigate("/cart");
   };
+
+  const fetchShowtimes = async (movieId) => {
+    try {
+      setIsLoading(true);
+      const response = await getShowtimeByMovieId(movieId);
+      
+      // Debug log
+      console.log('API Response:', response.data);
+      
+      const showtimesByDate = response.data.reduce((acc, showtime) => {
+        const date = new Date(showtime.startTime).toLocaleDateString();
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        acc[date].push(showtime);
+        return acc;
+      }, {});
+      
+      // Debug logs
+      console.log('Grouped Showtimes:', showtimesByDate);
+      console.log('Available Dates:', Object.keys(showtimesByDate));
+      
+      setShowtimes(showtimesByDate);
+      setAvailableDates(Object.keys(showtimesByDate));
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMovieSelect = (event) => {
+    const movieId = event.target.value;
+    setMovie(movieId);
+    if (movieId) {
+      fetchShowtimes(movieId);
+    } else {
+      setShowtimes([]); // Clear showtimes if no movie selected
+    }
+  };
+
+
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const response = await getAllMovies();
+        if (response.success && response.data) {
+          setMovies(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, []);
 
   return (
     <>
@@ -29,8 +103,8 @@ const QuickBooking = () => {
         </Typography>
 
         <Select
-          value={movie}
-          onChange={(e) => setMovie(e.target.value)}
+          value={movie || ""}
+          onChange={handleMovieSelect}
           displayEmpty
           sx={{
             bgcolor: "#0B0C10",
@@ -55,15 +129,18 @@ const QuickBooking = () => {
           <MenuItem value="" disabled>
             Chọn Phim
           </MenuItem>
-          <MenuItem value="movie1">Phim 1</MenuItem>
-          <MenuItem value="movie2">Phim 2</MenuItem>
+          {movies.map((movie) => (
+            <MenuItem key={movie.id} value={movie.id}>
+              {movie.name}
+            </MenuItem>
+          ))}
         </Select>
 
         <Select
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={selectedDate || ""}
+          onChange={(e) => setSelectedDate(e.target.value)}
           displayEmpty
-          disabled={!movie}
+          disabled={!movie || isLoading}
           sx={{
             bgcolor: "#0B0C10",
             color: "#C5C6C7",
@@ -87,15 +164,19 @@ const QuickBooking = () => {
           <MenuItem value="" disabled>
             Chọn Ngày
           </MenuItem>
-          <MenuItem value="date1">01/12</MenuItem>
-          <MenuItem value="date2">02/12</MenuItem>
+          {availableDates.map((date) => (
+            <MenuItem key={`date-${date}`} value={date}>
+              {date}
+            </MenuItem>
+          ))}
         </Select>
 
         <Select
-          value={showtime}
-          onChange={(e) => setShowtime(e.target.value)}
+          value={showtime || ""}
+          onChange={(e) =>{ 
+            setShowtime(e.target.value)          }}
           displayEmpty
-          disabled={!movie || !date}
+          disabled={!selectedDate || isLoading}
           sx={{
             bgcolor: "#0B0C10",
             color: "#C5C6C7",
@@ -117,10 +198,19 @@ const QuickBooking = () => {
           }}
         >
           <MenuItem value="" disabled>
-            Chọn Suất
+            Chọn Giờ
           </MenuItem>
-          <MenuItem value="time1">10:00 AM</MenuItem>
-          <MenuItem value="time2">12:00 PM</MenuItem>
+          {selectedDate &&
+            showtimes[selectedDate]?.map((time) => {
+              console.log('Rendering showtime:', time); // Debug log
+              return (
+                <MenuItem 
+                  value={time}
+                >
+                  {new Date(time.startTime).toLocaleTimeString()}
+                </MenuItem>
+              );
+            })}
         </Select>
 
         <Button
@@ -136,7 +226,7 @@ const QuickBooking = () => {
               color: "#0B0C10",
             },
           }}
-          disabled={!movie || !date || !showtime}
+          disabled={!movie || !selectedDate }
         >
           ĐẶT NGAY
         </Button>

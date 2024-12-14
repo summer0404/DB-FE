@@ -1,32 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import TheatersOutlinedIcon from "@mui/icons-material/TheatersOutlined";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from "react-router-dom";
+import {getAllMovies} from '../../api/movies.api';
 
-// Import images
-import SpiderMoviePoster from "../../assets/Spider_moviePoster.jpg";
-import WickedPoster from "../../assets/movie_poster.jpg";
-import LovePoster from "../../assets/love_poster.jpeg";
-
-const movies = [
-  {
-    title: "Wicked",
-    image: WickedPoster,
-  },
-  {
-    title: "Đôi bạn học yêu",
-    image: LovePoster,
-  },
-  {
-    title: "Người nhện: No Way Home",
-    image: SpiderMoviePoster,
-  },
-];
 
 const LandingPage = () => {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   // Slider configuration
   const sliderSettings = {
     dots: true,
@@ -37,6 +22,29 @@ const LandingPage = () => {
     autoplay: true,
     autoplaySpeed: 3000,
   };
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+        try {
+            setLoading(true);
+            const response = await getAllMovies();
+            if (response.success && response.data) {
+                // Get first 5 movies and transform data
+                const firstFiveMovies = response.data.slice(0, 5).map(movie => ({
+                    title: movie.name,
+                    image: movie.files[0]?.path || "" // Get first image path
+                }));
+                setMovies(firstFiveMovies);
+            }
+        } catch (error) {
+            console.error("Error fetching movies:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchMovies();
+}, []);
 
   const handlePlayButtonClick = (title) => {
     alert(`Playing: ${title}`);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -13,23 +13,69 @@ import {
   TextField,
   Grid,
   IconButton,
+  Select,
+  MenuItem,
 } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+
+import {
+  createFastFood,
+  getFastFood,
+  deleteFastFood,
+  updateFastFood,
+} from "../../api/fastfood.api";
 
 const FoodTable = ({ initialData }) => {
   const [foodData, setFoodData] = useState(initialData);
   const [newFood, setNewFood] = useState({
     name: "",
-    group: "",
+    foodGroup: "",
     price: "",
-    description: "",
-    image: "",
+    file: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileSelected, setFileSelected] = useState(false);
 
-  const [editIndex, setEditIndex] = useState(null); // Tracks the row being edited
-  const [editFood, setEditFood] = useState(null); // Tracks the data of the row being edited
+  const [editIndex, setEditIndex] = useState(-1); // Tracks the row being edited
+  const [editFood, setEditFood] = useState({
+    name: "",
+    foodGroup: "",
+    price: "",
+    file: "",
+  }); // Tracks the data of the row being edited
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    const fetchFoodData = async () => {
+      try {
+        setLoading(true);
+        const response = await getFastFood();
+        if (response.data) {
+          const formattedData = response.data.map((item) => ({
+            id: item.id,
+            name: item.name,
+            foodGroup: item.foodGroup,
+            price: item.price,
+            image: item.file?.path || "",
+          }));
+          setFoodData(formattedData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch food data: ", error);
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFoodData();
+  }, [refreshTrigger]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,35 +85,55 @@ const FoodTable = ({ initialData }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setSelectedFile(file);
+      setFileSelected(true);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewFood({ ...newFood, image: reader.result });
+      reader.onload = () => {
+        setNewFood({ ...newFood, file: reader.result }); // Changed to 'file'
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleAddFood = () => {
-    if (
-      newFood.name &&
-      newFood.group &&
-      newFood.price &&
-      newFood.description &&
-      newFood.image
-    ) {
-      setFoodData([...foodData, newFood]);
-      setNewFood({
-        name: "",
-        group: "",
-        price: "",
-        description: "",
-        image: "",
-      }); // Reset form
+  const handleAddFood = async () => {
+    try {
+      if (!selectedFile) {
+        throw new Error('Please select an image file');
+      }
+
+      const formData = new FormData();
+      formData.append("name", newFood.name);
+      formData.append("foodGroup", newFood.foodGroup);
+      formData.append("price", newFood.price);
+      formData.append("file", selectedFile); // Keeping 'file' to match backend
+
+      const response = await createFastFood(formData);
+      if (response.data) {
+        setFoodData([...foodData, response.data]);
+        setRefreshTrigger(prev => prev + 1); // Trigger refresh
+        setNewFood({ name: '', foodGroup: '', price: '', file: '' });
+        setSelectedFile(null);
+        setFileSelected(false);
+      }
+    } catch (error) {
+      console.error('Error adding food:', error);
     }
   };
 
-  const handleDeleteFood = (index) => {
-    setFoodData(foodData.filter((_, i) => i !== index));
+  const handleDelete = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa mục này không?")) {
+      try {
+        const response = await deleteFastFood(id);
+
+        if (response.success) {
+          setRefreshTrigger((prev) => prev + 1);
+          // Remove deleted item from state
+          setFoodData(foodData.filter((food) => food.id !== id));
+        }
+      } catch (error) {
+        console.error("Failed to delete food item:", error);
+      }
+    }
   };
 
   const handleEditFood = (index) => {
@@ -75,12 +141,35 @@ const FoodTable = ({ initialData }) => {
     setEditFood(foodData[index]); // Load the row's data for editing
   };
 
-  const handleSaveEdit = () => {
-    const updatedFoodData = [...foodData];
-    updatedFoodData[editIndex] = editFood;
-    setFoodData(updatedFoodData);
-    setEditIndex(null); // Exit editing mode
-    setEditFood(null);
+  const handleSaveEdit = async () => {
+    try {
+      const updatedFoodData = [...foodData];
+      const editedFood = { ...editFood }; // Copy the edited food data
+
+      // Prepare JSON payload
+      const payload = {
+        name: editedFood.name,
+        foodGroup: editedFood.foodGroup,
+        price: editedFood.price,
+        file: selectedFile || editedFood.image, // Use the selected file if available, otherwise keep the existing image
+      };
+
+      // Call the update API with JSON payload
+      console.log("payload", payload);
+      const response = await updateFastFood(editedFood.id, payload);
+
+      if (response.data) {
+        updatedFoodData[editIndex] = {
+          ...response.data,
+        };
+        setFoodData(updatedFoodData);
+        setEditIndex(-1); // Exit editing mode
+        setEditFood(null);
+        setSelectedFile(null); // Clear the selected file
+      }
+    } catch (error) {
+      console.error("Error updating food:", error);
+    }
   };
 
   const handleEditChange = (e) => {
@@ -137,11 +226,11 @@ const FoodTable = ({ initialData }) => {
         {/* Add New Food Form */}
         <Box sx={{ marginBottom: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={2}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 name="name"
-                label="Food Name"
+                label="Tên thức ăn"
                 value={newFood.name}
                 onChange={handleInputChange}
                 sx={{
@@ -150,24 +239,33 @@ const FoodTable = ({ initialData }) => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
-              <TextField
+
+            <Grid item xs={12} sm={3}>
+              <Select
                 fullWidth
-                name="group"
-                label="Group"
-                value={newFood.group}
+                name="foodGroup"
+                value={newFood.foodGroup}
                 onChange={handleInputChange}
+                displayEmpty
                 sx={{
                   backgroundColor: "#fff",
                   borderRadius: "4px",
                 }}
-              />
+              >
+                <MenuItem value="" disabled>
+                  Chọn nhóm thức ăn
+                </MenuItem>
+                <MenuItem value="Popcorn">Popcorn</MenuItem>
+                <MenuItem value="Snack">Snack</MenuItem>
+                <MenuItem value="Softdrink">Softdrink</MenuItem>
+              </Select>
             </Grid>
+
             <Grid item xs={12} sm={2}>
               <TextField
                 fullWidth
                 name="price"
-                label="Price"
+                label="Giá"
                 value={newFood.price}
                 onChange={handleInputChange}
                 sx={{
@@ -176,54 +274,41 @@ const FoodTable = ({ initialData }) => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                fullWidth
-                name="description"
-                label="Description"
-                value={newFood.description}
-                onChange={handleInputChange}
-                sx={{
-                  backgroundColor: "#fff",
-                  borderRadius: "4px",
-                }}
-              />
-            </Grid>
+
             <Grid item xs={12} sm={2}>
               <Button
-                variant="contained"
                 component="label"
+                variant="contained"
+                tabIndex={-1}
+                startIcon={fileSelected ? <CheckCircleIcon /> : <FileUploadOutlinedIcon />}
                 sx={{
                   height: "100%",
-                  backgroundColor: "#1F2833",
-                  color: "#66FCF1",
-                  borderColor: "#66FCF1",
+                  backgroundColor: fileSelected ? "#45A29E" : "#66FCF1",
+                  color: "#1F2833",
+                  fontWeight: "bold",
                   transition: "all 0.3s ease",
                   border: "1px solid #45A29E",
                   "&:hover": {
-                    backgroundColor: "#66FCF1",
-                    color: "#1F2833",
+                    backgroundColor: "#1F2833",
+                    color: "#66FCF1",
+                    borderColor: "#66FCF1",
                   },
                   "&:active": {
                     backgroundColor: "#0B0C10",
                     borderColor: "#45A29E",
                   },
-                  "&:disabled": {
-                    backgroundColor: "#C5C6C7",
-                    color: "#1F2833",
-                  },
                 }}
               >
-                <FileUploadOutlinedIcon />
-                <input
+                {fileSelected ? 'Đã tải lên' : 'Tải lên'}
+                <VisuallyHiddenInput
                   type="file"
-                  accept="image/*"
-                  hidden
                   onChange={handleFileChange}
+                  accept="image/*"
                 />
               </Button>
             </Grid>
-            <Grid item xs={12} sm={1}>
+
+            <Grid item xs={12} sm={2}>
               <Button
                 variant="contained"
                 onClick={handleAddFood}
@@ -260,30 +345,62 @@ const FoodTable = ({ initialData }) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  Image
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: "15%",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Hình ảnh
                 </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  Name
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: "25%",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Tên thức ăn
                 </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  Group
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: "25%",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Nhóm thức ăn
                 </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  Price
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: "15%",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Giá
                 </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  Description
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  Actions
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: "20%",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Hành động
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {foodData.map((food, index) => (
                 <TableRow key={index}>
-                  <TableCell>
+                  <TableCell sx={{ fontSize: "1.1rem" }}>
                     <img
                       src={food.image}
                       alt={food.name}
@@ -302,18 +419,26 @@ const FoodTable = ({ initialData }) => {
                           name="name"
                           value={editFood.name}
                           onChange={handleEditChange}
-                          sx={{ backgroundColor: "#fff" }}
+                          sx={{ backgroundColor: "#fff", fontSize: "1.1rem" }}
                         />
                       </TableCell>
                       <TableCell>
-                        <TextField
+                        <Select
                           fullWidth
-                          name="group"
-                          value={editFood.group}
+                          name="foodGroup"
+                          value={editFood.foodGroup}
                           onChange={handleEditChange}
-                          sx={{ backgroundColor: "#fff" }}
-                        />
+                          sx={{
+                            backgroundColor: "#fff",
+                            fontSize: "1.1rem",
+                          }}
+                        >
+                          <MenuItem value="Popcorn">Popcorn</MenuItem>
+                          <MenuItem value="Snack">Snack</MenuItem>
+                          <MenuItem value="Softdrink">Softdrink</MenuItem>
+                        </Select>
                       </TableCell>
+
                       <TableCell>
                         <TextField
                           fullWidth
@@ -325,55 +450,29 @@ const FoodTable = ({ initialData }) => {
                       </TableCell>
                       <TableCell>
                         <TextField
+                          type="file"
                           fullWidth
-                          name="description"
-                          value={editFood.description}
-                          onChange={handleEditChange}
-                          sx={{ backgroundColor: "#fff" }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          component="label"
-                          sx={{
-                            height: "100%",
-                            backgroundColor: "#1F2833",
-                            color: "#66FCF1",
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                              backgroundColor: "#66FCF1",
-                              color: "#1F2833",
-                            },
-                            "&:active": {
-                              backgroundColor: "#0B0C10",
-                            },
-                            "&:disabled": {
-                              backgroundColor: "#C5C6C7",
-                              color: "#1F2833",
-                            },
+                          onChange={handleEditFileChange}
+                          InputLabelProps={{
+                            shrink: true,
                           }}
-                        >
-                          <FileUploadOutlinedIcon />
-                          <input
-                            type="file"
-                            accept="image/*"
-                            hidden
-                            onChange={handleEditFileChange}
-                          />
-                        </Button>
+                        />
                       </TableCell>
                     </>
                   ) : (
                     <>
-                      <TableCell sx={{ color: "#fff" }}>{food.name}</TableCell>
-                      <TableCell sx={{ color: "#fff" }}>{food.group}</TableCell>
-                      <TableCell sx={{ color: "#fff" }}>{food.price}</TableCell>
-                      <TableCell sx={{ color: "#fff" }}>
-                        {food.description}
+                      <TableCell sx={{ color: "#fff", fontSize: "1.1rem" }}>
+                        {food.name}
+                      </TableCell>
+                      <TableCell sx={{ color: "#fff", fontSize: "1.1rem" }}>
+                        {food.foodGroup}
+                      </TableCell>
+                      <TableCell sx={{ color: "#fff", fontSize: "1.1rem" }}>
+                        {food.price}
                       </TableCell>
                     </>
                   )}
-                  <TableCell>
+                  <TableCell sx={{ fontSize: "1.1rem" }}>
                     <Box
                       sx={{
                         display: "flex",
@@ -401,7 +500,7 @@ const FoodTable = ({ initialData }) => {
                         </IconButton>
                       )}
                       <IconButton
-                        onClick={() => handleDeleteFood(index)}
+                        onClick={() => handleDelete(food.id)}
                         sx={{
                           color: "#FF0000",
                         }}
@@ -421,3 +520,15 @@ const FoodTable = ({ initialData }) => {
 };
 
 export default FoodTable;
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
