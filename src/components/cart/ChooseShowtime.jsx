@@ -1,36 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Typography, Grid, Button } from "@mui/material";
-import dayjs from "dayjs";
 
-const ChooseShowtime = ({ onShowtimeSelect }) => {
-  const today = dayjs();
-  const tomorrow = today.add(1, "day");
-
-  const [selectedDate, setSelectedDate] = useState(today.format("YYYY-MM-DD"));
-  const [selectedTime, setSelectedTime] = useState(null);
-
-  const availableTimes = ["10:00 AM", "1:00 PM", "4:00 PM", "7:00 PM", "10:00 PM"];
-
-  const handleDateSelection = (date) => {
-    setSelectedDate(date);
-    setSelectedTime(null); // Reset the selected time when the date changes
-  };
-
-  const handleTimeSelection = (time) => {
-    setSelectedTime(time);
-    if (onShowtimeSelect) {
-      onShowtimeSelect({ date: selectedDate, time });
-    }
-  };
+const ChooseShowtime = ({ showTime, selectedTime, handleSelectDay, handleSelectTime }) => {
+  // Lấy danh sách giờ chiếu dựa trên ngày đã chọn
+  const selectedDayTimes = showTime.find(item => item.day === selectedTime.day)?.times || [];
 
   return (
     <Box
       sx={{
-        backgroundColor: 'transparent',
+        backgroundColor: "transparent",
         padding: 4,
         marginBottom: 4,
         borderRadius: "8px",
-        border: '2px solid #66FCF1',
+        border: "2px solid #66FCF1",
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
         color: "#66FCF1",
         textAlign: "center",
@@ -40,58 +22,61 @@ const ChooseShowtime = ({ onShowtimeSelect }) => {
         CHỌN SUẤT CHIẾU
       </Typography>
 
+      {/* Phần chọn ngày */}
       <Box sx={{ marginBottom: 3 }}>
         <Typography variant="body1" sx={{ marginBottom: 2 }}>
           Chọn ngày:
         </Typography>
         <Grid container spacing={2} justifyContent="center">
-          {[today, tomorrow].map((date) => {
-            const formattedDate = date.format("YYYY-MM-DD");
-            const displayDate = date.format("DD/MM/YYYY");
-            return (
-              <Grid item key={formattedDate}>
-                <Button
-                  onClick={() => handleDateSelection(formattedDate)}
-                  sx={{
-                    backgroundColor: formattedDate === selectedDate ? "#66FCF1" : "#fff",
-                    color: "#000",
-                    "&:hover": {
-                      backgroundColor: formattedDate === selectedDate ? "#66FCF1" : "#f0f0f0",
-                    },
-                    padding: "10px 20px",
-                    borderRadius: "4px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {displayDate}
-                </Button>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Box>
-
-      <Box>
-        <Typography variant="body1" sx={{ marginBottom: 2 }}>
-          Chọn giờ:
-        </Typography>
-        <Grid container spacing={2} justifyContent="center">
-          {availableTimes.map((time) => (
-            <Grid item key={time}>
+          {showTime.map(({ day }) => (
+            <Grid item key={day}>
               <Button
-                onClick={() => handleTimeSelection(time)}
+                onClick={() => handleSelectDay(day)}
                 sx={{
-                  backgroundColor: time === selectedTime ? "#66FCF1" : "#fff",
-                  color:  "#000",
+                  backgroundColor: day === selectedTime.day ? "#66FCF1" : "#fff",
+                  color: "#000",
                   "&:hover": {
-                    backgroundColor: time === selectedTime ? "#66FCF1" : "#f0f0f0",
+                    backgroundColor: day === selectedTime.day ? "#66FCF1" : "#f0f0f0",
                   },
                   padding: "10px 20px",
                   borderRadius: "4px",
                   fontWeight: "bold",
                 }}
               >
-                {time}
+                {day}
+              </Button>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* Phần chọn giờ */}
+      <Box>
+        <Typography variant="body1" sx={{ marginBottom: 2 }}>
+          Chọn giờ:
+        </Typography>
+        <Grid container spacing={2} justifyContent="center">
+          {selectedDayTimes.map((o) => (
+            <Grid item key={o.time}>
+              <Button
+                onClick={() =>{ 
+                  handleSelectTime({ day: selectedTime.day, time: {
+                    startTime: o.startTime,
+                    endTime: o.endTime,
+                    time: o.time
+                  } })}}
+                sx={{
+                  backgroundColor: o.time === selectedTime?.time?.time ? "#66FCF1" : "#fff",
+                  color: "#000",
+                  "&:hover": {
+                    backgroundColor: o.time === selectedTime?.time?.time ? "#66FCF1" : "#f0f0f0",
+                  },
+                  padding: "10px 20px",
+                  borderRadius: "4px",
+                  fontWeight: "bold",
+                }}
+              >
+                {o.time}
               </Button>
             </Grid>
           ))}
