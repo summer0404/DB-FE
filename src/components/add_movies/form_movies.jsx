@@ -9,7 +9,11 @@ import {
   Typography,
   Autocomplete,
 } from "@mui/material";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import {
+  LocalizationProvider,
+  DatePicker,
+  DateTimePicker,
+} from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -45,6 +49,9 @@ const MovieForm = (props) => {
     country: props.form?.data?.country || "",
     description: props.form?.data?.description || "",
   });
+
+  const [startTime, setStartTime] = useState(props.form?.data?.startTime || []);
+  const [endTime, setEndTime] = useState(props.form?.data?.endTime || []);
 
   const handleMovieDataChange = (field, value) => {
     setMovieData((prev) => ({
@@ -97,10 +104,22 @@ const MovieForm = (props) => {
     setActors(newActors);
   };
 
+  const handleAddTime = () => {
+    setStartTime([...startTime, dayjs()]);
+    setEndTime([...endTime, dayjs()]);
+  };
+
+  const handleDeleteTime = (index) => {
+    setStartTime(startTime.filter((_, i) => i !== index));
+    setEndTime(endTime.filter((_, i) => i !== index));
+  };
+
   // Tải ảnh lên
-  const [posterPreviews, setPosterPreviews] = useState(props.form?.data?.files.map(file => {
-    return file.path;
-  }) || []); // Lưu danh sách URL của hình ảnh đã chọn
+  const [posterPreviews, setPosterPreviews] = useState(
+    props.form?.data?.files?.map((file) => {
+      return file.path;
+    }) || []
+  ); // Lưu danh sách URL của hình ảnh đã chọn
   const [posters, setPosters] = useState([]);
 
   const handleImageUpload = (event) => {
@@ -146,6 +165,18 @@ const MovieForm = (props) => {
     loadCountries(); // Gọi hàm bất đồng bộ
   }, []);
 
+  const handleShowTimeChange = (index, value) => {
+    const newShowTimes = [...startTime];
+    newShowTimes[index] = value;
+    setStartTime(newShowTimes);
+  };
+
+  const handleEndTimeChange = (index, value) => {
+    const newEndTimes = [...endTime];
+    newEndTimes[index] = value;
+    setEndTime(newEndTimes);
+  };
+
   const handleCreate = async () => {
     try {
       const newData = {
@@ -155,20 +186,18 @@ const MovieForm = (props) => {
         ageLimitation: movieData.ageLimitation,
         country: movieData.country,
         description: movieData.description,
-        genres: genres, // Nếu có danh mục
-        files: posters, // Mảng các file tải lên
-        actors: actors, // Danh sách diễn viên
-        directors: directors, // Danh sách đạo diễn
+        genres: genres,
+        files: posters,
+        actors: actors,
+        directors: directors,
+        startTime: startTime,
+        endTime: endTime, // Thêm thời gian kết thúc
       };
       props.setOpen(false);
-      // Gọi API tạo mới phim
       const response = await createMovie(newData);
       console.log("Tạo phim thành công:", response);
-
-      // Nếu cần, thực hiện thêm logic ở đây (reset form, thông báo...)
     } catch (error) {
-      console.error("Lỗi khi tạo phim:");
-      // Hiển thị lỗi hoặc thông báo người dùng
+      console.error("Lỗi khi tạo phim:", error);
     }
   };
 
@@ -295,6 +324,40 @@ const MovieForm = (props) => {
         <Typography variant="body2" color="text.secondary">
           {movieData.description.length}/500 ký tự
         </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="h6" className="text-black">
+          Thời gian chiếu và kết thúc
+        </Typography>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {startTime.map((showTime, index) => (
+            <Box key={index} className="flex items-center gap-4 mt-2">
+              <DateTimePicker
+                label="Thời gian chiếu"
+                value={showTime}
+                onChange={(newValue) => handleShowTimeChange(index, newValue)}
+                fullWidth
+              />
+              <DateTimePicker
+                label="Thời gian kết thúc"
+                value={endTime[index]}
+                onChange={(newValue) => handleEndTimeChange(index, newValue)}
+                fullWidth
+              />
+              <IconButton onClick={() => handleDeleteTime(index)}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ))}
+        </LocalizationProvider>
+        <Button
+          startIcon={<AddCircleOutlineOutlined />}
+          onClick={handleAddTime}
+          className="mt-2"
+        >
+          Thêm thời gian chiếu
+        </Button>
       </Box>
 
       <Box className="flex flex-col gap-2">
