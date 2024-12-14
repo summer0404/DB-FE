@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import NavBar from '../navbar/NavBar';
 import LandingPage from './LandingPage';
 import PopularMovies from './PopularMovies';
 import {getAllMovies} from '../../api/movies.api';
@@ -14,7 +13,6 @@ export default function HomePage() {
             try {
                 setLoading(true);
                 const response = await getAllMovies();
-                console.log("response", response);
                 if (response.success && response.data) {
                     setMovies(response.data);
                 } else {
@@ -47,7 +45,6 @@ export default function HomePage() {
     };
 
     const categorizedMovies = categorizeMovies(movies);
-    console.log("categorizedMovies", categorizedMovies);
     return (
         <div style={{ padding: '20px', backgroundColor: 'black' }}>
             <LandingPage />
