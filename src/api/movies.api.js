@@ -14,3 +14,14 @@ export async function getAllMovies() {
         throw error;
     }
 }
+
+export async function getMovieById(id) {
+    try {
+        const res = await axios.get(`${CONST_BASE_URL}/${MOVIES_CONST}/${id}`, {
+        });
+        return res.data;
+    } catch (error) {
+        console.error('Error getting movie by id:', error);
+        throw error;
+    }
+}

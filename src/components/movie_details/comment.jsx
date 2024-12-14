@@ -21,7 +21,11 @@ export default function Comment({ comments, addComment }) {
 
   const handleSubmit = () => {
     if (newComment.trim() && newRating) {
-      addComment({ rateTime: Date.now(), comment: newComment, stars: newRating });
+      addComment({
+        rateTime: Date.now(),
+        comment: newComment,
+        stars: newRating,
+      });
       setNewComment("");
       setNewRating(0);
     }
@@ -40,7 +44,6 @@ export default function Comment({ comments, addComment }) {
       >
         BÌNH LUẬN
       </Typography>
-
       <List
         sx={{
           width: "100%",
@@ -54,7 +57,7 @@ export default function Comment({ comments, addComment }) {
           mb: 2, // Margin bottom for spacing
         }}
       >
-        {comments.map((comment,index) => (
+        {comments.map((comment, index) => (
           <ListItem key={index} sx={{ padding: "0", cursor: "default" }}>
             <ListItemAvatar>
               <Avatar alt="Profile Picture" />
@@ -74,12 +77,13 @@ export default function Comment({ comments, addComment }) {
                   },
                 }}
               />
-              <ListItemText sx={{ color: "#ffffff" }}>{comment.content}</ListItemText>
+              <ListItemText sx={{ color: "#ffffff" }}>
+                {comment.content}
+              </ListItemText>
             </Box>
           </ListItem>
         ))}
       </List>
-
       {/* Comment Input Section */}
       // Check nếu user tồn tại thì mới hiện
       <Box
@@ -117,14 +121,42 @@ export default function Comment({ comments, addComment }) {
             "& .MuiRating-iconFilled": {
               color: "yellow",
             },
+            "& .MuiRating-icon": {
+              color: "yellow", // Sets outline color
+              strokeWidth: 1,
+            },
+            "& .MuiRating-iconEmpty": {
+              color: "transparent", // Makes empty stars transparent with white outline
+              stroke: "white",
+              strokeWidth: 1,
+            },
           }}
         />
 
         <Button
           variant="contained"
-          color="primary"
           onClick={handleSubmit}
           disabled={!newComment.trim() || !newRating}
+          sx={{
+            backgroundColor: "#66FCF1",
+            color: "#0B0C10",
+            fontWeight: "bold",
+            padding: "8px 24px",
+            transition: "all 0.3s ease",
+            border: "1px solid #45A29E",
+            "&:hover": {
+              backgroundColor: "#45A29E",
+              transform: "translateY(-2px)",
+              boxShadow: "0 4px 8px rgba(102, 252, 241, 0.2)",
+            },
+            "&:active": {
+              transform: "translateY(0)",
+            },
+            "&:disabled": {
+              backgroundColor: "#C5C6C7",
+              color: "#1F2833",
+            }
+          }}
         >
           Gửi bình luận
         </Button>

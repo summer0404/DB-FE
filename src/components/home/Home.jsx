@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-import { getAllMovie } from '../../service/home';
 import React, { useState, useEffect } from "react";
 import LandingPage from './LandingPage';
 import PopularMovies from './PopularMovies';
@@ -38,27 +36,13 @@ export default function HomePage() {
             if (!acc[genre]) {
                 acc[genre] = [];
             }
-            acc[genre].push({
-                title: movie.name,
-                img: movie.files && movie.files.length > 0 ? movie.files[0].path : "",
-            });
+            acc[genre].push(movie); // Push entire movie object
             return acc;
         }, {});
     };
 
     const categorizedMovies = categorizeMovies(movies);
-  const [movieData, setMovieData] = useState([]);
-  const getMovies = async () => {
-    const movies = await getAllMovie();
-    console.log(movies)
-    setMovieData(movies);
-  } 
-  
-  useEffect(() => {
-    getMovies();
-  }, []);
-  
-  return (
+    return (
         <div style={{ padding: '20px', backgroundColor: 'black' }}>
             <LandingPage />
 

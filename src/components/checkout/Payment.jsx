@@ -7,11 +7,31 @@ import {
   CardContent,
   Grid,
 } from "@mui/material";
+import { updateOrder } from "../../api/order.api";
 import { useState } from "react";
 import DiscountIcon from "@mui/icons-material/Discount";
 
-export default function Payment({back, next}) {
+export default function Payment({back, next, orderData}) {
     const [paymentMethod, setPaymentMethod] = useState("");
+    // Add handler function
+    const handlePayment = async () => {
+      try {
+        const response = await updateOrder(orderData.order.id, {
+          paymentStatus: "Thành công"
+        });
+        
+        if (response.success) {
+          window.alert("Thanh toán thành công");
+          next();
+        } else {
+          window.alert("Thanh toán thất bại: " + response.message);
+        }
+      } catch (error) {
+        console.error('Error updating payment:', error);
+        window.alert("Có lỗi xảy ra khi thanh toán");
+      }
+    };
+
   return (
     // <Box
     //   sx={{
@@ -43,8 +63,8 @@ export default function Payment({back, next}) {
           alignItems: "center",
           padding: "10px",
           marginBottom: "10px",
-          backgroundColor: "#1F2833",
-          color: "#FFF",
+          backgroundColor: paymentMethod === "momo" ? "#45A29E" : "#1F2833",
+          color: paymentMethod === "momo" ? "#0B0C10" : "#FFF",
           border: "1px solid #45A29E",
           cursor: "pointer",
           "&:hover": {
@@ -69,10 +89,11 @@ export default function Payment({back, next}) {
           alignItems: "center",
           padding: "10px",
           marginBottom: "10px",
-          backgroundColor: "#1F2833",
-          color: "#FFF",
+          backgroundColor: paymentMethod === "domestic" ? "#45A29E" : "#1F2833",
+          color: paymentMethod === "domestic" ? "#0B0C10" : "#FFF",
           border: "1px solid #45A29E",
           cursor: "pointer",
+          transition: "all 0.3s ease",
           "&:hover": {
             backgroundColor: "#66FCF1",
             color: "#0B0C10",
@@ -95,8 +116,8 @@ export default function Payment({back, next}) {
           alignItems: "center",
           padding: "10px",
           marginBottom: "10px",
-          backgroundColor: "#1F2833",
-          color: "#FFF",
+          backgroundColor: paymentMethod === "international" ? "#45A29E" : "#1F2833",
+          color: paymentMethod === "international" ? "#0B0C10" : "#FFF",
           border: "1px solid #45A29E",
           cursor: "pointer",
           "&:hover": {
@@ -115,7 +136,7 @@ export default function Payment({back, next}) {
       </Card>
 
       {/* Discount Code Section */}
-      <Button
+      {/* <Button
         sx={{
           marginTop: "20px",
           padding: "10px",
@@ -133,12 +154,12 @@ export default function Payment({back, next}) {
         }}
       >
         <DiscountIcon sx={{ marginRight: "10px", color: "#ff3030"}} />{" "}
-        {/* Add icon with margin */}
+      
         <Box sx={{ display: "flex", flexDirection: "column",
              alignItems: "flex-start" 
          }}>
           {" "}
-          {/* Wrapper for text */}
+          
           <Typography
             sx={{
               fontWeight: "bold",
@@ -157,7 +178,7 @@ export default function Payment({back, next}) {
             ABCXYZ
           </Typography>
         </Box>
-      </Button>
+      </Button> */}
 
       {/* Buttons */}
       <Box
@@ -183,6 +204,7 @@ export default function Payment({back, next}) {
         </Button>
         <Button
           variant="contained"
+          onClick={handlePayment}
           sx={{
             backgroundColor: paymentMethod ? "#66FCF1" : "#ccc",
             color: "#0B0C10",
@@ -195,7 +217,6 @@ export default function Payment({back, next}) {
     }
           }}
           disabled={!paymentMethod}
-            onClick={next}
         >
           THANH TOÁN
         </Button>

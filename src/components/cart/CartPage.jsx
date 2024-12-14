@@ -2,9 +2,11 @@ import React, { useEffect, useState, useCallback } from "react";
 import SeatingMap from "./SeatingMap";
 import FoodBuy from "./FoodBuy";
 import ChooseShowtime from "./ChooseShowtime";
-import QuickBooking from "./QuickBooking";
+import { createOrder } from "../../api/order.api";
 import MovieDetailComponent from "../movie_details";
 import { Box } from "@mui/material";
+import { getCoupons } from "../../api/coupon.api";
+import  ChooseCoupon from "./ChooseCoupon";
 import {
   getCombo,
   getCommentOfMovie,
@@ -13,8 +15,14 @@ import {
   getShowTimeOfMovie,
   sendComment,
 } from "../../service/cart";
+import { useNavigate } from "react-router-dom";
+
+
+const USER_ID="320b1ed2-946f-4245-a406-9d991bfd6815";
 
 export default function CartPage({ movieId }) {
+    const navigate = useNavigate();
+  
   const [movieInfo, setMovieInfo] = useState({
     id: "",
     name: "",
@@ -39,6 +47,12 @@ export default function CartPage({ movieId }) {
   const [busySeats, setBusySeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [selectedFoods, setSelectedFoods] = useState([]);
+  const [selectedCouponId, setSelectedCouponId] = useState(null);
+
+  const handleCouponSelect = (coupon) => {
+    setSelectedCouponId(coupon.id);
+  };
+
   const handleSelectFood = useCallback((foodId, price, change) => {
     setSelectedFoods((prevSelectedFoods) => {
       const existingFood = prevSelectedFoods.find((food) => food.id === foodId);
@@ -68,9 +82,9 @@ export default function CartPage({ movieId }) {
     });
   }, []);
 
-  const handleOrder = async () => {
+  const handleOrder = () => {
     if (selectedSeats.length === 0) {
-      console.log("Vui lòng chọn chỗ ngồi!");
+      window.alert("Vui lòng chọn chỗ ngồi!");
       return; // Dừng nếu không có ghế được chọn
     }
     let totalPrice = 0;
@@ -106,12 +120,13 @@ export default function CartPage({ movieId }) {
       tickets,
     };
 
+
     // Thêm thông tin `books` nếu `selectedFoods` không rỗng
     if (selectedFoods.length !== 0) {
       result.books = selectedFoods.map((food) => {
         totalPrice += food.price;
         return {
-          foodId: food.id,
+          fastfoodId: food.id,
           quantity: food.quantity,
           orderId: "a",
           size: "Big"
@@ -120,6 +135,12 @@ export default function CartPage({ movieId }) {
     }
 
     result.totalPrice = totalPrice;
+ 
+    if (selectedCouponId) {
+      result.couponId = selectedCouponId;
+    }
+    result.userId = USER_ID;
+    return result;
   };
 
   const getInfo = async () => {
@@ -185,7 +206,7 @@ export default function CartPage({ movieId }) {
     // Send the comment with necessary data
     await sendComment({
       ...newComment, // Spread newComment properties
-      userId: "ada88e22-687d-4b60-8292-cf7387e7aff4", // Add userId
+      userId: USER_ID, // Add userId
       movieId, // Add movieId
     });
   };
@@ -197,6 +218,27 @@ export default function CartPage({ movieId }) {
     getShowTime();
     getFastFoods();
   }, []);
+
+  const handleSubmitOrder = async () => {
+    try {
+      const orderData = handleOrder(); // Get order data
+      console.log('Order Data:', orderData);
+      if (!orderData) return; // Exit if validation failed
+      
+      const response = await createOrder(orderData);
+      if (response.success) {
+        navigate('/checkout', {
+          state: { orderData: response.data }
+        });
+      } else {
+        window.alert("Đặt vé thất bại: " + response.message);
+      }
+    } catch (error) {
+      console.error('Error creating order:', error);
+      window.alert("Có lỗi xảy ra khi đặt vé");
+    }
+  };
+  
 
   return (
     <>
@@ -213,7 +255,7 @@ export default function CartPage({ movieId }) {
         <MovieDetailComponent
           movieInfo={movieInfo || {}}
           comments={comments || []}
-          handleOrder={handleOrder}
+          handleOrder={handleSubmitOrder}
           addComment={addComment}
         />
         <ChooseShowtime
@@ -232,6 +274,7 @@ export default function CartPage({ movieId }) {
           selectedFoods={selectedFoods || []}
           handleSelectFood={handleSelectFood}
         />
+        <ChooseCoupon onSelect={handleCouponSelect}/>
       </Box>
     </>
   );

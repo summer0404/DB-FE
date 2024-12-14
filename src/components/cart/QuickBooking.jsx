@@ -25,7 +25,7 @@ const QuickBooking = () => {
   const navigate = useNavigate();
 
   const handleBooking = () => {
-    navigate("/cart");
+    navigate(`/cart/${movie}`);
   };
 
   const fetchShowtimes = async (movieId) => {
@@ -231,32 +231,32 @@ const QuickBooking = () => {
           ĐẶT NGAY
         </Button>
       </Box>
-      <PopularMovies title="Phim đang chiếu" movies={movieData} />
+      <PopularMovies title="Phim đang chiếu" movies={movies} />
     </>
   );
 };
 
 export default QuickBooking;
 
-const movieData = [
-  {
-    img: "src/assets/movie_poster.jpg",
-    title: "Venom: The Last Dance",
-    genre: "Science Fiction, Action, Adventure",
-  },
-  {
-    img: "src/assets/Spider_moviePoster.jpg",
-    title: "Smile 2",
-    genre: "Horror, Mystery",
-  },
-  {
-    img: "src/assets/love_poster.jpeg",
-    title: "Moana 2",
-    genre: "Animation, Adventure, Family, Comedy",
-  },
-  {
-    img: "src/assets/Spider_moviePoster.jpg",
-    title: "The Wild Robot",
-    genre: "Animation, Science Fiction, Family",
-  },
-];
+// const movieData = [
+//   {
+//     img: "src/assets/movie_poster.jpg",
+//     title: "Venom: The Last Dance",
+//     genre: "Science Fiction, Action, Adventure",
+//   },
+//   {
+//     img: "src/assets/Spider_moviePoster.jpg",
+//     title: "Smile 2",
+//     genre: "Horror, Mystery",
+//   },
+//   {
+//     img: "src/assets/love_poster.jpeg",
+//     title: "Moana 2",
+//     genre: "Animation, Adventure, Family, Comedy",
+//   },
+//   {
+//     img: "src/assets/Spider_moviePoster.jpg",
+//     title: "The Wild Robot",
+//     genre: "Animation, Science Fiction, Family",
+//   },
+// ];

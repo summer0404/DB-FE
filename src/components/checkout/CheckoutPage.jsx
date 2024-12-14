@@ -6,8 +6,12 @@ import ProgressBar from "./ProgressBar";
 import TicketInfo from "./TicketInfo";
 import Payment from "./Payment";
 import TicketCode from "./TicketCode";
+import { useLocation } from 'react-router-dom';
+
 
 const CheckoutPage = () => {
+  const location = useLocation();
+  const orderData = location.state?.orderData;
   const [progress, setProgress] = useState(1);
   const handleBack = () => {
     setProgress(progress - 1);
@@ -47,20 +51,20 @@ const CheckoutPage = () => {
             {progress === 1 && (
               <>
                 <CustomerInfo next={handleNext} />
-                <TicketInfo ticketData={ticketSampleData} />
+                <TicketInfo ticketData={orderData} />
               </>
             )}
             {progress === 2 && (
               <>
-                <Payment back={handleBack} next={handleNext} />
-                <TicketInfo ticketData={ticketSampleData} />
+                <Payment back={handleBack} next={handleNext} orderData={orderData}/>
+                <TicketInfo ticketData={orderData} />
               </>
             )}
 
             {progress === 3 && (
               <>
                 <TicketCode />
-                <TicketInfo ticketData={ticketSampleData} />
+                <TicketInfo ticketData={orderData} />
               </>
             )}
           </Grid>
@@ -72,11 +76,11 @@ const CheckoutPage = () => {
 
 export default CheckoutPage;
 
-const ticketSampleData = {
-  movieName: "The Matrix",
-  ageLimitation: "18",
-  startTime: "20:00",
-  room: "1",
-  seatName: "A1, A2",
-  price: "100000",
-};
+// const ticketSampleData = {
+//   movieName: "The Matrix",
+//   ageLimitation: "18",
+//   startTime: "20:00",
+//   room: "1",
+//   seatName: "A1, A2",
+//   price: "100000",
+// };

@@ -48,3 +48,14 @@ export async function updateFastFood(fastfoodId, fastfoodData) {
         throw error;
     }
 }
+
+export async function getFastFoodById(fastfoodId) {
+    try {
+        const res = await axios.get(`${CONST_BASE_URL}/${FASTFOOD_CONST}/${fastfoodId}`, {
+        });
+        return res.data;
+    } catch (error) {
+        console.error('Error getting fastfood by id:', error);
+        throw error;
+    }
+}

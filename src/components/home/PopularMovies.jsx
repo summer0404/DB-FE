@@ -74,8 +74,8 @@ export default function PopularMovies({ title, movies }) {
             }}
           >
             <img
-              src={item.img}
-              alt={item.title}
+              src={item.files[0].path}
+              alt={item.name}
               style={{
                 width: "100%",
                 height: "500px",
@@ -104,7 +104,7 @@ export default function PopularMovies({ title, movies }) {
                   textOverflow: "ellipsis",
                 }}
               >
-                {item.title}
+                {item.name}
               </Typography>
 
             </Box>

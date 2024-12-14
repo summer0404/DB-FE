@@ -13,3 +13,27 @@ export async function getOrders() {
         throw error;
     }
 }
+
+export async function createOrder(orderData) {
+    console.log('Order Data:', orderData);
+    try {
+        const res = await axios.post(`${CONST_BASE_URL}/${ORDERS_CONST}`, orderData, {
+        });
+        return res.data;
+    } catch (error) {
+        console.error('Error creating order:', error);
+        throw error;
+    }
+}
+
+export async function updateOrder(orderId, orderData) {
+
+    try {
+        const res = await axios.put(`${CONST_BASE_URL}/${ORDERS_CONST}/${orderId}`, orderData, {
+        });
+        return res.data;
+    } catch (error) {
+        console.error('Error updating order:', error);
+        throw error;
+    }
+}
