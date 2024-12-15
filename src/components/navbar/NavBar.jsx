@@ -1,24 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
-import Badge from "@mui/material/Badge";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import ButtonBase from "@mui/material/ButtonBase";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  InputBase,
+  Badge,
+  MenuItem,
+  Menu,
+  ButtonBase,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Paper,
+} from "@mui/material";
+import {
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  AccountCircle,
+  Mail as MailIcon,
+  Notifications as NotificationsIcon,
+  MoreVert as MoreIcon,
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import SideBar from "./SideBar";
-import { useNavigate } from 'react-router-dom';
-
+import { getAllMovie } from "../../service/home";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -60,12 +69,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function NavBar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
-
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [movies, setMovies] = useState([]);
+  const [showResults, setShowResults] = useState(false);
 
   const navigate = useNavigate();
 
@@ -90,79 +99,28 @@ export default function NavBar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
+  const handleSearchChange = async (event) => {
+    const term = event.target.value;
+    setSearchTerm(term);
 
-  const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
+    if (term.trim()) {
+      const results = await getAllMovie();
+      const filteredMovies = results.filter((movie) =>
+        movie.title.toLowerCase().includes(term.toLowerCase())
+      );
+      setMovies(filteredMovies);
+      setShowResults(true);
+    } else {
+      setShowResults(false);
+      setMovies([]);
+    }
+  };
+
+  const handleResultClick = (id) => {
+    navigate(`/cart/${id}`);
+    setShowResults(false);
+    setSearchTerm("");
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -190,94 +148,63 @@ export default function NavBar() {
           >
             <MenuIcon />
           </IconButton>
-          <ButtonBase onClick={() => navigate('/')} sx={{ color: '#66FCF1' }}>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: "none", sm: "block" }, color: "#66FCF1" }}
-          >
-            CINEMA AWESOME
-          </Typography>
+          <ButtonBase onClick={() => navigate("/")} sx={{ color: "#66FCF1" }}>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ display: { xs: "none", sm: "block" }, color: "#66FCF1" }}
+            >
+              CINEMA AWESOME
+            </Typography>
           </ButtonBase>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Tìm tên phim..."
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
+          <Box position="relative">
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Tìm tên phim..."
+                inputProps={{ "aria-label": "search" }}
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </Search>
+            {showResults && (
+              <Paper
+                sx={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  maxHeight: 300,
+                  overflowY: "auto",
+                  zIndex: 999,
+                }}
+              >
+                <List>
+                  {movies.length > 0 ? (
+                    movies.map((movie) => (
+                      <ListItemButton
+                        key={movie.id}
+                        onClick={() => handleResultClick(movie.id)}
+                      >
+                        <ListItemText primary={movie.title} />
+                      </ListItemButton>
+                    ))
+                  ) : (
+                    <ListItem>
+                      <ListItemText primary="Không tìm thấy kết quả" />
+                    </ListItem>
+                  )}
+                </List>
+              </Paper>
+            )}
+          </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              aria-label="show 4 new mails"
-              sx={{
-                color: "#66FCF1",
-                "&:hover": {
-                  color: alpha("#66FCF1", 0.8),
-                },
-              }}
-            >
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              sx={{
-                color: "#66FCF1",
-                "&:hover": {
-                  color: alpha("#66FCF1", 0.8),
-                },
-              }}
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              sx={{
-                color: "#66FCF1",
-                "&:hover": {
-                  color: alpha("#66FCF1", 0.8),
-                },
-              }}
-            >
-              <AccountCircle />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              sx={{
-                color: "#66FCF1",
-                "&:hover": {
-                  color: alpha("#66FCF1", 0.8),
-                },
-              }}
-            >
-              <MoreIcon />
-            </IconButton>
-          </Box>
         </Toolbar>
       </AppBar>
       <SideBar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 }
