@@ -60,7 +60,7 @@ export class AuthController {
       );
       request.res.cookie("sid", accessTokenCookie.token, {
         maxAge: accessTokenCookie.maxAge,
-        sameSite: "none",
+        sameSite: "lax",
         secure: true,
         httpOnly: false,
         path: "/",
@@ -68,7 +68,7 @@ export class AuthController {
 
       request.res.cookie("refresh_token", refreshTokenCookie.token, {
         maxAge: refreshTokenCookie.maxAge,
-        sameSite: "none",
+        sameSite: "lax",
         secure: true,
         httpOnly: false,
         path: "/", // Đảm bảo cookie có thể truy cập từ tất cả các path,
@@ -103,13 +103,14 @@ export class AuthController {
   async getMe(@Req() request: RequestWithUserDto, @Res() response: Response) {
     const { user } = request;
     try {
-      console.log(user);
+      console.log(123);
 
       const userInfo = await this.userService.findOne(user.userId);
       const returningData = {
         name: userInfo.firstName + " " + userInfo.lastName,
         email: userInfo.email,
         userType: userInfo.userType,
+        userId: userInfo.id,
       };
       return response.status(HttpStatus.OK).json({
         success: true,
@@ -172,7 +173,7 @@ export class AuthController {
 
       response.cookie("sid", accessTokenCookie.token, {
         maxAge: accessTokenCookie.maxAge,
-        sameSite: "none", // Hỗ trợ cross-origin
+        sameSite: "lax", // Hỗ trợ cross-origin
         secure: true, // Cookie chỉ được gửi qua HTTPS
       });
       return response.status(HttpStatus.OK).json({
