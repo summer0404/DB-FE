@@ -223,6 +223,7 @@ const MovieForm = (props) => {
       };
       props.setOpen(false);
       const response = await updateFilm(props.form?.data?.id, updatedData);
+      props.setReloadPage((prev) => !prev);
       console.log("Cập nhật phim thành công:", response);
     } catch (error) {
       console.error("Lỗi khi cập nhật phim:", error);

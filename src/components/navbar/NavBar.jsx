@@ -25,7 +25,6 @@ import {
   Notifications as NotificationsIcon,
   MoreVert as MoreIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 import SideBar from "./SideBar";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -121,7 +120,7 @@ export default function NavBar() {
         vertical: "top",
         horizontal: "right",
       }}
-      open={isMenuOpen}
+      // open={isMenuOpen}
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleLogout}>Log out</MenuItem>
@@ -142,7 +141,7 @@ export default function NavBar() {
         vertical: "top",
         horizontal: "right",
       }}
-      open={isMobileMenuOpen}
+      // open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
@@ -221,14 +220,12 @@ export default function NavBar() {
           </ButtonBase>
           <Box position="relative">
             <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
+              <SearchIconWrapper>{/* <SearchIcon /> */}</SearchIconWrapper>
               <StyledInputBase
                 placeholder="Tìm tên phim..."
                 inputProps={{ "aria-label": "search" }}
                 value={searchTerm}
-                onChange={handleSearchChange}
+                // onChange={handleSearchChange}
               />
             </Search>
             {showResults && (

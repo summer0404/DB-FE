@@ -26,6 +26,7 @@ function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userType = useSelector((state) => state?.user?.user?.userType);
+  const pathname = window.location.pathname;
 
   useEffect(() => {
     async function firstFetch() {
@@ -47,9 +48,11 @@ function App() {
   return (
     <div
       className="mx-auto"
-      style={{ padding: "20px", backgroundColor: "black" }}
+      style={
+        pathname === "/" ? {} : { padding: "20px", backgroundColor: "black" }
+      }
     >
-      <NavBar />
+      {pathname != "/" && <NavBar />}
       <Routes>
         {!userType && <Route path="/" element={<Login />} />}
         {/* <Route path="/register" element={<Register />} />} */}

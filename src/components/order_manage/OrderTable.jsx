@@ -8,6 +8,7 @@ import {
   Paper,
   Typography,
   Box,
+  Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getOrders } from "../../api/order.api";
@@ -72,8 +73,8 @@ export default function OrderTable() {
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           <Button
             variant="contained"
-            startIcon={<SortIcon />}
-            onClick={handleSort}
+            // startIcon={<SortIcon />}
+            // onClick={handleSort}
             sx={{
               backgroundColor: "#66FCF1",
               color: "#1F2833",
@@ -84,122 +85,121 @@ export default function OrderTable() {
           </Button>
         </Box>
 
-          {/* Order Table */}
-          <TableContainer component={Paper} sx={{ backgroundColor: "#1F2937" }}>
-            <Table>
-              <TableHead>
+        {/* Order Table */}
+        <TableContainer component={Paper} sx={{ backgroundColor: "#1F2937" }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: COLUMN_WIDTHS.createdTime,
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Thời gian tạo
+                </TableCell>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: COLUMN_WIDTHS.totalPrice,
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Tổng giá
+                </TableCell>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: COLUMN_WIDTHS.paymentMethod,
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Phương thức thanh toán
+                </TableCell>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: COLUMN_WIDTHS.realPrice,
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Giá cuối cùng
+                </TableCell>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    width: COLUMN_WIDTHS.paymentStatus,
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Trạng thái thanh toán
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading ? (
                 <TableRow>
-                  <TableCell
-                    sx={{
-                      color: "#fff",
-                      fontWeight: "bold",
-                      width: COLUMN_WIDTHS.createdTime,
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    Thời gian tạo
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      color: "#fff",
-                      fontWeight: "bold",
-                      width: COLUMN_WIDTHS.totalPrice,
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    Tổng giá
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      color: "#fff",
-                      fontWeight: "bold",
-                      width: COLUMN_WIDTHS.paymentMethod,
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    Phương thức thanh toán
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      color: "#fff",
-                      fontWeight: "bold",
-                      width: COLUMN_WIDTHS.realPrice,
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    Giá cuối cùng
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      color: "#fff",
-                      fontWeight: "bold",
-                      width: COLUMN_WIDTHS.paymentStatus,
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    Trạng thái thanh toán
+                  <TableCell colSpan={5} align="center">
+                    Loading...
                   </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      Loading...
+              ) : (
+                orders.map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell
+                      sx={{
+                        color: "#fff",
+                        width: COLUMN_WIDTHS.createdTime,
+                      }}
+                    >
+                      {new Date(order.createdTime).toLocaleString()}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        color: "#fff",
+                        width: COLUMN_WIDTHS.totalPrice,
+                      }}
+                    >
+                      {order.totalPrice.toLocaleString() + ",000"}đ
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        color: "#fff",
+                        width: COLUMN_WIDTHS.paymentMethod,
+                      }}
+                    >
+                      {order.paymentMethod}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        color: "#fff",
+                        width: COLUMN_WIDTHS.realPrice,
+                      }}
+                    >
+                      {order.realPrice.toLocaleString() + ",000"}đ
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        color: "#fff",
+                        width: COLUMN_WIDTHS.paymentStatus,
+                      }}
+                    >
+                      {order.paymentStatus}
                     </TableCell>
                   </TableRow>
-                ) : (
-                  orders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell
-                        sx={{
-                          color: "#fff",
-                          width: COLUMN_WIDTHS.createdTime,
-                        }}
-                      >
-                        {new Date(order.createdTime).toLocaleString()}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          color: "#fff",
-                          width: COLUMN_WIDTHS.totalPrice,
-                        }}
-                      >
-                        {order.totalPrice.toLocaleString()}đ
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          color: "#fff",
-                          width: COLUMN_WIDTHS.paymentMethod,
-                        }}
-                      >
-                        {order.paymentMethod}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          color: "#fff",
-                          width: COLUMN_WIDTHS.realPrice,
-                        }}
-                      >
-                        {order.realPrice.toLocaleString()}đ
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          color: "#fff",
-                          width: COLUMN_WIDTHS.paymentStatus,
-                        }}
-                      >
-                        {order.paymentStatus}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Box>
-    </>
+    </Box>
   );
 }
 

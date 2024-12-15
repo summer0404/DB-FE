@@ -16,7 +16,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
@@ -29,6 +29,7 @@ import {
   deleteFastFood,
   updateFastFood,
 } from "../../api/fastfood.api";
+import { useNavigate } from "react-router-dom";
 
 const FoodTable = ({ initialData }) => {
   const [foodData, setFoodData] = useState(initialData);
@@ -38,6 +39,7 @@ const FoodTable = ({ initialData }) => {
     price: "",
     file: "",
   });
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -98,7 +100,7 @@ const FoodTable = ({ initialData }) => {
   const handleAddFood = async () => {
     try {
       if (!selectedFile) {
-        throw new Error('Please select an image file');
+        throw new Error("Please select an image file");
       }
 
       const formData = new FormData();
@@ -110,13 +112,13 @@ const FoodTable = ({ initialData }) => {
       const response = await createFastFood(formData);
       if (response.data) {
         setFoodData([...foodData, response.data]);
-        setRefreshTrigger(prev => prev + 1); // Trigger refresh
-        setNewFood({ name: '', foodGroup: '', price: '', file: '' });
+        setRefreshTrigger((prev) => prev + 1); // Trigger refresh
+        setNewFood({ name: "", foodGroup: "", price: "", file: "" });
         setSelectedFile(null);
         setFileSelected(false);
       }
     } catch (error) {
-      console.error('Error adding food:', error);
+      console.error("Error adding food:", error);
     }
   };
 
@@ -166,6 +168,7 @@ const FoodTable = ({ initialData }) => {
         setEditIndex(-1); // Exit editing mode
         setEditFood(null);
         setSelectedFile(null); // Clear the selected file
+        setRefreshTrigger((prev) => prev + 1); // Trigger refresh
       }
     } catch (error) {
       console.error("Error updating food:", error);
@@ -280,7 +283,13 @@ const FoodTable = ({ initialData }) => {
                 component="label"
                 variant="contained"
                 tabIndex={-1}
-                startIcon={fileSelected ? <CheckCircleIcon /> : <FileUploadOutlinedIcon />}
+                startIcon={
+                  fileSelected ? (
+                    <CheckCircleIcon />
+                  ) : (
+                    <FileUploadOutlinedIcon />
+                  )
+                }
                 sx={{
                   height: "100%",
                   backgroundColor: fileSelected ? "#45A29E" : "#66FCF1",
@@ -299,7 +308,7 @@ const FoodTable = ({ initialData }) => {
                   },
                 }}
               >
-                {fileSelected ? 'Đã tải lên' : 'Tải lên'}
+                {fileSelected ? "Đã tải lên" : "Tải lên"}
                 <VisuallyHiddenInput
                   type="file"
                   onChange={handleFileChange}
@@ -468,7 +477,7 @@ const FoodTable = ({ initialData }) => {
                         {food.foodGroup}
                       </TableCell>
                       <TableCell sx={{ color: "#fff", fontSize: "1.1rem" }}>
-                        {food.price}
+                        {food.price.toString() + ",000"}
                       </TableCell>
                     </>
                   )}
