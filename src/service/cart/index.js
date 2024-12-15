@@ -6,7 +6,8 @@ const backendUrl = "http://localhost:3010/database/api/v1";
 export const getMovieInfo = async (movieId) => {
   try {
     const movieInfoResponse = await axios.get(
-      `${backendUrl}/movies/${movieId}`
+      `${backendUrl}/movies/${movieId}`,
+      { withCredentials: "include" }
     );
     const movieData = movieInfoResponse?.data?.data || {};
 
@@ -30,7 +31,9 @@ export const getMovieInfo = async (movieId) => {
 
 export const getCommentOfMovie = async (movieId) => {
   try {
-    const commentsResponse = await axios.get(`${backendUrl}/rates/${movieId}`);
+    const commentsResponse = await axios.get(`${backendUrl}/rates/${movieId}`, {
+      withCredentials: "include",
+    });
 
     const commentsData = commentsResponse?.data?.data || [];
 
@@ -45,7 +48,8 @@ export const getCommentOfMovie = async (movieId) => {
 export const getShowTimeOfMovie = async (movieId) => {
   try {
     const showTimeResponse = await axios.get(
-      `${backendUrl}/showtime/${movieId}`
+      `${backendUrl}/showtime/${movieId}`,
+      { withCredentials: "include" }
     );
     const showTimeData = showTimeResponse?.data?.data || [];
 
@@ -98,7 +102,9 @@ export const getShowTimeOfMovie = async (movieId) => {
 
     // Sắp xếp giờ trong từng ngày tăng dần
     groupedData.forEach((dayEntry) => {
-      dayEntry.times.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+      dayEntry.times.sort(
+        (a, b) => new Date(a.startTime) - new Date(b.startTime)
+      );
     });
 
     return groupedData;
@@ -113,14 +119,18 @@ export const formatDatetoDDMMYYYY = (isoDate) => {
   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Lấy tháng (cộng 1 vì getMonth trả về 0-11)
   const year = date.getFullYear(); // Lấy năm
   return `${day}/${month}/${year}`;
-}
+};
 
 export const getSeatOfMovie = async (movieId, startTime) => {
   try {
-    const ticketReponse = await axios.post(`${backendUrl}/tickets/showtime`, {
-      movieId,
-      startTime,
-    });
+    const ticketReponse = await axios.post(
+      `${backendUrl}/tickets/showtime`,
+      {
+        movieId,
+        startTime,
+      },
+      { withCredentials: "include" }
+    );
     const ticketData = ticketReponse?.data?.data || [];
     const busySeat = ticketData.map((ticket) => {
       const seatPosition = ticket.seatPosition;
@@ -136,7 +146,9 @@ export const getSeatOfMovie = async (movieId, startTime) => {
 
 export const getCombo = async () => {
   try {
-    const fastFoodResponse = await axios.get(`${backendUrl}/fastfoods`);
+    const fastFoodResponse = await axios.get(`${backendUrl}/fastfoods`, {
+      withCredentials: "include",
+    });
     const fastFoodData = fastFoodResponse?.data?.data;
     const groupedData = fastFoodData.reduce((acc, item) => {
       const groupTitle = item.foodGroup.toUpperCase(); // Convert foodGroup to uppercase
@@ -166,9 +178,11 @@ export const getCombo = async () => {
 
 export const sendComment = async (comment) => {
   try {
-    await axios.post(`${backendUrl}/rates`, comment);
+    await axios.post(`${backendUrl}/rates`, comment, {
+      withCredentials: "include",
+    });
     console.log("TẠO BÌNH LUẬN THÀNH CÔNG");
   } catch (error) {
     console.log("LLỖI KHI COMMENT", error);
   }
-}
+};

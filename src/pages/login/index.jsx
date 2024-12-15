@@ -6,9 +6,13 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { getInfo, login } from "../../api/auth.api";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/user.slice";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Login() {
+  useEffect(() => {}, []);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       // console.log(tokenResponse);
@@ -18,7 +22,6 @@ export default function Login() {
           const info = await getInfo();
           if (info?.data?.success == true) {
             dispatch(setUser(info.data.data));
-            localStorage.setItem("fid", "login");
             navigate("/home");
           }
         }

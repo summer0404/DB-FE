@@ -11,6 +11,7 @@ export async function login(token) {
         headers: {
           gid: token,
         },
+        withCredentials: "include",
       }
     );
     return res;

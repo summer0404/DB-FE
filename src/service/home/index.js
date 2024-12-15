@@ -4,7 +4,9 @@ const backendUrl = "http://localhost:3010/database/api/v1";
 
 export const getAllMovie = async () => {
   try {
-    const movieInfoResponse = await axios.get(`${backendUrl}/movies`);
+    const movieInfoResponse = await axios.get(`${backendUrl}/movies`, {
+      withCredentials: "include",
+    });
     const moviesData = movieInfoResponse?.data?.data || [];
 
     const result = moviesData.map((movie) => {

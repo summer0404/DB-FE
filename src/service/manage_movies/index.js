@@ -3,7 +3,9 @@ import axios from "axios";
 const backendURL = "http://localhost:3010/database/api/v1";
 export const getAllMovies = async () => {
   try {
-    const response = await axios.get(`${backendURL}/movies`);
+    const response = await axios.get(`${backendURL}/movies`, {
+      withCredentials: "include",
+    });
     return response?.data?.data || [];
   } catch (error) {
     console.error("L��i khi lấy tất cả các phim:", error);
@@ -252,6 +254,7 @@ export const createMovie = async (movieData) => {
       headers: {
         "Content-Type": "multipart/form-data", // Đặt Content-Type để báo đây là FormData
       },
+      withCredentials: "include",
     });
 
     return response.data; // Trả về dữ liệu từ API
@@ -264,7 +267,9 @@ export const createMovie = async (movieData) => {
 export const deleteMovie = async (id) => {
   try {
     console.log(id);
-    const response = await axios.delete(`${backendURL}/movies/${id}`);
+    const response = await axios.delete(`${backendURL}/movies/${id}`, {
+      withCredentials: "include",
+    });
     console.log(response.data); // Nếu muốn log phản hồi từ server
     return response.data; // Nếu cần trả về kết quả
   } catch (error) {
