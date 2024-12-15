@@ -7,27 +7,20 @@ import {
   IconButton,
   Typography,
   InputBase,
-  Badge,
-  MenuItem,
-  Menu,
-  ButtonBase,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
   Paper,
+  ButtonBase,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
   Search as SearchIcon,
-  AccountCircle,
-  Mail as MailIcon,
-  Notifications as NotificationsIcon,
-  MoreVert as MoreIcon,
 } from "@mui/icons-material";
 import SideBar from "./SideBar";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import { getAllMovie } from "../../service/home/index";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -69,8 +62,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function NavBar() {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
@@ -82,112 +73,32 @@ export default function NavBar() {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleSearchChange = async (event) => {
+    const term = event.target.value;
+    setSearchTerm(term);
+
+    if (term.trim()) {
+      const results = await getAllMovie();
+      const filteredMovies = results.filter((movie) =>
+        movie.title.toLowerCase().includes(term.toLowerCase())
+      );
+      setMovies(filteredMovies);
+      setShowResults(true);
+    } else {
+      setShowResults(false);
+      setMovies([]);
+    }
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
+  const handleResultClick = (id) => {
+    navigate(`/cart/${id}`);
+    setShowResults(false);
+    setSearchTerm("");
   };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
-  const handleLogout = () => {
-    handleMenuClose();
-    Cookies.remove("sid");
-    Cookies.remove("refresh_token");
-    navigate("/");
-  };
-
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
-
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      // open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleLogout}>Log out</MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      // open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        position="static"
-        sx={{
-          backgroundColor: "transparent",
-          boxShadow: "none",
-        }}
-      >
+      <AppBar position="static" sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
         <Toolbar>
           <IconButton
             size="large"
@@ -195,58 +106,33 @@ export default function NavBar() {
             color="inherit"
             aria-label="open drawer"
             onClick={toggleSidebar}
-            sx={{
-              mr: 2,
-              color: "#66FCF1",
-              "&:hover": {
-                color: alpha("#66FCF1", 0.8),
-              },
-            }}
+            sx={{ mr: 2, color: "#66FCF1", "&:hover": { color: alpha("#66FCF1", 0.8) } }}
           >
             <MenuIcon />
           </IconButton>
-          <ButtonBase
-            onClick={() => navigate("/home")}
-            sx={{ color: "#66FCF1" }}
-          >
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ display: { xs: "none", sm: "block" }, color: "#66FCF1" }}
-            >
+          <ButtonBase onClick={() => navigate("/home")} sx={{ color: "#66FCF1" }}>
+            <Typography variant="h6" noWrap component="div" sx={{ display: { xs: "none", sm: "block" }, color: "#66FCF1" }}>
               CINEMA AWESOME
             </Typography>
           </ButtonBase>
           <Box position="relative">
             <Search>
-              <SearchIconWrapper>{/* <SearchIcon /> */}</SearchIconWrapper>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
               <StyledInputBase
                 placeholder="Tìm tên phim..."
                 inputProps={{ "aria-label": "search" }}
                 value={searchTerm}
-                // onChange={handleSearchChange}
+                onChange={handleSearchChange}
               />
             </Search>
             {showResults && (
-              <Paper
-                sx={{
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  right: 0,
-                  maxHeight: 300,
-                  overflowY: "auto",
-                  zIndex: 999,
-                }}
-              >
+              <Paper sx={{ position: "absolute", top: "100%", left: 0, right: 0, maxHeight: 300, overflowY: "auto", zIndex: 999 }}>
                 <List>
                   {movies.length > 0 ? (
                     movies.map((movie) => (
-                      <ListItemButton
-                        key={movie.id}
-                        onClick={() => handleResultClick(movie.id)}
-                      >
+                      <ListItemButton key={movie.id} onClick={() => handleResultClick(movie.id)}>
                         <ListItemText primary={movie.title} />
                       </ListItemButton>
                     ))
