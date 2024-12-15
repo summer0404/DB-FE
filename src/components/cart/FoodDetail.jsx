@@ -1,7 +1,21 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardMedia, Typography, Button, Box } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Box,
+} from "@mui/material";
 
-const FoodDetail = ({ id, image, title, description, price, handleSelectFood }) => {
+const FoodDetail = ({
+  id,
+  image,
+  title,
+  description,
+  price,
+  handleSelectFood,
+}) => {
   const [number, setNumber] = useState(0);
   return (
     <Card
@@ -9,10 +23,10 @@ const FoodDetail = ({ id, image, title, description, price, handleSelectFood }) 
         backgroundColor: "#1C2336",
         color: "#fff",
         borderRadius: 2,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        height: '100%',
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
       }}
     >
       <CardMedia component="img" height="140" image={image} alt={title} />
@@ -24,7 +38,7 @@ const FoodDetail = ({ id, image, title, description, price, handleSelectFood }) 
           {description}
         </Typography>
         <Typography variant="h6" color="#66FCF1">
-          {`${price * 1000} VND`}
+          {`${price.toString()},000 VND`}
         </Typography>
         <Box
           sx={{
@@ -38,8 +52,9 @@ const FoodDetail = ({ id, image, title, description, price, handleSelectFood }) 
             variant="outlined"
             sx={{ color: "#fff", borderColor: "#66FCF1" }}
             onClick={() => {
-              setNumber(prev => Math.max(0, prev - 1));
-              handleSelectFood(id, price, -1)}}
+              setNumber((prev) => Math.max(0, prev - 1));
+              handleSelectFood(id, price, -1);
+            }}
           >
             -
           </Button>
@@ -48,8 +63,9 @@ const FoodDetail = ({ id, image, title, description, price, handleSelectFood }) 
             variant="outlined"
             sx={{ color: "#fff", borderColor: "#66FCF1" }}
             onClick={() => {
-              setNumber(prev => Math.max(0, prev + 1));
-              handleSelectFood(id, price, 1)}}
+              setNumber((prev) => Math.max(0, prev + 1));
+              handleSelectFood(id, price, 1);
+            }}
           >
             +
           </Button>

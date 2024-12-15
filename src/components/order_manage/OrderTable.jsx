@@ -11,20 +11,29 @@ import {
   Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import { getOrders } from "../../api/order.api";
+import { getOrders, getOrdersByUser } from "../../api/order.api";
+import { useSelector } from "react-redux";
 
 export default function OrderTable() {
   // States
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortAscending, setSortAscending] = useState(true);
+  const userId = useSelector((state) => state?.user?.user?.userId);
+  const userType = useSelector((state) => state?.user?.user?.userType);
 
   // Fetch data
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await getOrders();
-        setOrders(response.data);
+        if (userType == "Staff") {
+          const response = await getOrders();
+          setOrders(response.data);
+        } else if (userType == "Customer") {
+          const response = await getOrdersByUser(userId);
+          setOrders(response.data);
+        } else {
+        }
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -32,7 +41,7 @@ export default function OrderTable() {
       }
     };
     fetchOrders();
-  }, []);
+  }, [userType]);
 
   return (
     <Box

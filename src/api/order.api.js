@@ -15,6 +15,21 @@ export async function getOrders() {
   }
 }
 
+export async function getOrdersByUser(id) {
+  try {
+    const res = await axios.get(
+      `${CONST_BASE_URL}/${ORDERS_CONST}/user/${id}`,
+      {
+        withCredentials: "include",
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error getting orders:", error);
+    throw error;
+  }
+}
+
 export async function createOrder(orderData) {
   console.log("Order Data:", orderData);
   try {

@@ -22,7 +22,7 @@ export default function TicketInfo({ ticketData }) {
           const response = await getMovieById(movieId);
           setMovieInfo(response.data);
         } catch (error) {
-          console.error('Error fetching movie info:', error);
+          console.error("Error fetching movie info:", error);
         } finally {
           setLoading(false);
         }
@@ -44,42 +44,47 @@ export default function TicketInfo({ ticketData }) {
         <Typography variant="h5" sx={{ color: "#66FCF1", marginBottom: 2 }}>
           {loading ? "Loading..." : movieInfo?.name}
         </Typography>
-        <Typography variant="body1" sx={{ marginBottom: "5px", fontWeight: "bold", color: "#66FCF1" }}>
+        <Typography
+          variant="body1"
+          sx={{ marginBottom: "5px", fontWeight: "bold", color: "#66FCF1" }}
+        >
           Phim dành cho khán giả trên {movieInfo?.ageLimitation} tuổi
         </Typography>
-
         <Typography sx={{ color: "#C5C6C7", marginBottom: 1 }}>
-          Thời gian: <b>
-            {ticketData?.orderTickets && ticketData.orderTickets[0]?.startTime ? 
-              new Date(ticketData.orderTickets[0].startTime).toLocaleString('vi-VN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })
-              : '---'
-            }
+          Thời gian:{" "}
+          <b>
+            {ticketData?.orderTickets && ticketData.orderTickets[0]?.startTime
+              ? new Date(ticketData.orderTickets[0].startTime).toLocaleString(
+                  "vi-VN",
+                  {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                )
+              : "---"}
           </b>
         </Typography>
-        
         <Typography variant="body2" sx={{ marginBottom: "5px" }}>
           Phòng chiếu: <b>{ticketData.roomInfo.room.name}</b>
         </Typography>
-        
         <Typography sx={{ color: "#C5C6C7", marginBottom: 1 }}>
-          Số ghế: <b>
+          Số ghế:{" "}
+          <b>
             {ticketData?.orderTickets
-              ?.map(ticket => convertSeatIndexToName(ticket.seatPosition))
+              ?.map((ticket) => convertSeatIndexToName(ticket.seatPosition))
               .join(", ")}
           </b>
         </Typography>
         <Typography sx={{ color: "#C5C6C7", marginBottom: 1 }}>
-          Bắp nước: <b>
-            {ticketData?.fastfoods?.length > 0 
-              ? ticketData.fastfoods.map(food => 
-                  `${food.name} (${food.quantity})`
-                ).join(", ")
+          Bắp nước:{" "}
+          <b>
+            {ticketData?.fastfoods?.length > 0
+              ? ticketData.fastfoods
+                  .map((food) => `${food.name} (${food.quantity})`)
+                  .join(", ")
               : "---"}
           </b>
         </Typography>
@@ -92,11 +97,14 @@ export default function TicketInfo({ ticketData }) {
             marginTop: "10px",
           }}
         >
-          <Typography variant="h6" sx={{ color: "#66FCF1", fontWeight: "bold" }}>
+          <Typography
+            variant="h6"
+            sx={{ color: "#66FCF1", fontWeight: "bold" }}
+          >
             TỔNG SỐ TIỀN
           </Typography>
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            {ticketData.order.realPrice} VNĐ
+            {ticketData.order.realPrice.toString() + ",000"} VNĐ
           </Typography>
         </Box>
       </Box>
