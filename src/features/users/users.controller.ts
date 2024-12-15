@@ -305,7 +305,7 @@ export class UsersController {
     }
   }
 
-  @UseGuards(RoleGuard(UserType.STAFF))
+  // @UseGuards(RoleGuard(UserType.STAFF))
   @UseGuards(JwtAuthGuard)
   @Put(":id")
   @ApiOperation({
