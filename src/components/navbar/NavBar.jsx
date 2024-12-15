@@ -18,6 +18,7 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import ButtonBase from "@mui/material/ButtonBase";
 import SideBar from "./SideBar";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -85,6 +86,13 @@ export default function NavBar() {
     handleMobileMenuClose();
   };
 
+  const handleLogout = () => {
+    handleMenuClose();
+    Cookies.remove("sid");
+    Cookies.remove("refresh_token");
+    navigate("/");
+  };
+
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
@@ -106,8 +114,7 @@ export default function NavBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleLogout}>Log out</MenuItem>
     </Menu>
   );
 

@@ -194,6 +194,7 @@ const MovieForm = (props) => {
       };
       props.setOpen(false);
       const response = await createMovie(newData);
+      props.setReloadPage((prev) => !prev);
       console.log("Tạo phim thành công:", response);
     } catch (error) {
       console.error("Lỗi khi tạo phim:", error);
@@ -203,7 +204,7 @@ const MovieForm = (props) => {
   const [existingFiles, setExistingFiles] = useState(
     props.form?.data?.files || []
   );
-  
+
   const handleUpdate = async () => {
     try {
       const updatedData = {
@@ -227,7 +228,6 @@ const MovieForm = (props) => {
       console.error("Lỗi khi cập nhật phim:", error);
     }
   };
-  
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 shadow-md rounded-lg w-[80%] flex flex-col gap-5">
@@ -636,7 +636,6 @@ const MovieForm = (props) => {
           Cập nhật
         </Button>
       )}
-
     </div>
   );
 };

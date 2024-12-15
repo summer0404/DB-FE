@@ -17,7 +17,7 @@ import QuickBooking from "./components/cart/QuickBooking";
 import Checkout from "./pages/checkout";
 import OrderTable from "./components/order_manage/OrderTable";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { getInfo } from "./api/auth.api";
 import { setUser } from "./redux/user.slice";
@@ -25,6 +25,7 @@ import { setUser } from "./redux/user.slice";
 function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userType = useSelector((state) => state?.user?.user?.userType);
 
   useEffect(() => {
     async function firstFetch() {
@@ -50,18 +51,24 @@ function App() {
     >
       <NavBar />
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/add_food" element={<AddFood />} />
+        {!userType && <Route path="/" element={<Login />} />}
+        {/* <Route path="/register" element={<Register />} />} */}
+        {userType && <Route path="/home" element={<Home />} />}
+        {userType == "Staff" && (
+          <Route path="/add_food" element={<AddFood />} />
+        )}
         {/* <Route path="/add_movies" element={<AddMovies />} /> */}
-        <Route path="/cart/:id" element={<Cart />} />
-        <Route path="/movie_details" element={<MovieDetails />} />
-        <Route path="ticket_booking" element={<TicketBooking />} />
-        <Route path="/manage_movies" element={<ManageMovies />} />
-        <Route path="/quick_booking" element={<QuickBooking />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/manage_order" element={<OrderTable />} />
+        {userType && <Route path="/cart/:id" element={<Cart />} />}
+        {/* <Route path="/movie_details" element={<MovieDetails />} />} */}
+        {userType && (
+          <Route path="ticket_booking" element={<TicketBooking />} />
+        )}
+        {userType == "Staff" && (
+          <Route path="/manage_movies" element={<ManageMovies />} />
+        )}
+        {userType && <Route path="/quick_booking" element={<QuickBooking />} />}
+        {userType && <Route path="/checkout" element={<Checkout />} />}
+        {userType && <Route path="/manage_order" element={<OrderTable />} />}
       </Routes>
     </div>
   );

@@ -23,7 +23,7 @@ import { deleteMovie, getAllMovies } from "../../service/manage_movies";
 import { formatDate } from "../../hepler";
 
 function Row(props) {
-  const { row, handleOpenFormMovie } = props;
+  const { row, handleOpenFormMovie, setReloadPage } = props;
 
   const handleDeleteMovie = async (id) => {
     try {
@@ -63,7 +63,10 @@ function Row(props) {
           <IconButton
             size="small"
             sx={{ color: "#fff" }}
-            onClick={() => handleDeleteMovie(row.id)}
+            onClick={() => {
+              handleDeleteMovie(row.id);
+              setReloadPage((prev) => !prev);
+            }}
           >
             <DeleteOutlineSharpIcon />
           </IconButton>
@@ -118,6 +121,7 @@ export default function TableMovies() {
     data: {},
     state: "",
   });
+  const [reloadPage, setReloadPage] = useState(false);
 
   const getMovies = async () => {
     const movies = await getAllMovies();
@@ -126,7 +130,7 @@ export default function TableMovies() {
 
   useEffect(() => {
     getMovies();
-  }, []);
+  }, [reloadPage]);
 
   const [open, setOpen] = useState(false);
 
@@ -207,7 +211,11 @@ export default function TableMovies() {
           fullWidth
         >
           <DialogContent>
-            <MovieForm form={form} setOpen={setOpen} />
+            <MovieForm
+              form={form}
+              setOpen={setOpen}
+              setReloadPage={setReloadPage}
+            />
           </DialogContent>
           <DialogActions>
             <Button
@@ -307,6 +315,7 @@ export default function TableMovies() {
                   key={row.id}
                   row={row}
                   handleOpenFormMovie={handleOpenFormMovie}
+                  setReloadPage={setReloadPage}
                 />
               ))}
             </TableBody>
