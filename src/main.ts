@@ -11,6 +11,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationInputPipe());
   app.enableCors({
     origin: "http://localhost:5173",
+    credentials: true,
   });
   app.use(cookieParser());
   const ApiDocument = SwaggerModule.createDocument(app, swaggerConfig);

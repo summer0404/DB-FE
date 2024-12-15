@@ -50,7 +50,6 @@ export class AuthService {
 
   async getCookieWithJwtRefreshToken(userId: UUID) {
     const user = await this.userService.findOne(userId);
-
     const payload: TokenPayload = { userId, userType: user.userType };
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_TOKEN_SECRET,
