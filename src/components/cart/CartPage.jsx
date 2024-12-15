@@ -213,7 +213,7 @@ export default function CartPage({ movieId }) {
     getComment();
     getShowTime();
     getFastFoods();
-  }, []);
+  }, [movieId]);
 
   const handleSubmitOrder = async () => {
     try {
