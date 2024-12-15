@@ -47,7 +47,7 @@ export async function updateFastFood(fastfoodId, fastfoodData) {
     console.log("fastfoodId:", fastfoodId);
     console.log("fastfoodData:", fastfoodData);
     const res = await axios.post(
-      `${CONST_BASE_URL}/${FASTFOOD_CONST}/${fastfoodId}`,
+      `${CONST_BASE_URL}/${FASTFOOD_CONST}/update/${fastfoodId}`,
       fastfoodData,
       { withCredentials: "include" }
     );

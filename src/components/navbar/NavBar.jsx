@@ -17,8 +17,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import ButtonBase from "@mui/material/ButtonBase";
 import SideBar from "./SideBar";
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -190,15 +189,18 @@ export default function NavBar() {
           >
             <MenuIcon />
           </IconButton>
-          <ButtonBase onClick={() => navigate('/')} sx={{ color: '#66FCF1' }}>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: "none", sm: "block" }, color: "#66FCF1" }}
+          <ButtonBase
+            onClick={() => navigate("/home")}
+            sx={{ color: "#66FCF1" }}
           >
-            CINEMA AWESOME
-          </Typography>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ display: { xs: "none", sm: "block" }, color: "#66FCF1" }}
+            >
+              CINEMA AWESOME
+            </Typography>
           </ButtonBase>
           <Search>
             <SearchIconWrapper>

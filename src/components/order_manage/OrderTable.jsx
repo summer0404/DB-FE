@@ -8,17 +8,9 @@ import {
   Paper,
   Typography,
   Box,
-  Button,
-  TextField,
-  Grid,
-  IconButton,
-  Select,
-  MenuItem,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getOrders } from "../../api/order.api";
-
-
 
 export default function OrderTable() {
   // Add states
@@ -32,7 +24,7 @@ export default function OrderTable() {
         const response = await getOrders();
         setOrders(response.data);
       } catch (error) {
-        console.error('Error fetching orders:', error);
+        console.error("Error fetching orders:", error);
       } finally {
         setLoading(false);
       }
@@ -136,39 +128,51 @@ export default function OrderTable() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">Loading...</TableCell>
+                    <TableCell colSpan={5} align="center">
+                      Loading...
+                    </TableCell>
                   </TableRow>
                 ) : (
                   orders.map((order) => (
                     <TableRow key={order.id}>
-                      <TableCell sx={{ 
-                        color: '#fff',
-                        width: COLUMN_WIDTHS.createdTime 
-                      }}>
+                      <TableCell
+                        sx={{
+                          color: "#fff",
+                          width: COLUMN_WIDTHS.createdTime,
+                        }}
+                      >
                         {new Date(order.createdTime).toLocaleString()}
                       </TableCell>
-                      <TableCell sx={{ 
-                        color: '#fff',
-                        width: COLUMN_WIDTHS.totalPrice 
-                      }}>
+                      <TableCell
+                        sx={{
+                          color: "#fff",
+                          width: COLUMN_WIDTHS.totalPrice,
+                        }}
+                      >
                         {order.totalPrice.toLocaleString()}đ
                       </TableCell>
-                      <TableCell sx={{ 
-                        color: '#fff',
-                        width: COLUMN_WIDTHS.paymentMethod 
-                      }}>
+                      <TableCell
+                        sx={{
+                          color: "#fff",
+                          width: COLUMN_WIDTHS.paymentMethod,
+                        }}
+                      >
                         {order.paymentMethod}
                       </TableCell>
-                      <TableCell sx={{ 
-                        color: '#fff',
-                        width: COLUMN_WIDTHS.realPrice 
-                      }}>
+                      <TableCell
+                        sx={{
+                          color: "#fff",
+                          width: COLUMN_WIDTHS.realPrice,
+                        }}
+                      >
                         {order.realPrice.toLocaleString()}đ
                       </TableCell>
-                      <TableCell sx={{ 
-                        color: '#fff',
-                        width: COLUMN_WIDTHS.paymentStatus 
-                      }}>
+                      <TableCell
+                        sx={{
+                          color: "#fff",
+                          width: COLUMN_WIDTHS.paymentStatus,
+                        }}
+                      >
                         {order.paymentStatus}
                       </TableCell>
                     </TableRow>
@@ -185,9 +189,9 @@ export default function OrderTable() {
 
 // Width constants based on header text length
 const COLUMN_WIDTHS = {
-    createdTime: "25%", // "Thời gian tạo" - longest
-    totalPrice: "20%", // "Tổng giá" - medium
-    paymentMethod: "25%", // "Phương thức thanh toán" - longest
-    realPrice: "15%", // "Giá thực" - short
-    paymentStatus: "15%" // "Trạng thái" - short
-  };
+  createdTime: "25%", // "Thời gian tạo" - longest
+  totalPrice: "20%", // "Tổng giá" - medium
+  paymentMethod: "25%", // "Phương thức thanh toán" - longest
+  realPrice: "15%", // "Giá thực" - short
+  paymentStatus: "15%", // "Trạng thái" - short
+};

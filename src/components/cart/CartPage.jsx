@@ -6,7 +6,7 @@ import { createOrder } from "../../api/order.api";
 import MovieDetailComponent from "../movie_details";
 import { Box } from "@mui/material";
 import { getCoupons } from "../../api/coupon.api";
-import  ChooseCoupon from "./ChooseCoupon";
+import ChooseCoupon from "./ChooseCoupon";
 import {
   getCombo,
   getCommentOfMovie,
@@ -16,13 +16,11 @@ import {
   sendComment,
 } from "../../service/cart";
 import { useNavigate } from "react-router-dom";
-
-
-const USER_ID="320b1ed2-946f-4245-a406-9d991bfd6815";
+import { useSelector } from "react-redux";
 
 export default function CartPage({ movieId }) {
-    const navigate = useNavigate();
-  
+  const navigate = useNavigate();
+  const USER_ID = useSelector((state) => state?.user?.user?.userId);
   const [movieInfo, setMovieInfo] = useState({
     id: "",
     name: "",
@@ -120,7 +118,6 @@ export default function CartPage({ movieId }) {
       tickets,
     };
 
-
     // Thêm thông tin `books` nếu `selectedFoods` không rỗng
     if (selectedFoods.length !== 0) {
       result.books = selectedFoods.map((food) => {
@@ -129,13 +126,13 @@ export default function CartPage({ movieId }) {
           fastfoodId: food.id,
           quantity: food.quantity,
           orderId: "a",
-          size: "Big"
+          size: "Big",
         };
       });
     }
 
     result.totalPrice = totalPrice;
- 
+
     if (selectedCouponId) {
       result.couponId = selectedCouponId;
     }
@@ -202,7 +199,7 @@ export default function CartPage({ movieId }) {
   const addComment = async (newComment) => {
     // Update the state with the new comment
     setComments([...comments, newComment]);
-  
+
     // Send the comment with necessary data
     await sendComment({
       ...newComment, // Spread newComment properties
@@ -210,7 +207,6 @@ export default function CartPage({ movieId }) {
       movieId, // Add movieId
     });
   };
-  
 
   useEffect(() => {
     getInfo();
@@ -222,23 +218,22 @@ export default function CartPage({ movieId }) {
   const handleSubmitOrder = async () => {
     try {
       const orderData = handleOrder(); // Get order data
-      console.log('Order Data:', orderData);
+      console.log("Order Data:", orderData);
       if (!orderData) return; // Exit if validation failed
-      
+
       const response = await createOrder(orderData);
       if (response.success) {
-        navigate('/checkout', {
-          state: { orderData: response.data }
+        navigate("/checkout", {
+          state: { orderData: response.data },
         });
       } else {
         window.alert("Đặt vé thất bại: " + response.message);
       }
     } catch (error) {
-      console.error('Error creating order:', error);
+      console.error("Error creating order:", error);
       window.alert("Có lỗi xảy ra khi đặt vé");
     }
   };
-  
 
   return (
     <>
@@ -274,7 +269,7 @@ export default function CartPage({ movieId }) {
           selectedFoods={selectedFoods || []}
           handleSelectFood={handleSelectFood}
         />
-        <ChooseCoupon onSelect={handleCouponSelect}/>
+        <ChooseCoupon onSelect={handleCouponSelect} />
       </Box>
     </>
   );

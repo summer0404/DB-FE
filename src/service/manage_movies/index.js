@@ -308,11 +308,16 @@ export const updateFilm = async (id, movieData) => {
       formData.append(`files`, file);
     });
 
-    const response = await axios.post(`${backendURL}/movies/update/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axios.post(
+      `${backendURL}/movies/update/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: "include",
+      }
+    );
 
     console.log("Cập nhật phim thành công:", response.data);
 
