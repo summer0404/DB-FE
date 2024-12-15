@@ -277,3 +277,48 @@ export const deleteMovie = async (id) => {
     throw error; // Hoặc xử lý lỗi tùy ý
   }
 };
+
+export const updateFilm = async (id, movieData) => {
+  try {
+    const formData = new FormData();
+
+    // Append movie data fields to formData
+    formData.append("name", movieData.name);
+    formData.append("publishDay", movieData.publishDay);
+    formData.append("length", movieData.length);
+    formData.append("ageLimitation", movieData.ageLimitation);
+    formData.append("country", movieData.country);
+    formData.append("description", movieData.description);
+
+    // Append genres as JSON string
+    formData.append("genres", JSON.stringify(movieData.genres));
+
+    // Append directors as JSON string
+    formData.append("directors", JSON.stringify(movieData.directors));
+
+    // Append actors as JSON string
+    formData.append("actors", JSON.stringify(movieData.actors));
+
+    // Append startTime and endTime as JSON string
+    formData.append("startTime", JSON.stringify(movieData.startTime));
+    formData.append("endTime", JSON.stringify(movieData.endTime));
+
+    // Append each file in the posters array
+    movieData.files.forEach((file, index) => {
+      formData.append(`files`, file);
+    });
+
+    const response = await axios.post(`${backendURL}/movies/update/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("Cập nhật phim thành công:", response.data);
+
+    return response.data; // Trả về kết quả nếu cần
+  } catch (error) {
+    console.error("Lỗi khi cập nhật phim:", error);
+    throw error; // Ném lỗi để xử lý phía gọi hàm
+  }
+};

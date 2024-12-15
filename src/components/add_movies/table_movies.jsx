@@ -175,7 +175,7 @@ export default function TableMovies() {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => handleOpenFormMovie("add")}
+          onClick={() => handleOpenFormMovie("create")}
           sx={{
             backgroundColor: "#66FCF1",
             color: "#1F2833",
