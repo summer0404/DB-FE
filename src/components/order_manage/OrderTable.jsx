@@ -26,13 +26,12 @@ export default function OrderTable() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        if (userType == "Staff") {
+        if (userType === "Staff") {
           const response = await getOrders();
           setOrders(response.data);
-        } else if (userType == "Customer") {
+        } else if (userType === "Customer") {
           const response = await getOrdersByUser(userId);
           setOrders(response.data);
-        } else {
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -41,7 +40,33 @@ export default function OrderTable() {
       }
     };
     fetchOrders();
-  }, [userType]);
+  }, [userType, userId]);
+
+  // Function to sort orders
+  const handleSort = () => {
+    setSortAscending(!sortAscending);
+  };
+
+  const statusOrder = {
+    "Đang chờ thanh toán": 1,
+    "Thành công": 2,
+    "Đã hủy": 3,
+  };
+
+  const sortedOrders = [...orders].sort((a, b) => {
+    // So sánh trạng thái thanh toán
+    const statusA = statusOrder[a.paymentStatus] || 4;
+    const statusB = statusOrder[b.paymentStatus] || 4;
+
+    if (statusA === statusB) {
+      // Nếu trạng thái giống nhau, sắp xếp theo ngày tạo
+      return sortAscending
+        ? new Date(a.createdTime) - new Date(b.createdTime)
+        : new Date(b.createdTime) - new Date(a.createdTime);
+    }
+
+    return sortAscending ? statusA - statusB : statusB - statusA;
+  });
 
   return (
     <Box
@@ -82,8 +107,7 @@ export default function OrderTable() {
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           <Button
             variant="contained"
-            // startIcon={<SortIcon />}
-            // onClick={handleSort}
+            onClick={handleSort}
             sx={{
               backgroundColor: "#66FCF1",
               color: "#1F2833",
@@ -159,46 +183,21 @@ export default function OrderTable() {
                   </TableCell>
                 </TableRow>
               ) : (
-                orders.map((order) => (
+                sortedOrders.map((order) => (
                   <TableRow key={order.id}>
-                    <TableCell
-                      sx={{
-                        color: "#fff",
-                        width: COLUMN_WIDTHS.createdTime,
-                      }}
-                    >
+                    <TableCell sx={{ color: "#fff", width: COLUMN_WIDTHS.createdTime }}>
                       {new Date(order.createdTime).toLocaleString()}
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "#fff",
-                        width: COLUMN_WIDTHS.totalPrice,
-                      }}
-                    >
+                    <TableCell sx={{ color: "#fff", width: COLUMN_WIDTHS.totalPrice }}>
                       {order.totalPrice.toLocaleString() + ",000"}đ
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "#fff",
-                        width: COLUMN_WIDTHS.paymentMethod,
-                      }}
-                    >
+                    <TableCell sx={{ color: "#fff", width: COLUMN_WIDTHS.paymentMethod }}>
                       {order.paymentMethod}
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "#fff",
-                        width: COLUMN_WIDTHS.realPrice,
-                      }}
-                    >
+                    <TableCell sx={{ color: "#fff", width: COLUMN_WIDTHS.realPrice }}>
                       {order.realPrice.toLocaleString() + ",000"}đ
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "#fff",
-                        width: COLUMN_WIDTHS.paymentStatus,
-                      }}
-                    >
+                    <TableCell sx={{ color: "#fff", width: COLUMN_WIDTHS.paymentStatus }}>
                       {order.paymentStatus}
                     </TableCell>
                   </TableRow>
@@ -214,9 +213,9 @@ export default function OrderTable() {
 
 // Width constants based on header text length
 const COLUMN_WIDTHS = {
-  createdTime: "25%", // "Thời gian tạo" - longest
-  totalPrice: "20%", // "Tổng giá" - medium
-  paymentMethod: "25%", // "Phương thức thanh toán" - longest
-  realPrice: "15%", // "Giá thực" - short
-  paymentStatus: "15%", // "Trạng thái" - short
+  createdTime: "25%",
+  totalPrice: "20%",
+  paymentMethod: "25%",
+  realPrice: "15%",
+  paymentStatus: "15%",
 };
