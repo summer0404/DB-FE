@@ -32,6 +32,7 @@ function Row({ row, handleOpenFormMovie, setReloadPage }) {
     try {
       await deleteMovie(id);
       console.log("Xóa thành công");
+      setReloadPage((prev) => !prev);
     } catch (error) {
       console.log(error);
     }
@@ -65,10 +66,7 @@ function Row({ row, handleOpenFormMovie, setReloadPage }) {
         <IconButton
           size="small"
           sx={{ color: "#fff" }}
-          onClick={() => {
-            handleDeleteMovie(row.id);
-            setReloadPage((prev) => !prev);
-          }}
+          onClick={() => handleDeleteMovie(row.id)}
         >
           <DeleteOutlineSharpIcon />
         </IconButton>
@@ -98,6 +96,7 @@ Row.propTypes = {
     ).isRequired,
   }).isRequired,
   handleOpenFormMovie: PropTypes.func.isRequired,
+  setReloadPage: PropTypes.func.isRequired,
 };
 
 export default function TableMovies() {
@@ -192,7 +191,7 @@ export default function TableMovies() {
             sx={{ backgroundColor: "#66FCF1", color: "#1F2833" }}
             startIcon={<SortIcon />}
           >
-            Sắp xếp theo ngày
+            {sortAscending ? "Ngày tăng dần" : "Ngày giảm dần"}
           </Button>
           <Button
             variant="contained"
@@ -202,33 +201,6 @@ export default function TableMovies() {
             Thêm phim mới
           </Button>
         </Box>
-
-        <Dialog
-          open={open}
-          onClose={() => setOpen(false)}
-          maxWidth="md"
-          fullWidth
-        >
-          <DialogContent>
-            <MovieForm
-              form={form}
-              setOpen={setOpen}
-              setReloadPage={setReloadPage}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setOpen(false)}
-              sx={{
-                backgroundColor: "#ff153f",
-                color: "#ffffff",
-                "&:hover": { backgroundColor: "#cc1132" },
-              }}
-            >
-              Huỷ
-            </Button>
-          </DialogActions>
-        </Dialog>
 
         <TableContainer component={Paper} sx={{ backgroundColor: "#1F2937" }}>
           <Table>
@@ -255,7 +227,7 @@ export default function TableMovies() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {filteredRows.map((row) => (
                 <Row
                   key={row.id}
                   row={row}
@@ -267,6 +239,32 @@ export default function TableMovies() {
           </Table>
         </TableContainer>
       </Box>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogContent>
+          <MovieForm
+            form={form}
+            setOpen={setOpen}
+            setReloadPage={setReloadPage}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setOpen(false)}
+            sx={{
+              backgroundColor: "#ff153f",
+              color: "#ffffff",
+              "&:hover": { backgroundColor: "#cc1132" },
+            }}
+          >
+            Huỷ
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
