@@ -7,6 +7,7 @@ const RoleGuard = (userType: UserType): Type<CanActivate> => {
     canActivate(context: ExecutionContext) {
       const request = context.switchToHttp().getRequest<RequestWithUserDto>();
       const { user } = request;
+      console.log("role", user);
       const listRole = {
         [UserType.STAFF]: 2,
         [UserType.CUSTOMER]: 1,

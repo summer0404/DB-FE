@@ -103,6 +103,8 @@ export class AuthController {
   async getMe(@Req() request: RequestWithUserDto, @Res() response: Response) {
     const { user } = request;
     try {
+      console.log(user);
+
       const userInfo = await this.userService.findOne(user.userId);
       const returningData = {
         name: userInfo.firstName + " " + userInfo.lastName,

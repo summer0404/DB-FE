@@ -79,6 +79,7 @@ export class GoogleAuthGuard extends AuthGuard("google") {
           throw error;
         }
       }
+      console.log({ userId: user.id, gid: gid, userType: user.userType });
       request.user = { userId: user.id, gid: gid, userType: user.userType };
       return true;
     } catch (error) {

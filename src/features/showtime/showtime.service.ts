@@ -6,6 +6,7 @@ import { UpdateShowtimeDto } from "./dtos/update.dto";
 import { GetTicketByShowtimeDto } from "../tickets/dto/getTicketByShowtime.dto";
 import { Tickets } from "../tickets/tickets.entity";
 import { Transaction } from "sequelize";
+import { Rooms } from "../rooms/rooms.entity";
 
 @Injectable()
 export class ShowtimeService {
@@ -94,6 +95,27 @@ export class ShowtimeService {
       ],
     });
     return tickets;
+  }
+
+  async getShowtimeAndRoom(
+    movieId: string,
+    startTime: Date,
+    endTime: Date,
+    transaction: Transaction,
+  ): Promise<Showtime> {
+    return await this.showtimesRepository.findOne({
+      where: {
+        movieId,
+        startTime,
+        endTime,
+      },
+      transaction,
+      include: [
+        {
+          model: Rooms,
+        },
+      ],
+    });
   }
 
   async getByMovie(movieId: string): Promise<Showtime[]> {

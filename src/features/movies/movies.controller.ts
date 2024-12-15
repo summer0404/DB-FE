@@ -104,6 +104,7 @@ export class MoviesController {
     @Body() createDto: CreateMovies,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
+    console.log(createDto)
     let transaction = await this.dbSource.transaction();
     try {
       console.log(1);
@@ -114,8 +115,8 @@ export class MoviesController {
         throw new BadRequestException(
           "Thời gian bắt đầu và thời gian kết thúc phải là 2 mảng có cùng kích thước",
         );
-
       const startTimes = new Set();
+      
       for (const startTime of createDto.startTime) {
         const formattedTime = new Date(startTime).toISOString(); // Chuẩn hóa định dạng
         if (startTimes.has(formattedTime)) {

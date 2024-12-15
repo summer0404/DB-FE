@@ -26,6 +26,10 @@ import { CouponsService } from "../coupons/coupons.service";
 import { UsersService } from "../users/users.service";
 import { TicketsService } from "../tickets/tickets.service";
 import { BookService } from "../book/book.service";
+import { FastfoodsService } from "../fastfoods/fastfoods.service";
+import { NewOrderInterface } from "./newOrder.interface";
+import { Fastfoods } from "../fastfoods/fastfoods.entity";
+import { ShowtimeService } from "../showtime/showtime.service";
 import RoleGuard from "../auth/guards/role.guard";
 import { JwtAuthGuard } from "../auth/guards/jwt_auth.guard";
 
@@ -39,6 +43,8 @@ export class OrdersController {
     private readonly userService: UsersService,
     private readonly ticketService: TicketsService,
     private readonly bookService: BookService,
+    private readonly fastfoodService: FastfoodsService,
+    private readonly showtimeService: ShowtimeService,
     @Inject(SEQUELIZE)
     private readonly dbSource: Sequelize,
   ) {}
@@ -55,15 +61,64 @@ export class OrdersController {
     schema: {
       example: {
         success: true,
-        message: "Tạo phiếu giảm giá thành công",
+        message: "Tạo đơn hàng thành công",
         data: {
-          id: "9812466d-46c8-4f2d-bd2d-7a80816f6ecb",
-          isUsed: ["4f9cecc2-ae14-42f0-8548-134b8f85bfbd"],
-          name: "Chào mừng bạn mới",
-          expirationDate: "2024-11-27T17:56:29.279Z",
-          percent: 3,
-          updatedAt: "2024-12-02T12:15:49.744Z",
-          createdAt: "2024-12-02T12:15:49.744Z",
+          order: {
+            id: "9f31d111-57da-4c82-b961-02350ac83057",
+            createdTime: "2024-12-14T16:29:47.360Z",
+            totalPrice: 150,
+            staffId: null,
+            couponId: null,
+            userId: "302927fc-6874-4481-9cba-994c619aad80",
+            paymentMethod: "Online",
+            timePayment: null,
+            paymentStatus: "Đang chờ thanh toán",
+            realPrice: 150,
+            createdAt: "2024-12-14T16:33:09.081Z",
+            updatedAt: "2024-12-14T16:33:09.214Z",
+          },
+          fastfoods: [
+            {
+              id: "57882994-5c2b-414b-a53e-068d0e6b09f9",
+              name: "CocaCola",
+              group: "Popcorn",
+              price: 40,
+              size: "Big",
+              quantity: 2,
+            },
+          ],
+          orderTickets: [
+            {
+              movieId: "687c86e4-4e29-4763-ac2d-9f8638f88050",
+              startTime: "2024-12-12T07:01:31.192Z",
+              endTime: "2024-12-12T08:01:31.192Z",
+              price: 45,
+              seatPosition: 1,
+              orderId: "9f31d111-57da-4c82-b961-02350ac83057",
+            },
+            {
+              movieId: "687c86e4-4e29-4763-ac2d-9f8638f88050",
+              startTime: "2024-12-12T07:01:31.192Z",
+              endTime: "2024-12-12T08:01:31.192Z",
+              price: 45,
+              seatPosition: 2,
+              orderId: "9f31d111-57da-4c82-b961-02350ac83057",
+            },
+          ],
+          roomInfo: {
+            movieId: "687c86e4-4e29-4763-ac2d-9f8638f88050",
+            startTime: "2024-12-12T07:01:31.192Z",
+            endTime: "2024-12-12T08:01:31.192Z",
+            roomId: 2,
+            createdAt: "2024-12-14T09:02:10.334Z",
+            updatedAt: "2024-12-14T09:02:15.275Z",
+            room: {
+              id: 2,
+              name: "Tên phòng chiếu2",
+              createdAt: "2024-12-14T09:02:05.562Z",
+              updatedAt: "2024-12-14T09:02:05.562Z",
+            },
+          },
         },
       },
     },
@@ -163,10 +218,41 @@ export class OrdersController {
         transaction,
       );
 
-      const order = await this.ordersService.findOneTransaction(
+      let order = await this.ordersService.findOneTransaction(
         newOrder.id,
         transaction,
       );
+      let result: NewOrderInterface = { order };
+
+      let fastfoods = [];
+      if (createdBooks.length > 0) {
+        for (let i of any.books) {
+          let newfastfood: Fastfoods = await this.fastfoodService.findOneNoImg(
+            i.fastfoodId,
+          );
+          fastfoods.push({
+            id: newfastfood.id,
+            name: newfastfood.name,
+            group: newfastfood.foodGroup,
+            price: newfastfood.price,
+            size: i.size,
+            quantity: i.quantity,
+          });
+        }
+      }
+      let roomInfo = {};
+      if (any?.tickets && any?.tickets != undefined) {
+        let temp = await this.showtimeService.getShowtimeAndRoom(
+          any.tickets[0].movieId,
+          any.tickets[0].startTime,
+          any.tickets[0].endTime,
+          transaction,
+        );
+
+        roomInfo = temp;
+      }
+      result = { ...result, fastfoods, orderTickets: any.tickets, roomInfo };
+
       transaction.commit();
       setTimeout(
         async () => {
@@ -198,7 +284,7 @@ export class OrdersController {
         5 * 60 * 1000,
       );
       this.logger.debug("Tạo đơn hàng thành công");
-      this.response.initResponse(true, "Tạo đơn hàng thành công", order);
+      this.response.initResponse(true, "Tạo đơn hàng thành công", result);
       return res.status(HttpStatus.CREATED).json(this.response);
     } catch (error) {
       transaction.rollback();
