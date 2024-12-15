@@ -2,11 +2,32 @@ import background from "../../assets/imgs/login_background.jpg";
 import BK from "../../assets/imgs/bk.png";
 import Button from "@mui/material/Button";
 import GoogleIcon from "@mui/icons-material/Google";
+import { useGoogleLogin } from "@react-oauth/google";
+import { getInfo, login } from "../../api/auth.api";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/user.slice";
 
 export default function Login() {
-  const handleLogin = () => {
-    console.log("Login");
-  };
+  const dispatch = useDispatch();
+  const handleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      // console.log(tokenResponse);
+      try {
+        const userData = await login(tokenResponse.access_token);
+        if (userData?.data?.success == true) {
+          const info = await getInfo();
+          if (info?.data?.success == true) {
+            dispatch(setUser(info.data.data));
+            localStorage.setItem("fid", "login");
+            navigate("/home");
+          }
+        }
+      } catch (error) {
+        console.error("Error logging in:", error);
+      }
+    },
+    // flow: "auth-code",
+  });
   return (
     <div
       className="flex items-center justify-center bg-cover"
@@ -23,9 +44,7 @@ export default function Login() {
             <div className="text-900 text-3xl font-medium mb-3">
               HỆ THỐNG RẠP CHIẾU PHIM - 404 NotFound
             </div>
-            <span className="text-600 font-medium">
-              404 NotFound Cinemar
-            </span>
+            <span className="text-600 font-medium">404 NotFound Cinemar</span>
           </div>
 
           <div>
