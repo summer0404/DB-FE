@@ -13,11 +13,12 @@ import { useState, useEffect } from "react";
 import { getOrders } from "../../api/order.api";
 
 export default function OrderTable() {
-  // Add states
+  // States
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortAscending, setSortAscending] = useState(true);
 
-  // Add useEffect to fetch data
+  // Fetch data
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -33,40 +34,55 @@ export default function OrderTable() {
   }, []);
 
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "linear-gradient(to right, #0B0C10, #1F2833)",
+        padding: 4,
+      }}
+    >
       <Box
         sx={{
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          background: "linear-gradient(to right, #0B0C10, #1F2833)",
+          width: "90%",
+          maxWidth: "1200px",
+          backgroundColor: "transparent",
           padding: 4,
+          borderRadius: "8px",
+          border: "2px solid #66FCF1",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
+          color: "#fff",
         }}
       >
-        <Box
+        <Typography
+          variant="h5"
           sx={{
-            width: "90%",
-            maxWidth: "1200px",
-            backgroundColor: "transparent",
-            padding: 4,
-            borderRadius: "8px",
-            border: "2px solid #66FCF1",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
-            color: "#fff",
+            color: "#66FCF1",
+            marginBottom: 2,
+            fontWeight: "bold",
+            textAlign: "center",
           }}
         >
-          <Typography
-            variant="h5"
+          Danh sách các đơn hàng
+        </Typography>
+
+        {/* Sort Button */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<SortIcon />}
+            onClick={handleSort}
             sx={{
-              color: "#66FCF1",
-              marginBottom: 2,
-              fontWeight: "bold",
-              textAlign: "center",
+              backgroundColor: "#66FCF1",
+              color: "#1F2833",
+              "&:hover": { backgroundColor: "#45A29E" },
             }}
           >
-            Danh sách các đơn hàng
-          </Typography>
+            {sortAscending ? "Sắp xếp tăng dần" : "Sắp xếp giảm dần"}
+          </Button>
+        </Box>
 
           {/* Order Table */}
           <TableContainer component={Paper} sx={{ backgroundColor: "#1F2937" }}>

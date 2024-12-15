@@ -1,21 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
-import Badge from "@mui/material/Badge";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import ButtonBase from "@mui/material/ButtonBase";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  InputBase,
+  Badge,
+  MenuItem,
+  Menu,
+  ButtonBase,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Paper,
+} from "@mui/material";
+import {
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  AccountCircle,
+  Mail as MailIcon,
+  Notifications as NotificationsIcon,
+  MoreVert as MoreIcon,
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import SideBar from "./SideBar";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -60,12 +70,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function NavBar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
-
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [movies, setMovies] = useState([]);
+  const [showResults, setShowResults] = useState(false);
 
   const navigate = useNavigate();
 
@@ -209,84 +219,53 @@ export default function NavBar() {
               CINEMA AWESOME
             </Typography>
           </ButtonBase>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Tìm tên phim..."
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
+          <Box position="relative">
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Tìm tên phim..."
+                inputProps={{ "aria-label": "search" }}
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </Search>
+            {showResults && (
+              <Paper
+                sx={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  maxHeight: 300,
+                  overflowY: "auto",
+                  zIndex: 999,
+                }}
+              >
+                <List>
+                  {movies.length > 0 ? (
+                    movies.map((movie) => (
+                      <ListItemButton
+                        key={movie.id}
+                        onClick={() => handleResultClick(movie.id)}
+                      >
+                        <ListItemText primary={movie.title} />
+                      </ListItemButton>
+                    ))
+                  ) : (
+                    <ListItem>
+                      <ListItemText primary="Không tìm thấy kết quả" />
+                    </ListItem>
+                  )}
+                </List>
+              </Paper>
+            )}
+          </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              aria-label="show 4 new mails"
-              sx={{
-                color: "#66FCF1",
-                "&:hover": {
-                  color: alpha("#66FCF1", 0.8),
-                },
-              }}
-            >
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              sx={{
-                color: "#66FCF1",
-                "&:hover": {
-                  color: alpha("#66FCF1", 0.8),
-                },
-              }}
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              sx={{
-                color: "#66FCF1",
-                "&:hover": {
-                  color: alpha("#66FCF1", 0.8),
-                },
-              }}
-            >
-              <AccountCircle />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              sx={{
-                color: "#66FCF1",
-                "&:hover": {
-                  color: alpha("#66FCF1", 0.8),
-                },
-              }}
-            >
-              <MoreIcon />
-            </IconButton>
-          </Box>
         </Toolbar>
       </AppBar>
       <SideBar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 }

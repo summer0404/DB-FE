@@ -221,7 +221,7 @@ const MovieForm = (props) => {
         startTime: startTime,
         endTime: endTime,
       };
-      //props.setOpen(false);
+      props.setOpen(false);
       const response = await updateFilm(props.form?.data?.id, updatedData);
       console.log("Cập nhật phim thành công:", response);
     } catch (error) {
