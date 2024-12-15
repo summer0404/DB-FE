@@ -24,6 +24,7 @@ import {
   createMovie,
   deleteMovie,
   fetchCountries,
+  updateFilm,
 } from "../../service/manage_movies";
 import { formatDate } from "../../hepler";
 
@@ -128,8 +129,6 @@ const MovieForm = (props) => {
       ["image/jpeg", "image/png", "image/gif"].includes(file.type)
     ); // Lọc chỉ lấy file ảnh
 
-    console.log("File được chọn:", fileArray); // Log file được chọn
-
     setPosters((prevPosters) => [...prevPosters, ...fileArray]);
 
     const newPosterPreviews = fileArray.map((file) =>
@@ -200,6 +199,35 @@ const MovieForm = (props) => {
       console.error("Lỗi khi tạo phim:", error);
     }
   };
+
+  const [existingFiles, setExistingFiles] = useState(
+    props.form?.data?.files || []
+  );
+  
+  const handleUpdate = async () => {
+    try {
+      const updatedData = {
+        name: movieData.name,
+        publishDay: movieData.publishDay,
+        length: movieData.length,
+        ageLimitation: movieData.ageLimitation,
+        country: movieData.country,
+        description: movieData.description,
+        genres: genres,
+        files: posters,
+        actors: actors,
+        directors: directors,
+        startTime: startTime,
+        endTime: endTime,
+      };
+      //props.setOpen(false);
+      const response = await updateFilm(props.form?.data?.id, updatedData);
+      console.log("Cập nhật phim thành công:", response);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật phim:", error);
+    }
+  };
+  
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 shadow-md rounded-lg w-[80%] flex flex-col gap-5">
@@ -585,7 +613,7 @@ const MovieForm = (props) => {
         </div>
       </Box>
 
-      {props?.form?.state != "info" && (
+      {props?.form?.state === "create" && (
         <Button
           variant="contained"
           color="primary"
@@ -596,6 +624,19 @@ const MovieForm = (props) => {
           Tạo mới
         </Button>
       )}
+
+      {props?.form?.state === "edit" && (
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          className="mt-6"
+          onClick={handleUpdate}
+        >
+          Cập nhật
+        </Button>
+      )}
+
     </div>
   );
 };
